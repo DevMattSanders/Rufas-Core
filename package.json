@@ -1,0 +1,21 @@
+{
+  "name": "com.devmattsanders.rufas-core",
+  "version": "1.0.0",
+  "displayName": "RUFAS Core",
+  "description": "Reusable Unity Functionality & Systems",
+  "unity": "2019.1",
+  "keywords": [
+    "rufas",
+    "rufas-core"
+  ],
+  "samples": [
+    {
+      "displayName": "Examples",
+      "description": "Example prefabs using RUFAS Core",
+      "path": "Samples~/Examples"
+    }
+  ],
+  "author": {
+    "name": "Matthew Sanders & Joe Duffy"
+  }
+}
