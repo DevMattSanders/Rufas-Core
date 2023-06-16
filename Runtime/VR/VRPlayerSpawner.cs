@@ -25,14 +25,13 @@ namespace Rufas.VR {
         public bool alwaysCreateNewPlayerInstance = false;
         [PropertyTooltip("If true, this will match the player instance to the playerPrefab field, therefore destorying it if the prefab value is null")]
         public bool removePlayerInstanceIfPrefabNull = false;
-      
+
 
         private void Awake()
         {
-            if(playerInstance == null)
-            {
-                CreateNewPlayer();
-            }
+
+            CreateNewPlayer();
+
         }
 
         private void CreateNewPlayer()

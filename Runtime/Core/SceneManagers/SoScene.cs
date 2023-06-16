@@ -14,12 +14,14 @@ using UnityEditor.Build.Reporting;
 
 namespace Rufas
 {
+    
     [CreateAssetMenu(menuName = "Rufas/Scene/SoScene")]
     public class SoScene : SuperScriptable
     {
         public static UnityEvent<SoScene> SoSceneLoaderCalled = new UnityEvent<SoScene>();
 
         [HideLabel, Title("SceneByReference")]
+        [InlineButton("LoadScene")]
         public SceneReference sceneByReference;
 
 
@@ -29,7 +31,7 @@ namespace Rufas
             SoSceneLoaderCalled.Invoke(this);
             if (sceneByReference != null)
             {
-                RufasSceneManager.instance.LoadScene(sceneByReference);
+                SoSceneManager.instance.LoadScene(sceneByReference);
             }
             else
             {

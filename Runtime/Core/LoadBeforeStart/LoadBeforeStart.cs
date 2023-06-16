@@ -16,27 +16,32 @@ namespace Rufas
 
         public static Transform loadBeforeStartParent;
 
+        public bool organizeInDdolAsManager = false;
         public override void BehaviourToRunBeforeStart()
         {
             base.BehaviourToRunBeforeStart();
 
             foreach(GameObject nextPrefab in ddolBeforeScene)
             {
-                if (loadBeforeStartParent == null)
+                if (organizeInDdolAsManager)
                 {
-                    loadBeforeStartParent = new GameObject("-- MANAGERS ABOVE --").transform;
-                    DontDestroyOnLoad(loadBeforeStartParent.gameObject);
-                    loadBeforeStartParent.SetAsFirstSibling();
+                    if (loadBeforeStartParent == null)
+                    {
+                        loadBeforeStartParent = new GameObject("-- MANAGERS ABOVE --").transform;
+                        DontDestroyOnLoad(loadBeforeStartParent.gameObject);
+                        loadBeforeStartParent.SetAsFirstSibling();
+                    }
                 }
 
                 GameObject newGameobject = GameObject.Instantiate(nextPrefab);
-
-                
+                                
                
                 DontDestroyOnLoad(newGameobject);
 
-                newGameobject.transform.SetAsFirstSibling();
-                
+                if (organizeInDdolAsManager)
+                {
+                    newGameobject.transform.SetAsFirstSibling();
+                }
                 newGameobject.SendMessage("OnCreatedBeforeScene", SendMessageOptions.DontRequireReceiver);
                 
             }

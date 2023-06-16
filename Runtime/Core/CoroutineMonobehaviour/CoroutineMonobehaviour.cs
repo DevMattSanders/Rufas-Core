@@ -5,14 +5,14 @@ using UnityEngine.Events;
 
 namespace Rufas
 {
-    public class CoroutineMonobehaviour : MonoBehaviour
+    public class CoroutineMonoBehaviour : MonoBehaviour
     {
-        private static CoroutineMonobehaviour generatedInstance;
+        private static CoroutineMonoBehaviour generatedInstance;
         public static MonoBehaviour i
         {
             get
             {
-                if (!generatedInstance) generatedInstance = new GameObject("CoroutineMonobehaviour").AddComponent<CoroutineMonobehaviour>();
+                if (!generatedInstance) generatedInstance = new GameObject("CoroutineMonobehaviour").AddComponent<CoroutineMonoBehaviour>();
 
                 return generatedInstance;
             }
