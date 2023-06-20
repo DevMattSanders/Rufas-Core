@@ -10,11 +10,12 @@ namespace Rufas
     [CreateAssetMenu(menuName = "Rufas/LogicGroups/LogicGroup")]
     public class LogicGroup : SuperScriptable
     {
-        public System.Action EnabledStateChanged;
-        [ShowInInspector,ReadOnly] public bool IsEnabled { get; private set; }
+     //   public System.Action EnabledStateChanged;
+        [ShowInInspector,ReadOnly] public BoolWithCallback IsEnabled;// { get; private set; }
 
-        public System.Action OverrideStateChanged;
-        [ShowInInspector, ReadOnly] public bool IsOverriden { get; private set; }
+        [ShowInInspector, ReadOnly] public BoolWithCallback IsOverriden;
+      //  public System.Action OverrideStateChanged;
+         //public bool IsOverriden { get; private set; }
 
         private Dictionary<Object,bool> registeredEnablers = new Dictionary<Object, bool>();
 
@@ -72,10 +73,10 @@ namespace Rufas
             }
 
 
-            if (enableLogicGroup && IsEnabled == false)
+            if (enableLogicGroup && IsEnabled.Value == false)
             {
                 EnableLogicGroup();
-            }else if (enableLogicGroup == false && IsEnabled)
+            }else if (enableLogicGroup == false && IsEnabled.Value)
             {
                 DisableLogicGroup();
             }
@@ -86,15 +87,15 @@ namespace Rufas
 
         private void EnableLogicGroup()
         {
-            IsEnabled = true;
-            EnabledStateChanged?.Invoke();
+            IsEnabled.Value = true;
+            //EnabledStateChanged?.Invoke();
          
         }
 
         private void DisableLogicGroup()
         {
-            IsEnabled = false;
-            EnabledStateChanged?.Invoke();
+            IsEnabled.Value = false;
+            //EnabledStateChanged?.Invoke();
           
         }
 
@@ -103,16 +104,17 @@ namespace Rufas
    
         public void OverrideLogicGroup()
         {
-            IsOverriden = true;
-            OverrideStateChanged?.Invoke();
+            IsOverriden.Value = true;
+            //IsOverriden
+           // OverrideStateChanged?.Invoke();
         }
 
         //Should remove the logic override group from OverridenBy list
      
         public void UnoverrideLogicGroup()
         {
-            IsOverriden = false;
-            OverrideStateChanged?.Invoke();
+            IsOverriden.Value = false;
+          //  OverrideStateChanged?.Invoke();
         }
 
         
@@ -195,8 +197,8 @@ namespace Rufas
             logicGroupEnablerEditorDebugView.Clear();
 #endif
 
-            IsEnabled = false;
-            IsOverriden = false;
+            IsEnabled.Value = false;
+            IsOverriden.Value = false;
         }
 
 #if UNITY_EDITOR
@@ -241,5 +243,50 @@ namespace Rufas
 
 #endif
 
+    }
+
+    [System.Serializable]
+    public class LogicGroupReference
+    {
+        [HorizontalGroup("H")]
+        [HideLabel]
+        [OnValueChanged("TrackUpdated")]
+        public LogicGroup group;
+
+        [HorizontalGroup("H")]
+        [HideLabel]
+        [ShowIf("ShowTrackName")]
+        [ReadOnly]
+        public string trackName;
+
+        private void TrackUpdated()
+        {
+            if (group != null)
+            {
+                trackName = group.name;
+            }
+        }
+
+        private bool ShowTrackName()
+        {
+            if (group == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool TrackOverriden()
+        {
+            if (group == null)
+            {
+                return false;
+            }
+
+            return group.IsOverriden.Value;
+        }
     }
 }

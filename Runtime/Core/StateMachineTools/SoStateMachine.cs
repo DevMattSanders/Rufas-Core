@@ -56,6 +56,10 @@ namespace Rufas
                 nextState.stateEnterRequested.AddListener(StateEnterRequested);
             }
 
+            startingState = states[0];
+
+            startingState.EnterState();
+
             previousState = null;
         }
 
@@ -67,6 +71,7 @@ namespace Rufas
             {
                 nextState.stateEnterRequested.RemoveListener(StateEnterRequested);
             }
+            startingState.EnterState();
 
             previousState = null;
         }
@@ -84,8 +89,10 @@ namespace Rufas
 
             currentState = state;
 
-
-            previousState.SyncToStateMachine(this);
+            if (previousState != null)
+            {
+                previousState.SyncToStateMachine(this);
+            }
             nextState.SyncToStateMachine(this);
 
         }

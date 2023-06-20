@@ -35,7 +35,7 @@ namespace Rufas
 
             foreach (LogicGroup nextGroup in logicGroups)
             {
-                nextGroup.EnabledStateChanged += LogicGroupEnabledChanged;
+                nextGroup.IsEnabled.onValue += LogicGroupEnabledChanged;
             }
         }
 
@@ -43,7 +43,7 @@ namespace Rufas
         {
             base.SoOnStart();
 
-            LogicGroupEnabledChanged();
+            LogicGroupEnabledChanged(false);
         }
 
         public override void SoOnEnd()
@@ -54,7 +54,7 @@ namespace Rufas
 
             foreach (LogicGroup nextGroup in logicGroups)
             {
-                nextGroup.EnabledStateChanged -= LogicGroupEnabledChanged;
+                nextGroup.IsEnabled.onValue -= LogicGroupEnabledChanged;
             }
         }
 
@@ -64,12 +64,11 @@ namespace Rufas
             overridingLogicGroup = null;
         }
 
-        private void LogicGroupEnabledChanged()
+        private void LogicGroupEnabledChanged(bool ignore)
         {
             bool overrideNextGroup = false;
             overridingLogicGroup = null;
 
-           // Debug.Log("here");
 
             foreach (LogicGroup nextGroup in logicGroups)
             {
@@ -77,7 +76,7 @@ namespace Rufas
                 {
                     nextGroup.UnoverrideLogicGroup();
 
-                    if (nextGroup.IsEnabled)
+                    if (nextGroup.IsEnabled.Value)
                     {
                         overrideNextGroup = true;
 
