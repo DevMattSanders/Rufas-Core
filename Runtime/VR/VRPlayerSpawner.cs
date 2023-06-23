@@ -10,7 +10,12 @@ namespace Rufas.VR {
         public static GameObject playerInstance;
         
         [SerializeField] private GameObject playerPrefab;
-              
+
+        public static CodeEvent<Vector3,Quaternion> newPlayerPosRot;
+
+        public static bool lastPositionSet = false;
+        public static Vector3 lastPlayerPosition;
+        public static Quaternion lastPlayerRotation;
 
         [Header("Settings")]
         [Tooltip("If true, this will set the position and rotation for the current player instance when detected. Any newly created player will always be set to this point regardless of this setting")]
@@ -30,11 +35,11 @@ namespace Rufas.VR {
         private void Awake()
         {
 
-            CreateNewPlayer();
+            CreateOrMovePlayer();
 
         }
 
-        private void CreateNewPlayer()
+        private void CreateOrMovePlayer()
         {
             if (playerInstance != null && alwaysCreateNewPlayerInstance)
             {
@@ -50,21 +55,35 @@ namespace Rufas.VR {
             {
                 //Player doesn't exist and needs to be created
                 playerInstance = GameObject.Instantiate(playerPrefab, transform.position, Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f));
+                              
 
                 if (setNewPlayerAsDontDestroyOnLoad)
                 {
                     DontDestroyOnLoad(playerInstance);
                 }
+
+               // playerInstance = playerInstance.transform.GetChild(playerInstance.transform.childCount - 1).gameObject;
+
             }
             else if (playerInstance != null)
             {
                 //Player instance already exists
                 if (setExistingPlayerPositionAndRotation)
                 {
-                    playerInstance.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f));
+                   // Debug.Log("Set pos & rot");
+                    playerInstance.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f));                  
                 }
             }
-            
+
+            if (setExistingPlayerPositionAndRotation)
+            {
+                newPlayerPosRot.Raise(transform.position, Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f));
+
+                lastPlayerPosition = transform.position;
+                lastPlayerRotation = transform.rotation;
+
+                lastPositionSet = true;
+            }
         }
 
 #if UNITY_EDITOR

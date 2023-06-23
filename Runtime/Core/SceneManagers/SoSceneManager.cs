@@ -32,6 +32,9 @@ namespace Rufas
 
         [ReadOnly,SerializeField] private List<string> currentOpenScenes = new List<string>();
 
+        [DisableInPlayMode]
+        public LogicGroup sceneLoadingLogicGroup;
+
         public SceneReference loadingScene;
 
         public AsyncOperation operation;
@@ -92,6 +95,14 @@ namespace Rufas
             sceneToLoadNext = "";
 
             GetCurrentScenes_EditorOnly();
+
+           
+        }
+
+        public override void SoOnStart()
+        {
+            base.SoOnStart();
+            sceneLoadingLogicGroup?.RegisterEnabler(this, false, false);
         }
 
         public override void SoOnEnd()
@@ -104,6 +115,8 @@ namespace Rufas
             isCurrentlyLoadingScene.Value = false;
             showLoadingScreen.Value = false;
             sceneToLoadNext = "";
+
+            sceneLoadingLogicGroup?.UnregisterEnabler(this);
 
         }
 
@@ -168,6 +181,9 @@ namespace Rufas
             sceneCalledFromScene.Raise(currentScene, sceneName);
             percentAmount.Value = 0;
             isCurrentlyLoadingScene.Value = true;
+
+            sceneLoadingLogicGroup?.EnableFromRegisteredEnabler(this);
+
             sceneToLoadNext = sceneName;
 
             TriggerEndOfSceneBehaviours();
@@ -309,6 +325,8 @@ namespace Rufas
         {
             showLoadingScreen.Value = false;
             isCurrentlyLoadingScene.Value = false;
+
+            sceneLoadingLogicGroup?.DisableFromRegisteredEnabler(this);
         }
 
         /**/

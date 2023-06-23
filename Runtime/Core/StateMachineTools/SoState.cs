@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 namespace Rufas
 {
+    
     public class SoState : ScriptableObject
     {
         //  public SoStateMachine stateMachine;
@@ -16,12 +17,21 @@ namespace Rufas
         public UnityEvent<bool> onStateActiveChanged = new UnityEvent<bool>();
 
         //COMMENT//--Events for enter or exit changed
-
+        [SerializeField,ReadOnly]
         private bool stateActive;
 
-        public bool StateActive()
+        public bool StateActive
         {
-            return stateActive;
+            get
+            {
+                return stateActive;
+            }
+            set
+            {
+
+                stateActive = value;
+            }
+
         }
 
         //This is called from the state machine on the current and previously assigned states
@@ -39,15 +49,29 @@ namespace Rufas
                 stateActive = false;
                 onStateActiveChanged.Invoke(stateActive);
             }
+            else
+            {
+                stateActive = false;
+            }
        
         }
 
+        [ShowInInlineEditors]
+        [GUIColor("ButtonColour")]
         [Button]
+        [ShowInInspector]
         public void EnterState()
         {
             if (stateActive == true) return;
 
             stateEnterRequested.Invoke(this);
         }        
+
+        private Color ButtonColour()
+        {
+            if (stateActive) return new Color(0.8f, 1, 0.8f);
+
+             return new Color(1, 0.8f, 0.8f);
+        }
     }
 }

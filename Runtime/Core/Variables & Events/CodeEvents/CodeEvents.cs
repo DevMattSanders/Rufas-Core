@@ -101,10 +101,10 @@ namespace Rufas
             Raise(debugOne,debugTwo);
         }
         [HorizontalGroup("H", order: 2)]
-        [SerializeField, HideLabel, ReadOnly] private T lastTArgument;
+        [SerializeField, HideLabel, ReadOnly] public T lastTArgument;
 
         [HorizontalGroup("H", order: 3)]
-        [SerializeField, HideLabel, ReadOnly] private Y lastYArgument;
+        [SerializeField, HideLabel, ReadOnly] public Y lastYArgument;
 
         public void Raise(T tArgument, Y yArgument)
         {

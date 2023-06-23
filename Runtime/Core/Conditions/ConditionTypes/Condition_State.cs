@@ -49,7 +49,7 @@ namespace Rufas
                 return new Color(1, 0.95f, 1);
             }
 
-            if (stateValue.StateActive() == true)
+            if (stateValue.StateActive == true)
             {
                 return new Color(0.95f, 1, 1f);
             }
@@ -83,8 +83,8 @@ namespace Rufas
         {
             if (stateValue == null) { Debug.Log("STATE NULL!"); return true; }
 
-            if (stateValue.StateActive() == true && compareTo == ActiveState.Active
-                || stateValue.StateActive() == false && compareTo == ActiveState.NotActive)
+            if (stateValue.StateActive == true && compareTo == ActiveState.Active
+                || stateValue.StateActive == false && compareTo == ActiveState.NotActive)
             {
                 return true;
             }

@@ -1,3 +1,16 @@
 {
-	"name": "Rufas.BasicFunctions"
+    "name": "Rufas.BasicFunctions",
+    "rootNamespace": "Rufas.BasicFunctions",
+    "references": [
+        "GUID:00ea834f0c42e05479a0663414e6d3e0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

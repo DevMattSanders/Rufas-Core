@@ -51,16 +51,24 @@ namespace Rufas
         {
             base.SoOnAwake();
 
-            foreach(SoState nextState in states)
+            currentState = null;
+            nextState = null;
+            previousState = null;
+
+            foreach (SoState nextState in states)
             {
                 nextState.stateEnterRequested.AddListener(StateEnterRequested);
-            }
 
+                nextState.SyncToStateMachine(this);
+            }
+                       
             startingState = states[0];
 
             startingState.EnterState();
 
-            previousState = null;
+          
+
+           
         }
 
         public override void SoOnEnd()
@@ -74,6 +82,8 @@ namespace Rufas
             startingState.EnterState();
 
             previousState = null;
+            nextState = null;
+            currentState = null;
         }
 
         private void StateEnterRequested(SoState state)
