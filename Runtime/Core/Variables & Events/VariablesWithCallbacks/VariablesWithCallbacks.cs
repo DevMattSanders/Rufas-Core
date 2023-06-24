@@ -12,9 +12,16 @@ namespace Rufas
     }
 
     [System.Serializable, InlineProperty]
-    public struct BoolWithCallback
+    public struct BoolWithCallback : IEquatable<Boolean>
     {
+        [SerializeField, HideInInspector]
         private bool _value;
+
+        public BoolWithCallback(bool startingValue) : this()
+        {
+            Value = startingValue;
+        }
+
         [ShowInInspector, HideLabel]
         public bool Value
         {
@@ -31,10 +38,36 @@ namespace Rufas
 
                 _value = value;
                 onValue?.Invoke(_value);
-            }
+            }           
         }
 
-        public event Action<bool> onValue;       
+        public event Action<bool> onValue;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(bool other)
+        {
+            return _value == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+               
+
+        public static bool operator ==(BoolWithCallback a, bool b)
+        {
+            return a.Value == b;
+        }
+        public static bool operator !=(BoolWithCallback a, bool b)
+        {
+            return !(a.Value == b);
+        }
+       
     }
     [System.Serializable, InlineProperty]
     public struct FloatWithCallback
