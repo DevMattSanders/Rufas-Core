@@ -13,14 +13,14 @@ namespace Rufas
         [HorizontalGroup("H")]
         [ShowIf("useScriptable")]
         [HideLabel]
-        [Required]
-        public GameObjectVariable scriptable;
+        [Required,SerializeField]
+        private GameObjectVariable scriptable;
 
         [HorizontalGroup("H")]
         [HideIf("useScriptable")]
         [HideLabel]
-        [Required]
-        public GameObject sceneRef;
+        [Required,SerializeField]
+        private GameObject sceneRef;
         private Transform trueTarget;
 
         [HorizontalGroup("H")]
@@ -37,6 +37,20 @@ namespace Rufas
         private void UseSceneRef()
         {
             useScriptable = false;
+        }
+
+        public void InjectSceneRef(GameObject _gameObject)
+        {
+            useScriptable = false;
+
+            sceneRef = _gameObject;
+        }
+
+        public void InjectScriptable(GameObjectVariable _gameObjectVariable)
+        {
+            useScriptable = true;
+
+            scriptable = _gameObjectVariable;
         }
 
 

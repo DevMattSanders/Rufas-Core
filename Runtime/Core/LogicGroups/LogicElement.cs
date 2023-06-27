@@ -372,7 +372,7 @@ namespace Rufas
 
        [HideInInspector] public CodeEvent<int> logicCaseChanged;
 
-        private int logicCase;
+        [ReadOnly] public int logicCase;
        // public BoolWithCallback IsLogicEnabledAndActive;
         // public bool IsOverriden { get; private set; }
 
@@ -422,32 +422,7 @@ namespace Rufas
 
         public void RefreshEnabledState(bool __)
         {          
-            bool casesReturnEnabled = false;
-
-            int counter = -1;
-            
-            foreach (LogicElementConditionCase logicCase in cases)
-            {
-                counter++;
-                if (logicCase.condition.conditionMet)
-                {
-                    casesReturnEnabled = true;
-                    break;
-                }
-            }
-
            
-
-            if (casesReturnEnabled == true)
-            {
-                IsEnabled.Value = true;
-                logicCase = counter;
-            }
-            else
-            {
-                IsEnabled.Value = false;
-                logicCase = -1;
-            }
 
            // if (refreshMainStateAfter)
            // {
@@ -457,6 +432,18 @@ namespace Rufas
               
 
         public void RefreshOverridenState(bool __)
+        {
+          
+
+           // if (refreshMainStateAfter)
+           // {
+                Refresh();
+           // }
+        }
+
+       
+
+        public void Refresh()
         {
             bool shouldOverride = false;
 
@@ -471,18 +458,43 @@ namespace Rufas
 
             IsOverriden.Value = shouldOverride;
 
-           // if (refreshMainStateAfter)
-           // {
-                Refresh();
-           // }
-        }
+            if (IsOverriden == false)
+            {
 
-       
+                bool casesReturnEnabled = false;
 
-        public void Refresh()
-        {
+                int counter = -1;
+
+                Debug.Log(counter + " " + name);
+
+                foreach (LogicElementConditionCase logicCase in cases)
+                {
+                    counter++;
+                    if (logicCase.condition.conditionMet)
+                    {
+                        casesReturnEnabled = true;
+                        break;
+                    }
+                }
+
+
+
+                if (casesReturnEnabled == true)
+                {
+                    IsEnabled.Value = true;
+                    logicCase = counter;
+                }
+                else
+                {
+                    IsEnabled.Value = false;
+                    logicCase = -1;
+                }
+
+            }
+
             if (IsOverriden.Value || IsEnabled.Value == false)
             {
+                logicCase = -1;
                 logicCaseChanged.Raise(-1);
 
                 foreach (LogicGroupReference l in logicGroups)
@@ -492,6 +504,7 @@ namespace Rufas
             }
             else if (enabled == false || gameObject.activeInHierarchy == false)
             {
+                logicCase = -1;
                 logicCaseChanged.Raise(-1);
 
                 foreach (LogicGroupReference l in logicGroups)

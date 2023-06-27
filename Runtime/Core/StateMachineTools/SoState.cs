@@ -12,9 +12,11 @@ namespace Rufas
     {
         //  public SoStateMachine stateMachine;
 
-        public UnityEvent<SoState> stateEnterRequested = new UnityEvent<SoState>();
+        [HideInInspector]
+        public CodeEvent<SoState> stateEnterRequested;// = new UnityEvent<SoState>();
 
-        public UnityEvent<bool> onStateActiveChanged = new UnityEvent<bool>();
+        [ReadOnly]
+        public CodeEvent<bool> onStateActiveChanged;// = new UnityEvent<bool>();
 
         //COMMENT//--Events for enter or exit changed
         [SerializeField,ReadOnly]
@@ -42,12 +44,12 @@ namespace Rufas
             if (stateMachine.nextState == this)
             {
                 stateActive = true;
-                onStateActiveChanged.Invoke(stateActive);
+                onStateActiveChanged.Raise(stateActive);
             }
             else if (stateMachine.previousState == this)
             {
                 stateActive = false;
-                onStateActiveChanged.Invoke(stateActive);
+                onStateActiveChanged.Raise(stateActive);
             }
             else
             {
@@ -58,14 +60,22 @@ namespace Rufas
 
         [ShowInInlineEditors]
         [GUIColor("ButtonColour")]
-        [Button]
-        [ShowInInspector]
+        [Button]        
         public void EnterState()
         {
             if (stateActive == true) return;
 
-            stateEnterRequested.Invoke(this);
-        }        
+            stateEnterRequested.Raise(this);
+        }
+
+        [Button]
+        [HideInInlineEditors]
+        [GUIColor("ButtonColour")]
+        [ShowInInspector]
+        private void EnterState_Debug()
+        {
+            EnterState();
+        }
 
         private Color ButtonColour()
         {
