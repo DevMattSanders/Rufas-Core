@@ -176,6 +176,10 @@ namespace Rufas
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(builderTransform.position, maxCutOffPoint);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(builderTransform.position, canActivateRadius);
+            Gizmos.DrawWireSphere(builderTransform.position, deactivateRadius);
         }
     }
 }
