@@ -9,5 +9,6 @@ namespace Rufas
         public bool mirror;
         public Mesh previewMesh;
         public GameObject targetPrefab;
+        public Mesh previewColliderMesh;
     }
 }

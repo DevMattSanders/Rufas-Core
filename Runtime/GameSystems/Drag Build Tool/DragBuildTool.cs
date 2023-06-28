@@ -11,8 +11,13 @@ namespace Rufas
     public class DragBuildTool : MonoBehaviour
     {
         public static DragBuildTool Instance;
-        private PlayerInput playerInput;
         private DragBuildPreview previewObject;
+        [SerializeField] private Transform canDragPreview;
+        [SerializeField] private float canActivateRadius;
+        [SerializeField] private float deactivateRadius;
+
+        public enum DragBuildToolMode { Active, Inactive };
+        public DragBuildToolMode mode;
         
         [Space, Header("Builder")]
         [SerializeField] private Transform builderTransform;
@@ -35,30 +40,49 @@ namespace Rufas
             Instance = this;
 
             previewObject = GetComponentInChildren<DragBuildPreview>();
-            playerInput = GetComponentInChildren<PlayerInput>();
+        }
+
+        private void Start()
+        {
+            DeactivateBuildTool();
         }
 
         private void Update()
         {
+            if (mode == DragBuildToolMode.Inactive && !previewObject.gameObject.activeSelf) 
+            { 
+                float builderDistanceToMe = Vector3.Distance(builderTransform.position, transform.position);
+                if (builderDistanceToMe < canActivateRadius)
+                {
+                    canDragPreview.gameObject.SetActive(true);
+                    canDragPreview.transform.position = transform.position;
+                    canDragPreview.transform.rotation = Quaternion.Inverse(currentConnection.transform.rotation);
+                }
+                else
+                {
+                    canDragPreview.gameObject.SetActive(false);
+                
+                    if (builderDistanceToMe > deactivateRadius)
+                    {
+                        DeactivateBuildTool();
+                    }
+                }
+            }
+
             UpdateClosestEndPoint();
             
             if (closestTargetPoint == null) { 
-                previewObject.UpdateBuildPreview(false, null, false, false); 
+                previewObject.UpdateBuildPreview(false, null, null, false, false); 
                 return; 
             } else {
                 Debug.DrawLine(closestTargetPoint.transform.position, builderTransform.position, Color.blue);
 
                 if (overlappingColliders.Count <= 0) {
-                    previewObject.UpdateBuildPreview(true, closestTargetPoint.previewMesh, true, closestTargetPoint.mirror);
+                    previewObject.UpdateBuildPreview(true, closestTargetPoint.previewMesh, closestTargetPoint.previewColliderMesh, true, closestTargetPoint.mirror);
                 }
                 else {
-                    previewObject.UpdateBuildPreview(false, closestTargetPoint.previewMesh, true, closestTargetPoint.mirror);
+                    previewObject.UpdateBuildPreview(false, closestTargetPoint.previewMesh, closestTargetPoint.previewColliderMesh, true, closestTargetPoint.mirror);
                 }
-            }
-
-            if (playerInput.actions["Trigger Pressed (R)"].WasPressedThisFrame())
-            {
-                SpawnNewObject();
             }
         }
 
@@ -84,9 +108,9 @@ namespace Rufas
                 overlappingColliders.Clear();
 
                 if (newEndPoint != null) {
-                    previewObject.UpdateBuildPreview(true, newEndPoint.previewMesh, true, newEndPoint.mirror);
+                    previewObject.UpdateBuildPreview(true, newEndPoint.previewMesh, newEndPoint.previewColliderMesh, true, newEndPoint.mirror);
                 } else {
-                    previewObject.UpdateBuildPreview(false, null, false, false);
+                    previewObject.UpdateBuildPreview(false, null, null, false, false);
                 }
             }
         }
@@ -94,14 +118,12 @@ namespace Rufas
         [Button()]
         private void SpawnNewObject()
         {
-            if (closestTargetPoint == null  || previewColliding == true) { return; }
-
+            if (closestTargetPoint == null  || previewColliding == true || mode == DragBuildToolMode.Inactive) { return; }
 
             currentConnection.canBuild = false;
 
             GameObject newObject = Instantiate(closestTargetPoint.targetPrefab);
-
-          
+         
             newObject.transform.position = this.transform.position;
             newObject.transform.rotation = this.transform.rotation;
             newObject.transform.localScale = previewObject.transform.localScale;
@@ -121,13 +143,28 @@ namespace Rufas
             }
             closestTriggerPoint.canBuild = false;
 
-            UpdateToolTransformAndConnection(currentConnection);
+            //UpdateToolTransformAndConnection(currentConnection);
             OnObjectSpawnedEvent.Invoke(newObject);
 
+            DeactivateBuildTool();
+        }
+
+        [Button()] public void ActivateBuildTool()
+        {
+            mode = DragBuildToolMode.Active;
+            previewObject.gameObject.SetActive(true);
+            canDragPreview.gameObject.SetActive(false);
+        }
+        [Button()] public void DeactivateBuildTool()
+        {
+            mode = DragBuildToolMode.Inactive;
+            previewObject.gameObject.SetActive(false);
         }
 
         public void UpdateToolTransformAndConnection(DragBuildTriggerPoint newConnection)
         {
+            if (mode == DragBuildToolMode.Active) { return; }
+
             currentConnection = newConnection;
 
             transform.position = newConnection.transform.position;

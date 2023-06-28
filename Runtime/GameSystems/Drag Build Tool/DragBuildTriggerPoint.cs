@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace Rufas
@@ -10,8 +7,9 @@ namespace Rufas
         public bool canBuild = true;
         [Space]
         [SerializeField] private int validLayer;
-        [SerializeField] private LayerMask triggerLayers;
-        
+
+        public CodeEvent OnBuiltInTrigger;
+
         private void OnTriggerEnter(Collider other)
         {
             if (!canBuild) { return; }

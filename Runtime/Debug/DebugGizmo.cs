@@ -9,12 +9,15 @@ namespace Rufas
         private enum Shape { Sphere, Cube };
         [SerializeField] private Shape shape;
 
+        [SerializeField] private bool showGizmo = true;
         [Space]
         [SerializeField] private Color gizmoColour;
         [SerializeField] private float gizmoSize;
 
         private void OnDrawGizmos()
         {
+            if (!showGizmo) { return; } 
+
             Gizmos.color = gizmoColour;
 
             if (shape == Shape.Sphere)
