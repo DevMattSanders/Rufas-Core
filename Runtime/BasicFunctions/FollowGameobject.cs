@@ -10,6 +10,8 @@ namespace Rufas
         [SerializeField,HideInInspector]
         private bool useScriptable;
 
+        public bool debugBoolTrigger = true;
+
         [HorizontalGroup("H")]
         [ShowIf("useScriptable")]
         [HideLabel]
@@ -29,6 +31,8 @@ namespace Rufas
         private void UseScriptable()
         {
             useScriptable = true;
+
+            debugBoolTrigger = false;
         }
 
         [HorizontalGroup("H")]
@@ -37,6 +41,8 @@ namespace Rufas
         private void UseSceneRef()
         {
             useScriptable = false;
+
+            debugBoolTrigger = true;
         }
 
         public void InjectSceneRef(GameObject _gameObject)
