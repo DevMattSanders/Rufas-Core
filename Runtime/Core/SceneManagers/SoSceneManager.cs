@@ -141,7 +141,10 @@ namespace Rufas
 
             FindAllSoScenes_EditorOnly();
 #else
-        currentScene = SceneManager.GetActiveScene().name;
+        currentOpenScenes.Clear();
+
+        currentScene = SceneManager.GetActiveScene().name;        
+        currentOpenScenes.Add(currentScene);
 #endif
         }
 

@@ -16,11 +16,12 @@ namespace Rufas
         [SerializeField] private float canActivateRadius;
         [SerializeField] private float deactivateRadius;
 
+       
         public enum DragBuildToolMode { Active, Inactive };
         public DragBuildToolMode mode;
         
         [Space, Header("Builder")]
-        [SerializeField] private Transform builderTransform;
+        [SerializeField] public Transform builderTransform;
         [SerializeField] private float maxCutOffPoint;
 
         [Space, Header("Target Points")]
@@ -28,7 +29,12 @@ namespace Rufas
         [SerializeField] private Transform[] targetPoints;
 
         [Space, Header("Current Connection & Collision")]
-        public DragBuildTriggerPoint currentConnection;
+        public bool useBuildTriggerPoints = false;
+        [ShowIf("useBuildTriggerPoints")]
+        public DragBuildTriggerPoint currentDragBuildTriggerPoint;
+
+        [Tooltip("The object that is the highest on the hierarchy (without being the root) for the current object being used as a base to spawn objects from. For example, the parent transform to a track connection that has all of that tracks colliders below in the hierarchy")]
+        public Transform currentDragPointColliderParent;
         public bool previewColliding;
         public List<Collider> overlappingColliders;
 
@@ -49,33 +55,44 @@ namespace Rufas
 
         private void Update()
         {
-            if (mode == DragBuildToolMode.Inactive && !previewObject.gameObject.activeSelf) 
-            { 
-                float builderDistanceToMe = Vector3.Distance(builderTransform.position, transform.position);
-                if (builderDistanceToMe < canActivateRadius)
+            if (useBuildTriggerPoints)
+            {
+                if (mode == DragBuildToolMode.Inactive && !previewObject.gameObject.activeSelf)
                 {
-                    canDragPreview.gameObject.SetActive(true);
-                    canDragPreview.transform.position = transform.position;
-                    canDragPreview.transform.rotation = Quaternion.Inverse(currentConnection.transform.rotation);
-                }
-                else
-                {
-                    canDragPreview.gameObject.SetActive(false);
-                
-                    if (builderDistanceToMe > deactivateRadius)
+                    float builderDistanceToMe = Vector3.Distance(builderTransform.position, transform.position);
+                    if (builderDistanceToMe < canActivateRadius)
                     {
-                        DeactivateBuildTool();
+                        canDragPreview.gameObject.SetActive(true);
+
+                        canDragPreview.transform.SetPositionAndRotation(transform.position, transform.rotation);
+                        canDragPreview.transform.rotation = Quaternion.Inverse(currentDragBuildTriggerPoint.transform.rotation);
+                    }
+                    else
+                    {
+                        canDragPreview.gameObject.SetActive(false);
+
+                        if (builderDistanceToMe > deactivateRadius)
+                        {
+                            DeactivateBuildTool();
+                        }
                     }
                 }
             }
 
-            UpdateClosestEndPoint();
+                UpdateClosestEndPoint();
+            
             
             if (closestTargetPoint == null) { 
                 previewObject.UpdateBuildPreview(false, null, null, false, false); 
                 return; 
-            } else {
-                Debug.DrawLine(closestTargetPoint.transform.position, builderTransform.position, Color.blue);
+            } 
+            else 
+            {
+
+                if (builderTransform)
+                {
+                    Debug.DrawLine(closestTargetPoint.transform.position, builderTransform.position, Color.blue);
+                }
 
                 if (overlappingColliders.Count <= 0) {
                     previewObject.UpdateBuildPreview(true, closestTargetPoint.previewMesh, closestTargetPoint.previewColliderMesh, true, closestTargetPoint.mirror);
@@ -88,6 +105,8 @@ namespace Rufas
 
         private void UpdateClosestEndPoint()
         {
+            if (builderTransform == null) return;
+
             DragBuildTargetPoint newEndPoint = null;
             float closestDistance = float.MaxValue;
 
@@ -116,11 +135,11 @@ namespace Rufas
         }
 
         [Button()]
-        private void SpawnNewObject()
+        public void SpawnNewObject()
         {
             if (closestTargetPoint == null  || previewColliding == true || mode == DragBuildToolMode.Inactive) { return; }
 
-            currentConnection.canBuild = false;
+            if(useBuildTriggerPoints) currentDragBuildTriggerPoint.canBuild = false;
 
             GameObject newObject = Instantiate(closestTargetPoint.targetPrefab);
          
@@ -128,10 +147,13 @@ namespace Rufas
             newObject.transform.rotation = this.transform.rotation;
             newObject.transform.localScale = previewObject.transform.localScale;
 
+
+            //Loop and find next connection point.
+            /*
             DragBuildTriggerPoint[] triggerPoints = newObject.GetComponentsInChildren<DragBuildTriggerPoint>();
             DragBuildTriggerPoint closestTriggerPoint = null;
             float closestDistance = float.MaxValue;
-
+            
             foreach (DragBuildTriggerPoint triggerPoint in triggerPoints)
             {
                 float distance = Vector3.Distance(triggerPoint.transform.position, currentConnection.transform.position);
@@ -144,6 +166,8 @@ namespace Rufas
             closestTriggerPoint.canBuild = false;
 
             //UpdateToolTransformAndConnection(currentConnection);
+            */
+
             OnObjectSpawnedEvent.Invoke(newObject);
 
             DeactivateBuildTool();
@@ -165,21 +189,27 @@ namespace Rufas
         {
             if (mode == DragBuildToolMode.Active) { return; }
 
-            currentConnection = newConnection;
+            if(useBuildTriggerPoints) currentDragBuildTriggerPoint = newConnection;
 
             transform.position = newConnection.transform.position;
             transform.rotation = newConnection.transform.rotation;
-            transform.Rotate(0, 180, 0, Space.Self);
+            //transform.Rotate(0, 180, 0, Space.Self);
         }
+
+#if UNITY_EDITOR
 
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(builderTransform.position, maxCutOffPoint);
+            if (builderTransform)
+            {
+                Gizmos.color = Color.blue;
+                Gizmos.DrawWireSphere(builderTransform.position, maxCutOffPoint);
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(builderTransform.position, canActivateRadius);
-            Gizmos.DrawWireSphere(builderTransform.position, deactivateRadius);
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(builderTransform.position, canActivateRadius);
+                Gizmos.DrawWireSphere(builderTransform.position, deactivateRadius);
+            }
         }
+#endif
     }
 }

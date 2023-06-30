@@ -6,16 +6,13 @@ namespace Rufas
 {
     public class LoadSceneOnAwake : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
+        public SoScene sceneToLoad;
 
-        // Update is called once per frame
-        void Update()
-        {
         
+
+        private void Awake()
+        {
+            sceneToLoad.LoadScene();
         }
     }
 }

@@ -25,8 +25,8 @@ namespace Rufas
 
         private void OnTriggerEnter(Collider other)
         {
-            Collider[] expectedColliders = trackDragBuildTool.currentConnection.transform.parent.GetComponentsInChildren<Collider>();
-            if (expectedColliders.Contains(other)) { return; }
+            Collider[] excludedColliders = trackDragBuildTool.currentDragPointColliderParent.GetComponentsInChildren<Collider>();
+            if (excludedColliders.Contains(other)) { return; }
             if (other.gameObject.layer == 29 || other.gameObject.layer == 6) { return; }
             if (other.isTrigger) { return; }
             if (trackDragBuildTool.overlappingColliders.Contains(other)) { return; }

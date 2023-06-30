@@ -465,7 +465,7 @@ namespace Rufas
 
                 int counter = -1;
 
-                Debug.Log(counter + " " + name);
+                //Debug.Log(counter + " " + name);
 
                 foreach (LogicElementConditionCase logicCase in cases)
                 {
