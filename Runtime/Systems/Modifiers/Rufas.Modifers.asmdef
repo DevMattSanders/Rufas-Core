@@ -1,0 +1,16 @@
+{
+    "name": "Rufas.Modifers",
+    "rootNamespace": "Rufas.Modifiers",
+    "references": [
+        "Rufas"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
