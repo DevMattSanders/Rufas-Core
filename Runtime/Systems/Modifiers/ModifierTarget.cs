@@ -16,7 +16,7 @@ namespace Rufas.Modifiers
         {
             for (int index = modifiers.Count - 1; index >= 0; index--)
             {
-                if (modifiers[index].shouldTick) { modifiers[index].TickModifer(this); }
+                if (modifiers[index].shouldTick) { modifiers[index].TickModifier(this); }
                 
                 if (modifiers[index].IsActive == false)
                 {
