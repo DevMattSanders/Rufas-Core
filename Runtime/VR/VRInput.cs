@@ -5,8 +5,6 @@ using UnityEngine.InputSystem;
 
 namespace Rufas
 {
-
-    [CreateAssetMenu(menuName = "Rufas/VRInput")]
     public class VRInput : MonoBehaviour
     {
         public static VRInput instance;
