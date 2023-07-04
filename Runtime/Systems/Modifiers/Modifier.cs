@@ -31,7 +31,7 @@ namespace Rufas.Modifiers
 
         }
 
-        public virtual void TickModifer(ModifierTarget target)
+        public virtual void TickModifier(ModifierTarget target)
         {
             duration -= Time.deltaTime;
         }
