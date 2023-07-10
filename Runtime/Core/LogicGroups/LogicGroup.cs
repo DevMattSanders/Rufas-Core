@@ -43,6 +43,8 @@ namespace Rufas
         {
             if (registeredEnablers.ContainsKey(enabler))
             {
+                if (registeredEnablers[enabler] == true) return;
+
                 registeredEnablers[enabler] = true;
 
                 RefreshRegisteredEnablers();
@@ -53,6 +55,8 @@ namespace Rufas
         {
             if (registeredEnablers.ContainsKey(enabler))
             {
+                if (registeredEnablers[enabler] == false) return;
+
                 registeredEnablers[enabler] = false;
 
                 RefreshRegisteredEnablers();
