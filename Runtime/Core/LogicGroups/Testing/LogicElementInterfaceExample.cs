@@ -11,16 +11,16 @@ namespace Rufas
 
         public BoolWithCallback enableLogicGroup;
 
-
-
-        private void Start()
+        private void OnEnable()
         {
+            //enableLogicGroup.Value = true;
             myLogicGroup.RegisterEnabler(this, enableLogicGroup.Value, false);
             enableLogicGroup.onValue += SetLogicGroupEnabled;
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
+           // enableLogicGroup.Value = false;
             myLogicGroup.UnregisterEnabler(this);
             enableLogicGroup.onValue -= SetLogicGroupEnabled;
         }

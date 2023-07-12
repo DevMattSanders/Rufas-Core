@@ -5,37 +5,40 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
+using System.Linq;
+using UnityEngine.EventSystems;
 
 namespace Rufas
 {
     public class RadialMenu : MonoBehaviour
     {
+        private EventSystem eventSystem;
         [SerializeField] private bool menuOpen;
-        [SerializeField] private RadialMenuEntry selectedEntry;
+        public RadialMenuEntry selectedEntry;
         [SerializeField] private float menuRadius = 100f;
-        [Space]
+
         [SerializeField] private List<RadialMenuEntry> entries;
 
-        [Header("Placeholder")]
-        [SerializeField] private PlayerInput playerInput;
-
-        public void ToggleMenu()
+        private void Start()
         {
-            if (playerInput.actions["Trigger"].WasPressedThisFrame())
-            {
-                OpenRadialMenu();
-            }
-            else if (playerInput.actions["Trigger"].WasReleasedThisFrame())
-            {
-                CloseRadialMenu();
-            }
+            entries = GetEntries();
+            eventSystem = EventSystem.current;
+            if (eventSystem ==  null ) { Debug.LogError("Cannot find event system!", this.gameObject); }
         }
 
-        public void UpdateRadialMenu()
+        private List<RadialMenuEntry> GetEntries()
+        {
+            RadialMenuEntry[] entiresArray = GetComponentsInChildren<RadialMenuEntry>();
+            List<RadialMenuEntry> entriesList = entiresArray.ToList();
+            return entriesList;
+        }
+
+        public void UpdateRadialMenu(Vector2 inputVector)
         {
             if (menuOpen == false) { return; }
 
-            Vector2 joystickInput = playerInput.actions["Joystick"].ReadValue<Vector2>().normalized;
+            Vector2 joystickInput = inputVector;
 
             if (joystickInput.magnitude < 0.1f)
             {
@@ -47,7 +50,10 @@ namespace Rufas
                 float minAngleDifference = float.MaxValue;
                 foreach (RadialMenuEntry entry in entries)
                 {
-                    entry.myButton.interactable = false;
+                    if (entry != selectedEntry)
+                    {
+                        entry.myButton.interactable = false;
+                    }
 
                     // Calculate the angle of the rectTransform
                     Vector2 direction = entry.GetComponent<RectTransform>().position - transform.position;
@@ -61,7 +67,7 @@ namespace Rufas
                     {
                         minAngleDifference = angleDifference;
                         selectedEntry = entry;
-
+                        //eventSystem.SetSelectedGameObject(selectedEntry.gameObject);
                     }
                 }
 
@@ -69,9 +75,11 @@ namespace Rufas
             }
         }
 
-        public void OpenRadialMenu()
+        [Button] public void OpenRadialMenu()
         {
             menuOpen = true;
+            
+            //entries = GetEntries();
             float radiansOfSeperation = (Mathf.PI * 2) / entries.Count;
             for (int i = 0; i < entries.Count; i++)
             {
@@ -89,9 +97,11 @@ namespace Rufas
             selectedEntry.myButton.interactable = true;
         }
 
-        public void CloseRadialMenu()
+        [Button] public void CloseRadialMenu()
         {
             menuOpen = false;
+
+            //entries = GetEntries();
             for (int i = 0; i < entries.Count; i++)
             {
                 float delayTime = 0.025f * i;
@@ -103,7 +113,5 @@ namespace Rufas
                 selectedEntry.myButton.onClick.Invoke();
             }
         }
-
-
     }
 }

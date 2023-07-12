@@ -5,14 +5,16 @@ using Rufas;
 
 namespace Rufas.Modifiers
 {
-    public class ModifierTarget : MonoBehaviour
+    [System.Serializable] 
+    public class ModifierTarget
     {
-        [InlineEditor] public List<Modifier> modifiers = new List<Modifier>();
+        [HideInInspector] public Transform transform;
+        public List<Modifier> modifiers = new List<Modifier>();
 
         public CodeEvent<Modifier> OnModifierAdded;
         public CodeEvent<Modifier> OnModifierRemoved;
 
-        private void Update()
+        private void UpdateCurrentModifiers()
         {
             for (int index = modifiers.Count - 1; index >= 0; index--)
             {
@@ -20,7 +22,7 @@ namespace Rufas.Modifiers
                 
                 if (modifiers[index].IsActive == false)
                 {
-                    modifiers[index].DisableModifier();
+                    modifiers[index].DisableModifier(this);
                     RemoveModifier(modifiers[index]);
                 }
             }
@@ -40,7 +42,7 @@ namespace Rufas.Modifiers
 
         public void RemoveModifier(Modifier modifierInstance)
         {
-            modifierInstance.DisableModifier();
+            modifierInstance.DisableModifier(this);
             modifiers.Remove(modifierInstance);
             OnModifierRemoved.Raise(modifierInstance);
         }

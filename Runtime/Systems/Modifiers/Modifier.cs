@@ -8,13 +8,14 @@ namespace Rufas.Modifiers
     public class Modifier : ScriptableObject
     {
         public bool shouldTick = false;
-        [SerializeField] private float duration;
+
+        public float duration;
         public bool IsActive => duration > 0;
 
         [SerializeField] public float damagePerTick;
 
         [Header("Modifier Data")]
-        public GameObject iconPrefab;
+        public Sprite icon;
 
         public virtual bool CanAddModifer(ModifierTarget target)
         {
@@ -26,14 +27,16 @@ namespace Rufas.Modifiers
             
         }
 
-        public virtual void DisableModifier()
-        {
-
-        }
-
         public virtual void TickModifier(ModifierTarget target)
         {
             duration -= Time.deltaTime;
         }
+
+        public virtual void DisableModifier(ModifierTarget target)
+        {
+
+        }
+
+       
     }
 }
