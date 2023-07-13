@@ -12,7 +12,7 @@
     {
       "displayName": "Examples",
       "description": "Example prefabs using RUFAS Core",
-      "path": "Samples~/Examples"
+      "path": "Samples/Examples"
     }
   ],
   "author": {
