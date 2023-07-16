@@ -35,7 +35,7 @@ namespace Rufas
 
             foreach (LogicGroup nextGroup in logicGroups)
             {
-                nextGroup.IsEnabled.onValue += LogicGroupEnabledChanged;
+                nextGroup.IsEnabled.AddListener(LogicGroupEnabledChanged);
             }
         }
 
@@ -54,7 +54,7 @@ namespace Rufas
 
             foreach (LogicGroup nextGroup in logicGroups)
             {
-                nextGroup.IsEnabled.onValue -= LogicGroupEnabledChanged;
+                nextGroup.IsEnabled.RemoveListener(LogicGroupEnabledChanged);
             }
         }
 

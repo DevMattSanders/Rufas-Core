@@ -23,8 +23,26 @@ namespace Rufas
         {
             yield return new WaitForFrames(framesToSkip);
 
-            method();
+            method();            
         }
+
+        public class WaitForFrames : CustomYieldInstruction
+	{
+		private int _targetFrameCount;
+
+		public WaitForFrames(int numberOfFrames)
+		{
+			_targetFrameCount = Time.frameCount + numberOfFrames;
+		}
+
+		public override bool keepWaiting
+		{
+			get
+			{
+				return Time.frameCount < _targetFrameCount;
+			}
+		}
+	}
 
         public static void CallAtEndOfFrame(this MonoBehaviour mono, Action method)//, int frames)
             => mono.StartCoroutine(CallAtEndOfFrameRoutine(method));//, frames));
@@ -63,6 +81,24 @@ namespace Rufas
 
             changeFunction(1);
             onComplete?.Invoke();
+        }
+    }
+
+    public class WaitForFrames : CustomYieldInstruction
+    {
+        private int _targetFrameCount;
+
+        public WaitForFrames(int numberOfFrames)
+        {
+            _targetFrameCount = Time.frameCount + numberOfFrames;
+        }
+
+        public override bool keepWaiting
+        {
+            get
+            {
+                return Time.frameCount < _targetFrameCount;
+            }
         }
     }
 }

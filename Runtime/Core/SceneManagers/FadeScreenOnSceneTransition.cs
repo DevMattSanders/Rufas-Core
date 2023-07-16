@@ -14,8 +14,8 @@ namespace Rufas
         private Tween canvasGroupTween;
 
         private void Awake() { canvasGroup = GetComponent<CanvasGroup>(); }
-        private void Start() { SoSceneManager.instance.isCurrentlyLoadingScene.onValue += CurrentlyLoadingScene; SetScreenOnStart();}
-        private void OnDestroy() { SoSceneManager.instance.isCurrentlyLoadingScene.onValue -= CurrentlyLoadingScene; }
+        private void Start() { SoSceneManager.instance.isCurrentlyLoadingScene.AddListener(CurrentlyLoadingScene); SetScreenOnStart();}
+        private void OnDestroy() { SoSceneManager.instance.isCurrentlyLoadingScene.RemoveListener(CurrentlyLoadingScene); }
 
         private void SetScreenOnStart()
         {

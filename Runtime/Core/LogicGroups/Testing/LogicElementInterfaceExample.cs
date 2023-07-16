@@ -15,14 +15,14 @@ namespace Rufas
         {
             //enableLogicGroup.Value = true;
             myLogicGroup.RegisterEnabler(this, enableLogicGroup.Value, false);
-            enableLogicGroup.onValue += SetLogicGroupEnabled;
+            enableLogicGroup.AddListener(SetLogicGroupEnabled);
         }
 
         private void OnDisable()
         {
            // enableLogicGroup.Value = false;
             myLogicGroup.UnregisterEnabler(this);
-            enableLogicGroup.onValue -= SetLogicGroupEnabled;
+            enableLogicGroup.RemoveListener(SetLogicGroupEnabled);
         }
 
         private void SetLogicGroupEnabled(bool val)

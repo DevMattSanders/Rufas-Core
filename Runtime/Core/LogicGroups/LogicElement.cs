@@ -386,7 +386,7 @@ namespace Rufas
             {
                 group.group.RegisterEnabler(this, IsEnabled.Value, listenerOnly);
 
-                group.group.IsOverriden.onValue += RefreshOverridenState;
+                group.group.IsOverriden.AddListener(RefreshOverridenState);
             }
             RefreshOverridenState(false);
 
@@ -409,7 +409,7 @@ namespace Rufas
             {
                 group.group.UnregisterEnabler(this);
 
-                group.group.IsOverriden.onValue -= RefreshOverridenState;
+                group.group.IsOverriden.RemoveListener(RefreshOverridenState);
             }
 
             foreach (LogicElementConditionCase next in cases)

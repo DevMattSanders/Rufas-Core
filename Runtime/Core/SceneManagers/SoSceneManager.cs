@@ -12,6 +12,8 @@ namespace Rufas
     public class SoSceneManager : SuperScriptable
     {            
 
+
+
         public CodeEvent onSceneLoadTriggered;
         public CodeEvent endOfScene;
         public CodeEvent<string> sceneEntered;
@@ -152,7 +154,7 @@ namespace Rufas
         private void FindAllSoScenes_EditorOnly()
         {
 #if UNITY_EDITOR
-            List<SoScene> foundSoScenes = GeneralMethods.FindAllScriptableObjectsOfType<SoScene>();
+            List<SoScene> foundSoScenes = RufasStatic.GetAllScriptables_ToList<SoScene>();
 
             allSoScenes.Clear();
 
@@ -160,7 +162,8 @@ namespace Rufas
             {
                 allSoScenes.Add(new SceneManagerDebugContainer(soScene));
             }
-#endif
+#endif            
+
         }
 
         

@@ -35,7 +35,7 @@ namespace Rufas
         {
             //_/Debug.Log("Find All Super Scriptables! (Only works in editor!)");
 #if UNITY_EDITOR
-            superScriptables = GeneralMethods.FindAllScriptableObjectsOfType<SuperScriptable>();
+            superScriptables = RufasStatic.GetAllScriptables_ToList<SuperScriptable>();
 #endif
         }
 
