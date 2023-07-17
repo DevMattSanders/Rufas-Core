@@ -8,6 +8,8 @@ namespace Rufas
     {
         public SuperScriptableDatabase[] database;
 
+        public bool callSoOnStartAtEndOfAwake = true;
+
         private void Awake()
         {
             if (database == null) database = Resources.FindObjectsOfTypeAll<SuperScriptableDatabase>();
@@ -19,20 +21,30 @@ namespace Rufas
                 nextDatabase.TriggerAll_SoOnAwake();
             }
 
-            foreach(SuperScriptableDatabase nextDatabase in database)
+            if (callSoOnStartAtEndOfAwake)
             {
-                nextDatabase.TriggerAll_SoOnLoad();
+                if (database == null) database = Resources.FindObjectsOfTypeAll<SuperScriptableDatabase>();
+
+                if (database.Length > 1) { Debug.LogError("Multiple super scriptable databases found!"); }
+
+                foreach (SuperScriptableDatabase nextDatabase in database)
+                {
+                    nextDatabase.TriggerAll_SoOnStart();
+                }
             }
         }
         private void Start()
         {
-            if (database == null) database = Resources.FindObjectsOfTypeAll<SuperScriptableDatabase>();
-            
-            if (database.Length > 1) { Debug.LogError("Multiple super scriptable databases found!"); }
-
-            foreach (SuperScriptableDatabase nextDatabase in database)
+            if (!callSoOnStartAtEndOfAwake)
             {
-                nextDatabase.TriggerAll_SoOnStart();
+                if (database == null) database = Resources.FindObjectsOfTypeAll<SuperScriptableDatabase>();
+
+                if (database.Length > 1) { Debug.LogError("Multiple super scriptable databases found!"); }
+
+                foreach (SuperScriptableDatabase nextDatabase in database)
+                {
+                    nextDatabase.TriggerAll_SoOnStart();
+                }
             }
         }
 

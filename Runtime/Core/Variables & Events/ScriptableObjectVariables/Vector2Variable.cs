@@ -6,8 +6,9 @@ using UnityEngine;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/Variable/Vector2")]
-    public class Vector2Variable : SuperScriptable
+    public class Vector2Variable : SuperScriptableVariable<Vector2>
     {
+        /*
         private Vector2 _value;
 
         [ShowInInspector, HideInEditorMode, LabelText("$GetName")]
@@ -30,5 +31,6 @@ namespace Rufas
             //Load stuff
             _value = startingValue; // loading          
         }
+        */
     }
 }

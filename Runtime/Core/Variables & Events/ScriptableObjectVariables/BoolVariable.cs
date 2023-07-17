@@ -6,11 +6,9 @@ using UnityEngine;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/Variable/Bool")]
-    public class BoolVariable : SuperScriptableWithID
-    {
-        [SerializeField, EnableIf("allowSaveLoad"), TitleGroup("Save Load Options", Order = 1)]
-        private bool saveOnValueChanged;
-
+    public class BoolVariable : SuperScriptableVariable<bool>
+    {       
+        /*
         [DisableInPlayMode, SerializeField,TitleGroup("$GetName")]
         private bool startingValue;
         private string GetName() { return name; }
@@ -33,9 +31,7 @@ namespace Rufas
                     SoOnSave();
                 }
             }
-        }
-
-      
+        }              
 
         public override void SoOnAwake()
         {
@@ -50,20 +46,22 @@ namespace Rufas
         }
         public override void SoOnSave()
         {
-            if (!allowSaveLoad || Application.isPlaying == false) return;
+            if (Application.isPlaying == false) return;
 
             base.SoOnSave();
 
-            SaveLoad.Instance.SaveBool(UniqueID, _value);
+            SaveLoad.Instance.TrySave<bool>(UniqueID, _value);
         }
 
-        public override void SoOnLoad()
+        [Button]
+        public void SoOsnLoad()
         {
-            if (!allowSaveLoad || Application.isPlaying == false) return;
+            if (Application.isPlaying == false) return;
 
             base.SoOnLoad();
 
-            _value = SaveLoad.Instance.LoadBool(UniqueID);
+            SaveLoad.Instance.TryLoad<bool>(UniqueID, out _value);
         }
-    }
+        */
+    }   
 }

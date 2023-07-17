@@ -6,8 +6,8 @@ using UnityEngine;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/Variable/Float")]
-    public class FloatVariable : SuperScriptable
-    {
+    public class FloatVariable : SuperScriptableVariable<float>
+    {/*
         private float _value;
 
         [ShowInInspector, HideInEditorMode, LabelText("$GetName")]
@@ -36,5 +36,6 @@ namespace Rufas
             base.SoOnEnd();
             _value = startingValue;
         }
+        */
     }
 }

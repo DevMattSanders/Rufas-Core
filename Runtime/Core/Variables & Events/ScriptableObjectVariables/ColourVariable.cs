@@ -6,8 +6,9 @@ using UnityEngine;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/Variable/Colour")]
-    public class ColourVariable : SuperScriptable
+    public class ColourVariable : SuperScriptableVariable<Color>
     {
+        /*
         private Color _value;
 
         [ShowInInspector, HideInEditorMode, LabelText("$GetName")]
@@ -36,5 +37,6 @@ namespace Rufas
             base.SoOnEnd();
             _value = startingValue;
         }
+        */
     }
 }

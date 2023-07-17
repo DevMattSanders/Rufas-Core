@@ -2,22 +2,24 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace Rufas
 {
     public class SuperScriptableWithID : SuperScriptable, ISerializationCallbackReceiver
     {
-        [HideInInlineEditors, TitleGroup("Save Load Options", Order = 1)]//, HorizontalGroup("ID")]
-        public bool allowSaveLoad = false;
+       // [HideInInlineEditors, TitleGroup("Save Load Options", Order = 1)]//, HorizontalGroup("ID")]
+     //   public bool allowSaveLoad = false;
 
        
 
         [SerializeField,HideInInspector]
         private string uniqueID;
 
-        [ShowInInspector,ReadOnly,HideLabel, TitleGroup("Save Load Options", Order = 1)]//, ShowIf("allowSaveAndLoad")]//, HorizontalGroup("ID")]
+        [ShowInInspector,ReadOnly,HideLabel, HorizontalGroup("Save Load Options/H"), HideInInlineEditors]//, ShowIf("allowSaveAndLoad")]//, HorizontalGroup("ID")]
         public string UniqueID
         {
             get
@@ -26,12 +28,24 @@ namespace Rufas
             }
         }
 
+
         
-        [Button, EnableIf("allowSaveLoad"), TitleGroup("Save Load Options", Order = 1)]
-        [HideInInlineEditors]
+        [Button,HorizontalGroup("Save Load Options/H"),GUIColor("RefreshIDButtonColour"), HideInInlineEditors]
         public void RefreshID()
         {
             ProcessRegistration(this);
+        }
+
+        private Color RefreshIDButtonColour()
+        {
+            if (string.IsNullOrEmpty(uniqueID))
+            {
+                return Color.red;
+            }
+            else
+            {
+                return Color.grey;
+            }
         }
 
         public override void SoOnStart()
@@ -44,8 +58,8 @@ namespace Rufas
         {
             if (SaveLoad.Instance.ObjectToString.TryGetValue(obj, out var existingId))
             {
-               Debug.Log(existingId);
-               Debug.Log(obj.UniqueID);
+               //Debug.Log(existingId);
+               //Debug.Log(obj.UniqueID);
              
                 if (obj.UniqueID != existingId)
                 {

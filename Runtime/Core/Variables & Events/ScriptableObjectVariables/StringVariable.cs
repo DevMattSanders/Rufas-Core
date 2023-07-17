@@ -5,9 +5,10 @@ using UnityEngine;
 
 namespace Rufas
 {
-    [CreateAssetMenu(menuName = "Rufas/Variable/Int")]
-    public class StringVariable : SuperScriptable
+    [CreateAssetMenu(menuName = "Rufas/Variable/String")]
+    public class StringVariable : SuperScriptableVariable<string>
     {
+        /*
         private string _value;
 
         [ShowInInspector, HideInEditorMode, LabelText("$GetName")]
@@ -45,5 +46,6 @@ namespace Rufas
             base.SoOnEnd();
             _value = startingValue;
         }
+        */
     }
 }

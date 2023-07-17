@@ -8,6 +8,18 @@ namespace Rufas
     [CreateAssetMenu(menuName = "Rufas/Variable/GameObject")]
     public class GameObjectVariable : SuperScriptable
     {
+        [InfoBox("Usecase is for storing instances generated at runtime or for referencing prefabs. There is no saving/loading feature for this type")]
+
+        [DisableInPlayMode]
+        public GameObject startingValue;
+        [DisableInEditorMode]
         public GameObject value;
+
+        public override void SoOnAwake()
+        {
+            base.SoOnAwake();
+
+            value = startingValue;
+        }
     }
 }

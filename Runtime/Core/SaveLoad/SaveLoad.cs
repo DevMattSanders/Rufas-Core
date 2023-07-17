@@ -56,6 +56,8 @@ namespace Rufas
 
         public string fileName;
 
+        private static SaveLoad editorInstance;
+
         private static SaveLoad instance;
         
         public static SaveLoad Instance
@@ -64,13 +66,18 @@ namespace Rufas
             {
                 if (Application.isPlaying == false)
                 {
-                    if (instance == null)
+                    if (editorInstance == null)
                     {
-                        instance = RufasStatic.GetAllScriptables_ToList<SaveLoad>()[0];
+                        editorInstance = RufasStatic.GetAllScriptables_ToList<SaveLoad>()[0];
                     }
-                }
 
-                return instance;
+                    return editorInstance;
+                }
+                else
+                {
+
+                    return instance;
+                }
             }
         }
 
@@ -91,9 +98,62 @@ namespace Rufas
         //OUT IF SUCCESSFUL FOR EACH LOAD JOB! SHOULD LOAD PACKET THAT CONTAINS A VALUE AND BOOL FOR IF ACTUALLY FOUND
 
         //Bool
-        public void SaveBool(string varID, bool value) { ES3.Save<bool>(varID, value, fileName); }
-        public bool LoadBool(string varID) { return ES3.Load<bool>(varID, fileName); }
+       
 
+        public void TrySave<T>(string varID, T value)
+        {
+            // try
+            //{
+            //ES3.Save
+                ES3.Save<T>(varID, value, fileName);
+           // }
+           // catch
+            ////{
+            //    Debug.Log("Cannot save: " + varID + " " + value+ ". Most likely due to it not being serializable in ES3");
+            //}
+        }
+
+        public void TryLoad<T>(string varID, out T value)
+        {
+           // try
+           // {
+                if (ES3.KeyExists(varID, fileName))
+                {
+                    value = ES3.Load<T>(varID, fileName);
+                }
+                else
+                {
+                    value = default(T);
+                }
+           // }
+            //catch
+           // {
+             //   value = default(T);
+              //  return false;
+
+              //  Debug.Log("Cannot save: " + varID + " " + value + ". Most likely due to it not being serializable in ES3");
+
+           // }
+        }
+
+        /*
+        public void SaveBool(string varID, bool value) { ES3.Save<bool>(varID, value, fileName); }
+
+        public void LoadBool(string varID, out bool successful, out bool value)
+        {
+            if (ES3.KeyExists(varID, fileName))
+            {
+                successful = true;
+               value = ES3.Load<bool>(varID, fileName);
+            }
+            else
+            {
+                successful = false;
+                value = false;
+            }
+        }
+
+        
         //Color
         public void SaveColor(string varID, Color value) { ES3.Save<Color>(varID, value, fileName); }
         public Color LoadColor(string varID) { return ES3.Load<Color>(varID, fileName); }
@@ -121,5 +181,6 @@ namespace Rufas
         //Vector3
         public void SaveVector3(string varID, Vector3 value) { ES3.Save<Vector3>(varID, value, fileName); }
         public Vector3 LoadVector3(string varID) { return ES3.Load<Vector3>(varID, fileName); }
+        */
     }
 }

@@ -48,24 +48,16 @@ namespace Rufas
 
 #endif
 
-         //   Debug.Log("So Awake");
             foreach (var superScriptable in superScriptables) { superScriptable.SoOnAwake(); }
         }
 
         public void TriggerAll_SoOnStart()
         {
-          //  Debug.Log("So Start");
             foreach (var superScriptable in superScriptables) { superScriptable.SoOnStart(); }
-        }
-
-        public void TriggerAll_SoOnLoad()
-        {
-            foreach (var superScriptable in superScriptables) { superScriptable.SoOnLoad(); }
         }
 
         public void TriggerAll_SoOnEnd()
         {
-          //  Debug.Log("So End");
             foreach (var superScriptable in superScriptables) { superScriptable.SoOnEnd(); }
         }
     }

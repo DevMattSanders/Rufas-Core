@@ -29,15 +29,5 @@ namespace Rufas
 
         }
 #endif
-
-        public virtual void SoOnSave()
-        {
-
-        }
-
-        public virtual void SoOnLoad()
-        {
-
-        }
     }
 }
