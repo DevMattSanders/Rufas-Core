@@ -6,11 +6,18 @@ using UnityEngine;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/Variable/Bool")]
-    public class BoolVariable : SuperScriptable
+    public class BoolVariable : SuperScriptableWithID
     {
+        [SerializeField, EnableIf("allowSaveLoad"), TitleGroup("Save Load Options", Order = 1)]
+        private bool saveOnValueChanged;
+
+        [DisableInPlayMode, SerializeField,TitleGroup("$GetName")]
+        private bool startingValue;
+        private string GetName() { return name; }
+
         private bool _value;
 
-        [ShowInInspector,DisableInEditorMode, LabelText("$GetName")]
+        [ShowInInspector, DisableInEditorMode, TitleGroup("$GetName")]
         public bool Value
         {
             get
@@ -19,30 +26,44 @@ namespace Rufas
             }
             set
             {
-
-                //If _value != value
-                //Custom event for every time thevalue is changed
-                               
                 _value = value;
+
+                if (saveOnValueChanged)
+                {
+                    SoOnSave();
+                }
             }
         }
-                       
-        [DisableInPlayMode,SerializeField,LabelText("$GetName")] private bool startingValue;
 
-        private string GetName() { return name; }
+      
 
         public override void SoOnAwake()
         {
-            base.SoOnAwake();            
-
-            //Load stuff
-            _value = startingValue; // loading          
+            base.SoOnAwake();
+            _value = startingValue;
         }
 
         public override void SoOnEnd()
         {
             base.SoOnEnd();
             _value = startingValue;
+        }
+        public override void SoOnSave()
+        {
+            if (!allowSaveLoad || Application.isPlaying == false) return;
+
+            base.SoOnSave();
+
+            SaveLoad.Instance.SaveBool(UniqueID, _value);
+        }
+
+        public override void SoOnLoad()
+        {
+            if (!allowSaveLoad || Application.isPlaying == false) return;
+
+            base.SoOnLoad();
+
+            _value = SaveLoad.Instance.LoadBool(UniqueID);
         }
     }
 }

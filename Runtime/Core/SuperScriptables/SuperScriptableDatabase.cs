@@ -58,6 +58,11 @@ namespace Rufas
             foreach (var superScriptable in superScriptables) { superScriptable.SoOnStart(); }
         }
 
+        public void TriggerAll_SoOnLoad()
+        {
+            foreach (var superScriptable in superScriptables) { superScriptable.SoOnLoad(); }
+        }
+
         public void TriggerAll_SoOnEnd()
         {
           //  Debug.Log("So End");

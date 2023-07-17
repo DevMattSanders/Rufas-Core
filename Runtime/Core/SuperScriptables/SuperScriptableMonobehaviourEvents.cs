@@ -18,6 +18,11 @@ namespace Rufas
             {
                 nextDatabase.TriggerAll_SoOnAwake();
             }
+
+            foreach(SuperScriptableDatabase nextDatabase in database)
+            {
+                nextDatabase.TriggerAll_SoOnLoad();
+            }
         }
         private void Start()
         {

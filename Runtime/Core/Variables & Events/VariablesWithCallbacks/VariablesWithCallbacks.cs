@@ -184,6 +184,94 @@ namespace Rufas
     }
 
     [System.Serializable, InlineProperty]
+    public struct DoubleWithCallback : IEquatable<double>
+    {
+        [SerializeField, HideInInspector]
+        private double _value;
+
+        public DoubleWithCallback(double startingValue) : this()
+        {
+            Value = startingValue;
+        }
+
+        [ShowInInspector, HideLabel, HorizontalGroup("H")]
+        public double Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                if (value == _value)
+                {
+                    return;
+                }
+
+                _value = value;
+                onValue?.Invoke(_value);
+            }
+        }
+
+        public void AddListener(System.Action<double> listener)
+        {
+            onValue += listener;
+        }
+
+        public void RemoveListener(System.Action<double> listener)
+        {
+            onValue -= listener;
+        }
+
+        [SerializeField, HideInInspector]
+        private event Action<double> onValue;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(double other)
+        {
+            return _value == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public static bool operator ==(DoubleWithCallback a, double b)
+        {
+            return a.Value == b;
+        }
+        public static bool operator !=(DoubleWithCallback a, double b)
+        {
+            return !(a.Value == b);
+        }
+
+        public static bool operator ==(double a, DoubleWithCallback b)
+        {
+            return a == b.Value;
+        }
+
+        public static bool operator !=(double a, DoubleWithCallback b)
+        {
+            return !(a == b.Value);
+        }
+
+        public static bool operator ==(DoubleWithCallback a, DoubleWithCallback b)
+        {
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(DoubleWithCallback a, DoubleWithCallback b)
+        {
+            if (a.Value == b.Value) return false; return true;
+        }
+    }
+
+    [System.Serializable, InlineProperty]
     public struct FloatWithCallback : IEquatable<float>
     {
         [SerializeField, HideInInspector]
@@ -282,7 +370,94 @@ namespace Rufas
 
     }
 
-    
+    [System.Serializable, InlineProperty]
+    public struct GameObjectWithCallback : IEquatable<GameObject>
+    {
+        [SerializeField, HideInInspector]
+        private GameObject _value;
+
+        public GameObjectWithCallback(GameObject startingValue) : this()
+        {
+            Value = startingValue;
+        }
+
+        [ShowInInspector, HideLabel]
+        public GameObject Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                if (value == _value)
+                {
+                    return;
+                }
+
+                _value = value;
+                onValue?.Invoke(_value);
+            }
+        }
+
+        public void AddListener(System.Action<GameObject> listener)
+        {
+            onValue += listener;
+        }
+
+        public void RemoveListener(System.Action<GameObject> listener)
+        {
+            onValue -= listener;
+        }
+
+        [SerializeField, HideInInspector]
+        private event Action<GameObject> onValue;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(GameObject other)
+        {
+            return _value == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public static bool operator ==(GameObjectWithCallback a, GameObject b)
+        {
+            return a.Value == b;
+        }
+        public static bool operator !=(GameObjectWithCallback a, GameObject b)
+        {
+            return !(a.Value == b);
+        }
+
+        public static bool operator ==(GameObject a, GameObjectWithCallback b)
+        {
+            return a == b.Value;
+        }
+        public static bool operator !=(GameObject a, GameObjectWithCallback b)
+        {
+            return !(a == b.Value);
+        }
+
+        public static bool operator ==(GameObjectWithCallback a, GameObjectWithCallback b)
+        {
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(GameObjectWithCallback a, GameObjectWithCallback b)
+        {
+            if (a.Value == b.Value) return false;
+
+            return true;
+        }
+    }
 
     [System.Serializable, InlineProperty]
     public struct IntWithCallback : IEquatable<int>
@@ -342,7 +517,6 @@ namespace Rufas
             return base.GetHashCode();
         }
 
-
         public static bool operator ==(IntWithCallback a, int b)
         {
             return a.Value == b;
@@ -372,10 +546,8 @@ namespace Rufas
 
             return true;
         }
-
     }
        
-
     [System.Serializable, InlineProperty]
     public struct StringWithCallback : IEquatable<string>
     {
@@ -467,5 +639,181 @@ namespace Rufas
 
     }
 
+    [System.Serializable, InlineProperty]
+    public struct Vector2WithCallback : IEquatable<Vector2>
+    {
+        [SerializeField, HideInInspector]
+        private Vector2 _value;
 
+        public Vector2WithCallback(Vector2 startingValue) : this()
+        {
+            Value = startingValue;
+        }
+
+        [ShowInInspector, HideLabel]
+        public Vector2 Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                if (value == _value)
+                {
+                    return;
+                }
+
+                _value = value;
+                onValue?.Invoke(_value);
+            }
+        }
+
+        public void AddListener(System.Action<Vector2> listener)
+        {
+            onValue += listener;
+        }
+
+        public void RemoveListener(System.Action<Vector2> listener)
+        {
+            onValue -= listener;
+        }
+
+        [SerializeField, HideInInspector]
+        private event Action<Vector2> onValue;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(Vector2 other)
+        {
+            return _value == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public static bool operator ==(Vector2WithCallback a, Vector2 b)
+        {
+            return a.Value == b;
+        }
+        public static bool operator !=(Vector2WithCallback a, Vector2 b)
+        {
+            return !(a.Value == b);
+        }
+
+        public static bool operator ==(Vector2 a, Vector2WithCallback b)
+        {
+            return a == b.Value;
+        }
+        public static bool operator !=(Vector2 a, Vector2WithCallback b)
+        {
+            return !(a == b.Value);
+        }
+
+        public static bool operator ==(Vector2WithCallback a, Vector2WithCallback b)
+        {
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(Vector2WithCallback a, Vector2WithCallback b)
+        {
+            if (a.Value == b.Value) return false;
+
+            return true;
+        }
+    }
+
+    [System.Serializable, InlineProperty]
+    public struct Vector3WithCallback : IEquatable<Vector3>
+    {
+        [SerializeField, HideInInspector]
+        private Vector3 _value;
+
+        public Vector3WithCallback(Vector3 startingValue) : this()
+        {
+            Value = startingValue;
+        }
+
+        [ShowInInspector, HideLabel]
+        public Vector3 Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                if (value == _value)
+                {
+                    return;
+                }
+
+                _value = value;
+                onValue?.Invoke(_value);
+            }
+        }
+
+        public void AddListener(System.Action<Vector3> listener)
+        {
+            onValue += listener;
+        }
+
+        public void RemoveListener(System.Action<Vector3> listener)
+        {
+            onValue -= listener;
+        }
+
+        [SerializeField, HideInInspector]
+        private event Action<Vector3> onValue;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(Vector3 other)
+        {
+            return _value == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public static bool operator ==(Vector3WithCallback a, Vector3 b)
+        {
+            return a.Value == b;
+        }
+        public static bool operator !=(Vector3WithCallback a, Vector3 b)
+        {
+            return !(a.Value == b);
+        }
+
+        public static bool operator ==(Vector3 a, Vector3WithCallback b)
+        {
+            return a == b.Value;
+        }
+        public static bool operator !=(Vector3 a, Vector3WithCallback b)
+        {
+            return !(a == b.Value);
+        }
+
+        public static bool operator ==(Vector3WithCallback a, Vector3WithCallback b)
+        {
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(Vector3WithCallback a, Vector3WithCallback b)
+        {
+            if (a.Value == b.Value) return false;
+
+            return true;
+        }
+    }
 }
