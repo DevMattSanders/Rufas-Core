@@ -13,6 +13,11 @@
       "displayName": "Examples",
       "description": "Example prefabs using RUFAS Core",
       "path": "Samples/Examples"
+    },
+    {
+      "displayName": "ScriptableCreator",
+      "description": "A Odin menu to create scriptable objects.",
+      "path": "Samples/ScriptableCreator"
     }
   ],
   "author": {
