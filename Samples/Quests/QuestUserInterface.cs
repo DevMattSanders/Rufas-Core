@@ -28,7 +28,7 @@ namespace Rufas.Quests
 
         private void ShowQuestStarted(QuestData questData)
         {
-            questTitleText.SetText("Quest Started: " + questData.questName);
+            questTitleText.SetText("Current Activity: " + questData.questName);
             questTitleText.GetComponent<TextFadeOut>().FadeText();
         }
 
@@ -39,7 +39,7 @@ namespace Rufas.Quests
 
         private void ShowQuestCompleted(QuestData questData)
         {
-            questTitleText.SetText("Quest Complete: " + questData.questName);
+            questTitleText.SetText("Activity Complete: " + questData.questName);
             questTitleText.GetComponent<TextFadeOut>().FadeText();
         }
     }

@@ -19,6 +19,7 @@ namespace Rufas.Quests
         public void FadeText()
         {
             textMeshPro = GetComponent<TextMeshProUGUI>();
+            textMeshPro.enabled = true;
             Color newColour = textMeshPro.color;
             newColour.a = 1;
             initialColor = newColour;
@@ -50,6 +51,7 @@ namespace Rufas.Quests
                 // Fade-out completed, disable the text element
                 elapsedTime = 0;
                 shouldFade = false;
+                textMeshPro.enabled = false;
             }
         }
     }

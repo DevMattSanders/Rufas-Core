@@ -24,6 +24,7 @@ namespace Rufas
         [Button]
         private void FindAndRefreshAll()
         {
+#if UNITY_EDITOR
             SuperScriptableWithID[] scriptables = RufasStatic.GetAllScriptables_ToArray<SuperScriptableWithID>();
 
             for (int i = 0; i < scriptables.Length; i++)
@@ -52,6 +53,7 @@ namespace Rufas
             {
                 StringToObject.Remove(val);
             }
+#endif
         }
 
         public string fileName;
@@ -66,12 +68,16 @@ namespace Rufas
             {
                 if (Application.isPlaying == false)
                 {
+#if UNITY_EDITOR
                     if (editorInstance == null)
                     {
                         editorInstance = RufasStatic.GetAllScriptables_ToList<SaveLoad>()[0];
                     }
 
                     return editorInstance;
+#else
+                return instance;
+#endif
                 }
                 else
                 {
