@@ -75,6 +75,10 @@ namespace Rufas
         [BoxGroup("Position")]
         public float positionFollowSpeed = 3;
 
+        [ShowIf("ShowPosFollowSpeed")]
+        [BoxGroup("Position")]
+        public bool multiplyByDistance = false;
+
         //Odin fields
         private bool ShowAnyPosFields() { if (!positionX && !positionY && !positionZ) return false; return true; }
         private bool ShowPosFollowSpeed() { if (ShowAnyPosFields() && smoothPosition) return true; return false; }
@@ -153,7 +157,14 @@ namespace Rufas
 
             if (!smoothPosition) { transform.position = targetPos; return; }
 
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, Vector3.Distance(transform.position, targetPos) * positionFollowSpeed * Time.deltaTime);
+            if (multiplyByDistance)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, Vector3.Distance(transform.position, targetPos) * positionFollowSpeed * Vector3.Distance(transform.position,targetPos) * Time.deltaTime);
+            }
+            else
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, Vector3.Distance(transform.position, targetPos) * positionFollowSpeed * Time.deltaTime);
+            }        
         }
 
         Vector3 targetRot;
