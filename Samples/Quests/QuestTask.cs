@@ -8,6 +8,7 @@ namespace Rufas.Quests
     public class QuestTask : SuperScriptable
     {
         [TextArea] public string taskDescription;
+        public AudioClip taskAudioClip;
         [Space]
         public QuestData parentQuest;
         public bool completed = false;
