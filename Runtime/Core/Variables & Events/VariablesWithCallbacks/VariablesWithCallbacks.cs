@@ -17,6 +17,7 @@ namespace Rufas
             Value = startingValue;
         }
 
+
         [ShowInInspector, HideLabel]
         public bool Value
         {

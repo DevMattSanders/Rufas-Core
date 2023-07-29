@@ -12,10 +12,26 @@ namespace Rufas
         {
             get
             {
-                if (!generatedInstance) generatedInstance = new GameObject("CoroutineMonobehaviour").AddComponent<CoroutineMonoBehaviour>();
+                if (!generatedInstance)
+                {
+                    generatedInstance = new GameObject("CoroutineMonobehaviour").AddComponent<CoroutineMonoBehaviour>();
+                    GameObject.DontDestroyOnLoad(generatedInstance.gameObject);
+                }
 
                 return generatedInstance;
             }
         }
+
+        public static void StartCoroutine(IEnumerator Routine, IEnumerator routineInstance)
+        {
+            if(routineInstance != null)
+            {
+                i.StopCoroutine(routineInstance);
+            }
+
+            routineInstance = Routine;
+
+            i.StartCoroutine(routineInstance);
+        } 
     }
 }
