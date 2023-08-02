@@ -92,7 +92,7 @@ namespace Rufas
             }
         }
 
-        public void AddListener(UnityAction<bool> onConditionMetChanged)
+        public void AddListener(UnityAction<bool> onConditionMetChanged, bool invokeListenerNow)
         {
             if (conType == ConditionType.so && conditionDataScriptable == null) return;
 
@@ -105,7 +105,10 @@ namespace Rufas
                 conditionDataInstance.AwakeInput(onConditionMetChanged);
             }
 
-            onConditionMetChanged.Invoke(conditionMet);
+            if (invokeListenerNow)
+            {
+                onConditionMetChanged.Invoke(conditionMet);
+            }
         }
 
         public void RemoveListener(UnityAction<bool> onConditionMetChanged)

@@ -105,9 +105,10 @@ namespace Rufas
             Debug.Log("GotLogicElement");
         }
 
-      
 
-     //   [Button("Refresh")]
+
+        //   [Button("Refresh")]
+        [ContextMenu("Refresh Cases Size")]
         private void RefreshCasesSize()
         {
             if (logicElement == null) logicElement = GetComponent<LogicElement>();

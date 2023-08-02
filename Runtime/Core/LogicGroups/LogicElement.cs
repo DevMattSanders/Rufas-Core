@@ -392,7 +392,7 @@ namespace Rufas
 
             foreach (LogicElementConditionCase next in cases)
             {
-                next.condition.AddListener(RefreshEnabledState);
+                next.condition.AddListener(RefreshEnabledState,true);
             }
 
             RefreshEnabledState(false);
