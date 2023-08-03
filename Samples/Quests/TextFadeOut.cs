@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+using MPUIKIT;
+
 namespace Rufas.Quests
 {
 
@@ -16,13 +18,25 @@ namespace Rufas.Quests
         private float elapsedTime = 0f;
         private Color initialColor;
 
-        public void FadeText()
+        [SerializeField] private MPImage background;
+        private Color initialBackgroundColor;
+
+        private void Awake()
         {
             textMeshPro = GetComponent<TextMeshProUGUI>();
-            textMeshPro.enabled = true;
+            
             Color newColour = textMeshPro.color;
+            initialBackgroundColor = background.color;
             newColour.a = 1;
             initialColor = newColour;
+        }
+
+        public void FadeText()
+        {
+            textMeshPro.enabled = true;
+            textMeshPro.color = initialColor;
+            background.color = initialBackgroundColor;
+
             elapsedTime = 0;
             shouldFade = true;
         }
@@ -43,8 +57,15 @@ namespace Rufas.Quests
 
                 // Set the text color with the fade-out factor
                 Color textColor = initialColor;
-                textColor.a = 1f - fadeOutFactor;
+                textColor.a = initialBackgroundColor.a - fadeOutFactor;
                 textMeshPro.color = textColor;
+
+                if (background != null)
+                {
+                    Color backgroundColour = initialBackgroundColor;
+                    backgroundColour.a = initialBackgroundColor.a - fadeOutFactor;
+                    background.color = backgroundColour;
+                }
             }
             else
             {

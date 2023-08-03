@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using MPUIKIT;
+
 
 namespace Rufas.Quests
 {
@@ -11,6 +13,7 @@ namespace Rufas.Quests
 
         [SerializeField] private TextMeshProUGUI questTitleText;
         [SerializeField] private TextMeshProUGUI questHintText;
+        [SerializeField] private GameObject questHintBackground;
 
         private void OnEnable()
         {
@@ -39,6 +42,10 @@ namespace Rufas.Quests
 
         private void ShowQuestCompleted(QuestData questData)
         {
+            Debug.Log("Show quest completed text");
+
+            questHintBackground.gameObject.SetActive(false);
+
             questTitleText.SetText("Activity Complete: " + questData.questName);
             questTitleText.GetComponent<TextFadeOut>().FadeText();
         }

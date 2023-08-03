@@ -3,7 +3,8 @@
     "rootNamespace": "Rufas.Quests",
     "references": [
         "Rufas",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "MPUIKit"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
