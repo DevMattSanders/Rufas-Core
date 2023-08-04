@@ -304,9 +304,9 @@ namespace Rufas
                 }
 
                 _value = value;
-                Debug.Log("Set value: " + Value + " " + value + " " + _value);
+              //  Debug.Log("Set value: " + Value + " " + value + " " + _value);
                 onValue?.Invoke(_value);
-                Debug.Log("InvokedEvent value: " + Value + " " + value + " " + _value);
+              //  Debug.Log("InvokedEvent value: " + Value + " " + value + " " + _value);
             }
         }
 
