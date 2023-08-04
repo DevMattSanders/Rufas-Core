@@ -47,11 +47,10 @@ namespace Rufas
 
         [SerializeField]
         [SerializeReference]
-        [OdinSerialize]
         [HideReferenceObjectPicker]
         [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true)]
         [InlineButton("FindAllSoScenes_EditorOnly", "Refresh")]
-        private List<SceneManagerDebugContainer> allSoScenes;
+        private List<SceneManagerDebugContainer> allSoScenes = new List<SceneManagerDebugContainer>();
 
         [System.Serializable]
         public class SceneManagerDebugContainer

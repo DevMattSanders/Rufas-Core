@@ -13,13 +13,20 @@ namespace Rufas
         private CanvasGroup canvasGroup;
         private Tween canvasGroupTween;
 
-        private void Awake() { canvasGroup = GetComponent<CanvasGroup>(); }
+        [SerializeField]
+        private bool startFaded;
+
+        private void Awake() { canvasGroup = GetComponent<CanvasGroup>(); 
+            
+            
+           
+        }
         private void Start() { SoSceneManager.instance.isCurrentlyLoadingScene.AddListener(CurrentlyLoadingScene); SetScreenOnStart();}
         private void OnDestroy() { SoSceneManager.instance.isCurrentlyLoadingScene.RemoveListener(CurrentlyLoadingScene); }
 
         private void SetScreenOnStart()
         {
-            if (SoSceneManager.instance.isCurrentlyLoadingScene.Value)
+            if (SoSceneManager.instance.isCurrentlyLoadingScene.Value || startFaded)
             {
                 canvasGroup.alpha = 1;
                 canvasGroup.blocksRaycasts = true;
@@ -29,6 +36,8 @@ namespace Rufas
                 canvasGroup.alpha = 0;
                 canvasGroup.blocksRaycasts = true;
             }
+
+            CurrentlyLoadingScene(SoSceneManager.instance.isCurrentlyLoadingScene.Value);
         }
 
         private void CurrentlyLoadingScene(bool loadingScene)
