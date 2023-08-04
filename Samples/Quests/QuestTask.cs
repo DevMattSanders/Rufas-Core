@@ -14,6 +14,13 @@ namespace Rufas.Quests
         public bool completed = false;
         public CodeEvent completeEvent;
 
+        public override void SoOnAwake()
+        {
+            base.SoOnAwake();
+
+            completed = false;
+        }
+
         public override void SoOnStart()
         {
             base.SoOnStart();
