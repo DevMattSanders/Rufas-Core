@@ -46,7 +46,6 @@ namespace Rufas
 
 
         [SerializeField]
-        [SerializeReference]
         [HideReferenceObjectPicker]
         [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true)]
         [InlineButton("FindAllSoScenes_EditorOnly", "Refresh")]
