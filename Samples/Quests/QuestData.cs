@@ -19,6 +19,7 @@ namespace Rufas.Quests
         private int taskIndex;
         [InlineEditor] public List<QuestTask> tasks = new List<QuestTask>();
 
+
         public override void SoOnStart()
         {
             taskIndex = tasks.IndexOf(currentTask);
@@ -34,9 +35,7 @@ namespace Rufas.Quests
             }
             else
             {
-                currentTask = tasks[taskIndex];
-                tracker.OnTaskStarted.Raise(currentTask);
-                Debug.Log("NEW TASK: " + currentTask.taskDescription);
+                tracker.StartNextTaskDelayRoutine();
             }
         }
 
@@ -46,6 +45,14 @@ namespace Rufas.Quests
 
             tracker.OnQuestComplete.Raise(this);
             tracker.currentQuest = null;
+        }
+
+    
+        public void StartNextTask()
+        {
+            currentTask = tasks[taskIndex];
+            tracker.OnTaskStarted.Raise(currentTask);
+            Debug.Log("NEW TASK: " + currentTask.taskDescription);
         }
     }
 }

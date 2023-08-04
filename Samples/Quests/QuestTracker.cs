@@ -10,6 +10,10 @@ namespace Rufas.Quests
     {
         [InlineEditor] public QuestData currentQuest;
 
+
+        [Header("Delay")]
+        public float taskStartDelay = 1f;
+
         public CodeEvent<QuestData> OnQuestStarted;
         public CodeEvent<QuestTask> OnTaskComplete;
         public CodeEvent<QuestTask> OnTaskStarted;
@@ -24,6 +28,19 @@ namespace Rufas.Quests
 
             OnQuestStarted.Raise(currentQuest);
             OnTaskStarted.Raise(currentQuest.currentTask);
+        }
+
+        public void StartNextTaskDelayRoutine()
+        {
+            StartCoroutine(NextTaskDelay());
+        }
+
+
+        IEnumerator NextTaskDelay()
+        {
+            yield return new WaitForSeconds(taskStartDelay);
+
+            currentQuest.StartNextTask();
         }
     }
 }
