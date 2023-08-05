@@ -16,7 +16,7 @@ namespace Rufas.Quests
 
         [Header("Tasks")]
         public QuestTask currentTask;
-        private int taskIndex;
+        [SerializeField] private int taskIndex;
         [InlineEditor] public List<QuestTask> tasks = new List<QuestTask>();
 
 
@@ -44,7 +44,7 @@ namespace Rufas.Quests
             Debug.Log("Quest Completed");
 
             tracker.OnQuestComplete.Raise(this);
-            tracker.currentQuest = null;
+            //tracker.currentQuest = null;
         }
 
     
