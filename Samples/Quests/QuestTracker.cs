@@ -23,8 +23,15 @@ namespace Rufas.Quests
         {
             if (currentQuest == null) { return; }
 
+            foreach (var task in currentQuest.tasks) {
+                task.completed = false;
+            }
+
+            currentQuest.questCompleted = false;
+
             currentQuest.tracker = this;
             currentQuest.currentTask = currentQuest.tasks[0];
+            currentQuest.taskIndex = 0;
 
             OnQuestStarted.Raise(currentQuest);
             OnTaskStarted.Raise(currentQuest.currentTask);
