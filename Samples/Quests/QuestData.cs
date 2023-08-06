@@ -10,19 +10,22 @@ namespace Rufas.Quests
     public class QuestData : SuperScriptable
     {
         public string questName = "Unnamed Quest";
+        public bool questCompleted = false;
+
 
         [Header("Trackers")]
         [ReadOnly] public QuestTracker tracker;
 
         [Header("Tasks")]
         public QuestTask currentTask;
-        [SerializeField] private int taskIndex;
+        public int taskIndex;
         [InlineEditor] public List<QuestTask> tasks = new List<QuestTask>();
 
 
         public override void SoOnStart()
         {
-            taskIndex = tasks.IndexOf(currentTask);
+            taskIndex = 0;
+            questCompleted= false;
         }
 
         public void MoveToNextTasK()
@@ -44,6 +47,7 @@ namespace Rufas.Quests
             Debug.Log("Quest Completed");
 
             tracker.OnQuestComplete.Raise(this);
+            questCompleted= true;
             //tracker.currentQuest = null;
         }
 

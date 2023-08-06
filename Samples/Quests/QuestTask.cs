@@ -37,8 +37,8 @@ namespace Rufas.Quests
 
         private void OnTaskComplete()
         {
-            completed = true;
             parentQuest.tracker.OnTaskComplete.Raise(this);
+            completed = true;
             if (parentQuest.currentTask != this) 
             { 
                 Debug.Log("Not current task"); 
