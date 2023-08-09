@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Rufas.BasicFunctions
+namespace Rufas
 {
-    public static class RandomBool
+    public static class Random
     {
-        public static bool GetBool()
+        public static bool Bool()
         {
-            float randomValue = Random.value;
+            float randomValue = UnityEngine.Random.value;
             if (randomValue >= 0.5f)
             {
                 return true;
