@@ -6,11 +6,14 @@ namespace Rufas
 {
     public class NullParent : MonoBehaviour
     {
-        public static Transform nullParent;
+        public static Transform nullParent { get; private set; }
 
         private void Awake()
         {
-            if (nullParent == null) nullParent = transform;
+            if (gameObject.activeInHierarchy)
+            {
+                if (nullParent == null) nullParent = transform;
+            }
         }
 
         private void OnDestroy()
