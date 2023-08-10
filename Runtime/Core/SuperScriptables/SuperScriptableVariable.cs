@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Rufas
 {
-    [InlineEditor]
+    [InlineEditor(Expanded = false,DrawPreview = true,PreviewAlignment = PreviewAlignment.Right)]
     public class SuperScriptableVariable <T>: SuperScriptableWithID
     {
         [SerializeField, TitleGroup("Save Load Options", Order = 1), HideInInlineEditors]
@@ -14,11 +14,10 @@ namespace Rufas
         [SerializeField, TitleGroup("Save Load Options", Order = 1), HideInInlineEditors]
         internal bool loadOnAwake;
 
-        [DisableInPlayMode, SerializeField, TitleGroup("$GetName"),InlineProperty]
+        [DisableInPlayMode, SerializeField,InlineProperty, TitleGroup("$GetName")]
         private T startingValue;
         private string GetName()
         {
-            //bool saveExists = DebugIfSaveDataExists().Item1;
             string toReturn = name;
 
             if (saveOnValueChanged) { toReturn += " | (Save On Change)"; } else { toReturn += " | (Direct Save Only)"; }
@@ -30,7 +29,7 @@ namespace Rufas
 
         private T _value;
 
-        [ShowInInspector, DisableInEditorMode, TitleGroup("$GetName"), InlineProperty]
+        [ShowInInspector, DisableInEditorMode, InlineProperty, TitleGroup("$GetName")]
         public T Value
         {
             get
@@ -59,9 +58,11 @@ namespace Rufas
 
         [SerializeField,LabelText("ValueChangedDebug"), HideInInlineEditors] private CodeEvent<T> OnValueChanged;
 
-        public void AddListener(System.Action<T> listener)
+        public void AddListener(System.Action<T> listener,bool runEventNow = false)
         {
             OnValueChanged.AddListener(listener);
+
+            if (runEventNow) listener.Invoke(Value);
         }
 
         public void RemoveListener(System.Action<T> listener)
@@ -89,7 +90,7 @@ namespace Rufas
         public override void SoOnEnd()
         {
             base.SoOnEnd();
-            //_value = startingValue;
+            _value = startingValue;
         }
         [Button("Save"), TitleGroup("Save Load Options", Order = 1), HideInInlineEditors]
         public void Save()
