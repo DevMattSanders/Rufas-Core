@@ -16,7 +16,7 @@ namespace Rufas
 
         public CodeEvent onSceneLoadTriggered;
         public CodeEvent endOfScene;
-        public CodeEvent<string> sceneEntered;
+        public CodeEvent<string> onSceneEntered;
 
         public CodeEvent<string, string> sceneCalledFromScene;
 
@@ -309,8 +309,8 @@ namespace Rufas
         private void LoadOutLoadingScreen()
         {
             currentScene = sceneToLoadNext;
-            Debug.Log(currentScene);
-            sceneEntered.Raise(currentScene);
+           // Debug.Log(currentScene);
+            onSceneEntered.Raise(currentScene);
 
             currentOpenScenes.Add(currentScene);
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentScene));

@@ -102,7 +102,7 @@ namespace Rufas
             base.GetLogicElement();
 
             RefreshTweenCases();
-            Debug.Log("GotLogicElement");
+          //  Debug.Log("GotLogicElement");
         }
 
 
@@ -125,7 +125,7 @@ namespace Rufas
                     tweenCases.Add(new TweenCase());
                 }
 
-                Debug.Log("Here: " + tweenCases.Count);
+              //  Debug.Log("Here: " + tweenCases.Count);
                 for (int i = 0; i < tweenCases.Count; i++)
                 {
                     tweenCases[i].conditionValue = logicElement.cases[i].conditionEvent;

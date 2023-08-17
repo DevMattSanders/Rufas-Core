@@ -8,7 +8,7 @@ namespace Rufas
     {
         public SuperScriptableDatabase[] database;
 
-        public bool callSoOnStartAtEndOfAwake = true;
+        public bool callSoOnStartAtEndOfAwake = false;
 
         private void Awake()
         {
