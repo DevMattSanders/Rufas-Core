@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,7 +24,11 @@ namespace Rufas
         //Ease of use for adapting existing events to voidEvents
         public void Call() { voidEvent.Raise(); }
         public void Invoke() { voidEvent.Raise(); }
+
+        [Button]
         public void Raise() { voidEvent.Raise(); }
+
+       
 
     }
 }
