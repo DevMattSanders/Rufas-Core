@@ -44,8 +44,11 @@ namespace Rufas
 		}
 	}
 
-        public static void CallAtEndOfFrame(this MonoBehaviour mono, Action method)//, int frames)
-            => mono.StartCoroutine(CallAtEndOfFrameRoutine(method));//, frames));
+        public static void CallAtEndOfFrame(this MonoBehaviour mono, Action method)
+        { //, int frames)
+          //=>
+            if (mono.isActiveAndEnabled)  mono.StartCoroutine(CallAtEndOfFrameRoutine(method));
+        }//, frames));
 
         private static IEnumerator CallAtEndOfFrameRoutine(Action method)//, int frames)
         {
