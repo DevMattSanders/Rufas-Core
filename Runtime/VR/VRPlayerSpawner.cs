@@ -114,6 +114,11 @@ namespace Rufas.VR {
                 playerToBuild = prefab;
             }
 
+            if(playerToBuild == null)
+            {
+                Debug.LogError("Player prefab or scriptable reference missing on player spawner!");
+            }
+
             if (playerInstance != null && alwaysCreateNewPlayerInstance)
             {
                 GameObject.Destroy(playerInstance);
