@@ -10,6 +10,7 @@ namespace Rufas.Quests
     {
         [InlineEditor] public QuestData currentQuest;
 
+        public LocalBoolVariable questActive;
 
         [Header("Delay")]
         public float taskStartDelay = 1f;
@@ -19,9 +20,11 @@ namespace Rufas.Quests
         public CodeEvent<QuestTask> OnTaskStarted;
         public CodeEvent<QuestData> OnQuestComplete;
 
-        private void Start()
+        private IEnumerator Start()
         {
-            if (currentQuest == null) { return; }
+            questActive.Value = false;
+
+            if (currentQuest == null) { yield break; ; }
 
             foreach (var task in currentQuest.tasks) {
                 task.completed = false;
@@ -32,6 +35,11 @@ namespace Rufas.Quests
             currentQuest.tracker = this;
             currentQuest.currentTask = currentQuest.tasks[0];
             currentQuest.taskIndex = 0;
+
+            yield return new WaitForSeconds(taskStartDelay * 3);
+
+            questActive.Value = true;
+
 
             OnQuestStarted.Raise(currentQuest);
             OnTaskStarted.Raise(currentQuest.currentTask);
