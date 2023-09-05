@@ -43,7 +43,7 @@ namespace Rufas
         [FoldoutGroup("Group Settings")]
         [GUIColor("DelayColour")]
         [InlineButton("OverrideDelay", label: "Override")]
-        [PropertyRange(0, 10)]
+        [PropertyRange(0, 60)]
         [OnValueChanged("RefreshTweenValues")]
         public float delay;
 
@@ -59,7 +59,7 @@ namespace Rufas
         [FoldoutGroup("Group Settings")]
         [GUIColor("DurationColour")]
         [InlineButton("OverrideDuration", label: "Override")]
-        [PropertyRange(0, 10)]
+        [PropertyRange(0, 60)]
         [OnValueChanged("RefreshTweenValues")]
         public float duration = 1;
 

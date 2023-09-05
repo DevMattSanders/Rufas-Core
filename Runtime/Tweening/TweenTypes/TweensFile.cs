@@ -9,10 +9,10 @@ namespace Rufas
     public class zBaseTween
     {
         [HideInInspector] public bool useDelay;
-        [ShowIf("useDelay"), PropertyRange(0, 10)] public float delay;
+        [ShowIf("useDelay"), PropertyRange(0, 60)] public float delay;
 
         [HideInInspector] public bool useDuration;
-        [ShowIf("useDuration"), PropertyRange(0, 10)] public float duration;
+        [ShowIf("useDuration"), PropertyRange(0, 60)] public float duration;
 
         [HideInInspector] public bool useEase;
         [ShowIf("useEase")] public Ease ease = Ease.InOutSine;
