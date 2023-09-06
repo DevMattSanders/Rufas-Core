@@ -42,12 +42,14 @@ namespace Rufas.Quests
 
         private void ShowQuestCompleted(QuestData questData)
         {
-            Debug.Log("Show quest completed text");
+          
 
-            questHintBackground.gameObject.SetActive(false);
+          //  Debug.Log("Show quest completed text");
 
-            questTitleText.SetText("Activity Complete: " + questData.questName);
-            questTitleText.GetComponent<TextFadeOut>().FadeText();
+          //  questHintBackground.gameObject.SetActive(false);
+
+            //questTitleText.SetText("Activity Complete: " + questData.questName);
+          //  questTitleText.GetComponent<TextFadeOut>().FadeText();
         }
     }
 }
