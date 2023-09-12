@@ -19,7 +19,7 @@ namespace Rufas.Quests
         [Header("Tasks")]
         public QuestTask currentTask;
         public int taskIndex;
-        [InlineEditor] public List<QuestTask> tasks = new List<QuestTask>();
+        [InlineEditor] public List<QuestTask> tasks;// = new List<QuestTask>();
 
 
         public override void SoOnStart()
