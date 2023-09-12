@@ -9,10 +9,13 @@ namespace Rufas.Quests
         [SerializeField] private QuestTracker _tracker;
         [SerializeField] private QuestTask task;
 
+        private bool alreadyCompletedInScene = false;
+
         public void CompleteTask()
         {
-            if (task != null && _tracker.currentQuest.currentTask == task)
+            if (task != null && _tracker.currentQuest.currentTask == task && alreadyCompletedInScene == false)
             {
+                alreadyCompletedInScene = true;
                 task.completeEvent.Raise();
             }
         }
