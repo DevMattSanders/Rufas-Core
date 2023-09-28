@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rufas
 {
-    public static class Random
+    public static class RandomValues
     {
         public static bool Bool()
         {
@@ -17,3 +17,7 @@ namespace Rufas
         }
     }
 }
+
+
+
+
