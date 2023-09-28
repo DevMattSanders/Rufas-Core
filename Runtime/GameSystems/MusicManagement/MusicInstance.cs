@@ -9,13 +9,24 @@ namespace Rufas.MusicManagement
     {
         [SerializeField, InlineEditor, ReadOnly] private MusicTrack myTrack;
         [Space]
+        public FloatVariable musicVolume;
         [SerializeField, InlineEditor, ReadOnly] private AudioSource audioSource;
 
-        public void InitMusicInstance(float volume)
+        public MusicInstance (FloatVariable volumeSO)
         {
-            audioSource = GetComponent<AudioSource>();
-            UpdateVolume(volume);
+            musicVolume = volumeSO;
         }
+
+        private void Start()
+        {
+            musicVolume.AddListener(UpdateVolume);
+        }
+
+        private void OnDestroy()
+        {
+            musicVolume.RemoveListener(UpdateVolume);
+        }
+
 
         public void UpdateVolume(float volume)
         {
@@ -24,7 +35,7 @@ namespace Rufas.MusicManagement
 
         public void PlayNewMusicTrack(MusicTrack newTrack)
         {
-            InitMusicInstance(MusicManager.Instance.musicVolume.Value);
+            audioSource = GetComponent<AudioSource>();
             myTrack = newTrack;
             audioSource.clip = newTrack.audioClip;
             audioSource.Play();

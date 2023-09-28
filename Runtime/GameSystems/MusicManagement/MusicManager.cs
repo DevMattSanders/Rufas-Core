@@ -37,21 +37,17 @@ namespace Rufas.MusicManagement
             else { Debug.LogError("Two or more instances of music manager!", this.gameObject); }
         }
 
-        //private void Start()
-        //{
-        //    currentInstance = CreateNewMusicInstance();
-        //    currentTrack = currentTrackList.GetNextUnplayedTrack();
-        //    currentInstance.PlayNewMusicTrack(currentTrack);
-        //}
-
         private void Update()
         {
-            timeLeftOnCurrentTrack = currentInstance.GetTimeLeftOnCurrentTrack();
-            if (timeLeftOnCurrentTrack <= crossFadeDuration && !isCurrentlyFading)
+            if (currentInstance != null)
             {
-                StartCrossFade();
+                timeLeftOnCurrentTrack = currentInstance.GetTimeLeftOnCurrentTrack();
+                if (timeLeftOnCurrentTrack <= crossFadeDuration && !isCurrentlyFading)
+                {
+                    StartCrossFade();
+                }
             }
-
+            
             if (isCurrentlyFading)
             {
                 if (fadeTimer < crossFadeDuration)
@@ -69,6 +65,7 @@ namespace Rufas.MusicManagement
                     fadeTimer = 0f;
                     Destroy(currentInstance.gameObject);
                     currentInstance = upcommingInstance;
+                    upcommingInstance = null;
                     currentTrack = currentInstance.GetMusicTrack();
                 }
             }
@@ -94,7 +91,11 @@ namespace Rufas.MusicManagement
         private MusicInstance CreateNewMusicInstance()
         {
             MusicInstance newInstance = new GameObject("Music Instance").AddComponent<MusicInstance>();
+            
             newInstance.transform.SetParent(transform, false);
+            newInstance.musicVolume = musicVolume;
+            //newInstance.UpdateVolume(musicVolume.Value);
+
             return newInstance;
         }
 
