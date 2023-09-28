@@ -9,6 +9,8 @@ namespace Rufas.MusicManagement
     public class MusicTrackList : SuperScriptable
     {
         [Header("Settings")]
+        public bool playInRandomOrder;
+        private int nonRandomIndex;
         public float crossFadeDuration;
 
         [Header("Tracks")]
@@ -24,12 +26,25 @@ namespace Rufas.MusicManagement
 
         public MusicTrack GetNextUnplayedTrack()
         {
+            MusicTrack nextTrack;
+
             if (unplayedTracks.Count == 0) { 
                 CreateUnplayedList(); 
             }
 
-            MusicTrack nextTrack = unplayedTracks[Random.Range(0, unplayedTracks.Count)];
-            unplayedTracks.Remove(nextTrack);
+            if (playInRandomOrder)
+            {
+                nextTrack = unplayedTracks[Random.Range(0, unplayedTracks.Count)];
+                unplayedTracks.Remove(nextTrack);
+                return nextTrack;
+            }
+            else
+            {
+                nextTrack = unplayedTracks[nonRandomIndex];
+                nonRandomIndex++;
+                if (nonRandomIndex >= unplayedTracks.Count) { nonRandomIndex = 0; }
+            }
+            
             return nextTrack;
         }
 
@@ -40,6 +55,8 @@ namespace Rufas.MusicManagement
             {
                 unplayedTracks.Add(track);
             }
+
+            nonRandomIndex = 0;
         }
     }
 }

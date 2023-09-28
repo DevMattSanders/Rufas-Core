@@ -73,6 +73,8 @@ namespace Rufas.MusicManagement
 
         public void StartNewTrackList(MusicTrackList newTrackList)
         {
+            if (isCurrentlyFading) { return; }
+
             crossFadeDuration = newTrackList.crossFadeDuration;
             currentTrackList = newTrackList;
 
