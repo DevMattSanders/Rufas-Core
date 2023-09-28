@@ -1,12 +1,17 @@
 using Rufas;
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 namespace Rufas.MusicManagement
 {
     public class MusicTrackList : SuperScriptable
     {
+        [Header("Settings")]
+        public float crossFadeDuration;
+
+        [Header("Tracks")]
         [DisableInPlayMode, SerializeField] private List<MusicTrack> musicTracks = new List<MusicTrack>();
         [DisableInEditorMode, SerializeField] private List<MusicTrack> unplayedTracks;
 

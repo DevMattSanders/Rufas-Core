@@ -10,19 +10,26 @@ namespace Rufas.MusicManagement
     {
         public static MusicManager Instance;
 
-        [SerializeField, InlineEditor, ReadOnly] public MusicTrack currentTrack;
+        [Header("Current & Upcoming")]
         [SerializeField, ReadOnly] public float timeLeftOnCurrentTrack;
+        [SerializeField, InlineEditor, ReadOnly] public MusicTrack currentTrack;
+        [Space]
         [SerializeField, InlineEditor, ReadOnly] public MusicTrack upcomingTrack;
         [Space]
-        [InlineEditor, ReadOnly] public MusicTrackList currentTrackList;
+        [Header("Track List")]
+        [InlineEditor, DisableInPlayMode] public MusicTrackList currentTrackList;
         [Space]
-        [FoldoutGroup("Settings")] public FloatVariable musicVolume;
-        [FoldoutGroup("Settings")] public float fadeDurationTime;
+        [Header("Volume Settings")]
+        public FloatVariable musicVolume;
         [Space]
-        [FoldoutGroup("Music Instances"), SerializeField] private bool isCurrentlyFading;
-        [FoldoutGroup("Music Instances"), SerializeField] private float fadeTimer;
-        [FoldoutGroup("Music Instances"), SerializeField, InlineEditor, ReadOnly] private MusicInstance currentInstance;
-        [FoldoutGroup("Music Instances"), SerializeField, InlineEditor, ReadOnly] private MusicInstance upcommingInstance;
+        [Header("Cross Fading")]
+        [SerializeField] private bool isCurrentlyFading;
+        [SerializeField] private float crossFadeDuration;
+        [SerializeField] private float fadeTimer;
+        [Space]
+        [Header("Instances")]
+        [FoldoutGroup("Instances"), SerializeField, InlineEditor, ReadOnly] private MusicInstance currentInstance;
+        [FoldoutGroup("Instances"), SerializeField, InlineEditor, ReadOnly] private MusicInstance upcommingInstance;
 
         private void Awake()
         {
@@ -30,29 +37,29 @@ namespace Rufas.MusicManagement
             else { Debug.LogError("Two or more instances of music manager!", this.gameObject); }
         }
 
-        private void Start()
-        {
-            currentInstance = CreateNewMusicInstance();
-            currentTrack = currentTrackList.GetNextUnplayedTrack();
-            currentInstance.PlayNewMusicTrack(currentTrack);
-        }
+        //private void Start()
+        //{
+        //    currentInstance = CreateNewMusicInstance();
+        //    currentTrack = currentTrackList.GetNextUnplayedTrack();
+        //    currentInstance.PlayNewMusicTrack(currentTrack);
+        //}
 
         private void Update()
         {
             timeLeftOnCurrentTrack = currentInstance.GetTimeLeftOnCurrentTrack();
-            if (timeLeftOnCurrentTrack <= fadeDurationTime && !isCurrentlyFading)
+            if (timeLeftOnCurrentTrack <= crossFadeDuration && !isCurrentlyFading)
             {
-                StartCrossFadeToNextTrack();
+                StartCrossFade();
             }
 
             if (isCurrentlyFading)
             {
-                if (fadeTimer < fadeDurationTime)
+                if (fadeTimer < crossFadeDuration)
                 {
-                    float fadeProgress = (fadeTimer / fadeDurationTime) * musicVolume.Value;
-                    currentInstance.UpdateMusicInstance(musicVolume.Value - fadeProgress);
+                    float fadeProgress = (fadeTimer / crossFadeDuration) * musicVolume.Value;
+                    currentInstance.UpdateVolume(musicVolume.Value - fadeProgress);
 
-                    upcommingInstance.UpdateMusicInstance(fadeProgress);
+                    upcommingInstance.UpdateVolume(fadeProgress);
 
                     fadeTimer += Time.deltaTime;
                 }
@@ -67,6 +74,23 @@ namespace Rufas.MusicManagement
             }
         }
 
+        public void StartNewTrackList(MusicTrackList newTrackList)
+        {
+            crossFadeDuration = newTrackList.crossFadeDuration;
+            currentTrackList = newTrackList;
+
+            if (currentInstance != null)
+            {
+                StartCrossFade();
+            }
+            else
+            {
+                currentInstance = CreateNewMusicInstance();
+                currentTrack = currentTrackList.GetNextUnplayedTrack();
+                currentInstance.PlayNewMusicTrack(currentTrack);
+            }
+        }
+
         private MusicInstance CreateNewMusicInstance()
         {
             MusicInstance newInstance = new GameObject("Music Instance").AddComponent<MusicInstance>();
@@ -74,7 +98,7 @@ namespace Rufas.MusicManagement
             return newInstance;
         }
 
-        [Button()] private void StartCrossFadeToNextTrack()
+        [Button()] private void StartCrossFade()
         {
             Debug.Log("Start Timer");
             isCurrentlyFading = true;

@@ -14,10 +14,10 @@ namespace Rufas.MusicManagement
         public void InitMusicInstance(float volume)
         {
             audioSource = GetComponent<AudioSource>();
-            audioSource.volume = volume;
+            UpdateVolume(volume);
         }
 
-        public void UpdateMusicInstance(float volume)
+        public void UpdateVolume(float volume)
         {
             audioSource.volume = volume;
         }
