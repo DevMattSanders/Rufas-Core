@@ -58,32 +58,38 @@ namespace Rufas
             foreach (SoState nextState in states)
             {
                 nextState.stateEnterRequested.AddListener(StateEnterRequested);
-
                 nextState.SyncToStateMachine(this);
             }
                        
+                      
+        }
+
+        public override void SoOnStart()
+        {
+            base.SoOnStart();
+
             startingState = states[0];
 
             startingState.EnterState();
-
-          
-
-           
         }
 
         public override void SoOnEnd()
         {
             base.SoOnEnd();
 
-            foreach (SoState nextState in states)
-            {
-                nextState.stateEnterRequested.RemoveListener(StateEnterRequested);
-            }
-            startingState.EnterState();
-
             previousState = null;
             nextState = null;
             currentState = null;
+
+            foreach (SoState nextState in states)
+            {
+                nextState.stateEnterRequested.RemoveListener(StateEnterRequested);
+
+                if (nextState.StateActive) nextState.SyncToStateMachine(this);
+            }
+            //startingState.EnterState();
+
+         
         }
 
         private void StateEnterRequested(SoState state)
