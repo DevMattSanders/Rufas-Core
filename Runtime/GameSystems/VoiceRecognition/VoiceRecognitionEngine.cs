@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+
+#if !PLATFORM_ANDROID
 using UnityEngine.Windows.Speech;
 
 namespace Rufas
@@ -45,3 +47,4 @@ namespace Rufas
         }
     }
 }
+#endif

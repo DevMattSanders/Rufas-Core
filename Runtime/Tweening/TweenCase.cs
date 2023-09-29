@@ -15,6 +15,10 @@ namespace Rufas
         public bool showCondition = true;
         [HideInInspector]
         public TweenElement tweenElement;
+
+        [HideInInspector]
+        public Transform tweenTarget;
+
         [HideInInspector]
         public int tweenCaseIndex;
 
@@ -108,11 +112,8 @@ namespace Rufas
         [InlineButton("GetCurrentValues", label: "Get")]
         public List<zBaseTween> tweens = new List<zBaseTween>();
 
-
-       /// public TweenCase()
-       // {
-          //  tweens.AddRange(new List<BaseTween> { new MoveTo(), new RotateTo(), new ScaleTo(), new FadeTo() });
-       // }
+       [HideInInspector] public BoolWithCallback tweenCaseRunning;
+        [HideInInspector] public CodeEvent onTweenCaseCompleted;
 
         public void TweenCompleted()
         {
@@ -129,15 +130,24 @@ namespace Rufas
 
             if (allComplete == true)
             {
-                tweenElement.IndexCompleted(tweenCaseIndex);
+                tweenElement?.IndexCompleted(tweenCaseIndex);
+                tweenCaseRunning.Value = false;
+                onTweenCaseCompleted.Raise();
             }
         }
 
         public void GoToValuesImmediate()
         {
+            if(tweenTarget == null)
+            {
+                if (tweenElement == null) return;
+
+                tweenTarget = tweenElement.transform;
+            }
+
             foreach (zBaseTween tween in tweens)
             {
-                tween.FastAction(tweenElement.transform);
+                tween.FastAction(tweenTarget);// tweenElement.transform);
             }
 
             TweenCompleted();
@@ -145,9 +155,16 @@ namespace Rufas
 
         private void GetCurrentValues()
         {
+            if (tweenTarget == null)
+            {
+                if (tweenElement == null) return;
+
+                tweenTarget = tweenElement.transform;
+            }
+
             foreach (zBaseTween tween in tweens)
             {
-                tween.GetCurrentValues(tweenElement.transform);
+                tween.GetCurrentValues(tweenTarget);// tweenElement.transform);
             }
         }
 
@@ -189,12 +206,18 @@ namespace Rufas
 
         public void StartActions(Transform transform)
         {
+            tweenCaseRunning.Value = true;
+
             foreach (zBaseTween tween in tweens) tween.StartTween(transform, TweenCompleted);
+
+            
         }
 
         public void StopActions()
         {
             foreach (zBaseTween tween in tweens) tween.StopTween();
+
+            tweenCaseRunning.Value = false;
         }
     }
 }
