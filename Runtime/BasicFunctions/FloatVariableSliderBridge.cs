@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Rufas.BasicFunctions
 {
-    [RequireComponent(typeof(Slider))] public class FloatVariableSlider : MonoBehaviour
+    [RequireComponent(typeof(Slider))] public class FloatVariableSliderBridge : MonoBehaviour
     {
         private Slider slider;
         [SerializeField] private FloatVariable variable;
@@ -13,20 +13,20 @@ namespace Rufas.BasicFunctions
         private void Awake()
         {
             slider = GetComponent<Slider>();
-            slider.value = variable.Value;
+            slider.SetValueWithoutNotify(variable.Value);
         }
 
-        private void OnEnable()
+        private void Start()
         {
-            slider.onValueChanged.AddListener(SetVariableValue);
+            slider.onValueChanged.AddListener(RefreshValue);
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
-            slider.onValueChanged.RemoveListener(SetVariableValue);
+            slider.onValueChanged.RemoveListener(RefreshValue);
         }
 
-        public void SetVariableValue(float value)
+        public void RefreshValue(float value)
         {
             variable.Value = value;
         }
