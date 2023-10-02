@@ -149,7 +149,6 @@ namespace Rufas
                 if (tween != null) tween.Kill();
 
                 tween = targetTransform.DOBlendableRotateBy(rotateLoopAddition, rotateLoopDuration, RotateMode.FastBeyond360).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
-
             }
         }
 

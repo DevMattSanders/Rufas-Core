@@ -12,7 +12,7 @@ namespace Rufas
     {
 
         [HideInInspector]
-        public bool showCondition = true;
+        public bool showCondition = false;
         [HideInInspector]
         public TweenElement tweenElement;
 

@@ -1,4 +1,6 @@
+using DG.Tweening;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -70,6 +72,10 @@ namespace Rufas
         [ShowIf("ShowAnyPosFields")]
         [BoxGroup("Position")]
         public Vector3 positionOffset;
+
+        [ShowIf("ShowAnyRotFields")]
+        [BoxGroup("Rotation")]
+        public Vector3 positionThresholdBeforeMoving;
 
         [ShowIf("ShowPosFollowSpeed")]
         [BoxGroup("Position")]
@@ -144,16 +150,16 @@ namespace Rufas
 
         private void UpdatePositon()
         {
-            if(!positionX && !positionY && !positionZ) return;
-            
+            if(!positionX && !positionY && !positionZ) return;            
 
             Vector3 targetPos = trueTarget.position + positionOffset;
-
+            
             if (!positionX) targetPos.x = transform.position.x;
 
             if(!positionY) targetPos.y = transform.position.y;
 
             if(!positionZ) targetPos.z = transform.position.z;
+
 
             if (!smoothPosition) { transform.position = targetPos; return; }
 
