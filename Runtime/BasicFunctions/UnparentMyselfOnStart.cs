@@ -4,7 +4,16 @@ using UnityEngine;
 
 public class UnparentMyselfOnStart : MonoBehaviour
 {
-    void Start()
+    public float delay = 0;
+    IEnumerator Start()
+    {
+        yield return new WaitForSeconds(delay);
+
+
+        Unparent();
+    }
+
+    private void Unparent()
     {
         transform.parent = null;
     }

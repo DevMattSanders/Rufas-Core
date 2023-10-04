@@ -10,25 +10,52 @@ namespace Rufas.BasicFunctions
         private Slider slider;
         [SerializeField] private FloatVariable variable;
 
+        bool ignoreVariableEvents = false;
+        bool ignoreSliderEvents = false;
         private void Awake()
         {
-            slider = GetComponent<Slider>();
-            slider.SetValueWithoutNotify(variable.Value);
+            slider = GetComponent<Slider>();            
         }
 
         private void Start()
         {
-            slider.onValueChanged.AddListener(RefreshValue);
+            //slider.value = variable.Value;
+
+            VariableChanged(variable.Value);
+
+            slider.onValueChanged.AddListener(SliderChanged);
+
+            variable.AddListener(VariableChanged);
+
+            //RefreshValue(slider.);
         }
 
         private void OnDestroy()
         {
-            slider.onValueChanged.RemoveListener(RefreshValue);
+            slider.onValueChanged.RemoveListener(SliderChanged);
+
+            variable.RemoveListener(VariableChanged);
         }
 
-        public void RefreshValue(float value)
+        private void VariableChanged(float val)
         {
-            variable.Value = value;
+            if (ignoreVariableEvents == false)
+            {
+                ignoreSliderEvents = true;
+                slider.value = val;
+                slider.Rebuild(CanvasUpdate.Prelayout);
+                ignoreSliderEvents = false;
+            }
+        }
+
+        public void SliderChanged(float value)
+        {
+            if (ignoreSliderEvents == false)
+            {
+                ignoreVariableEvents = true;
+                variable.Value = value;
+                ignoreVariableEvents = false;
+            }
         }
     }
 }
