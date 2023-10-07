@@ -58,5 +58,14 @@ namespace Rufas.MusicManagement
 
             nonRandomIndex = 0;
         }
+
+        [Button]
+        public void PlayList()
+        {
+            if(MusicManager.Instance != null)
+            {
+                MusicManager.Instance.StartNewTrackList(this);
+            }
+        }
     }
 }

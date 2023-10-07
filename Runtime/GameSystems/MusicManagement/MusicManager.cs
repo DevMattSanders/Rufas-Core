@@ -63,7 +63,7 @@ namespace Rufas.MusicManagement
                 {
                     isCurrentlyFading = false;
                     fadeTimer = 0f;
-                    Destroy(currentInstance.gameObject);
+                    if (currentInstance != null) { Destroy(currentInstance.gameObject); }
                     currentInstance = upcommingInstance;
                     upcommingInstance = null;
                     currentTrack = currentInstance.GetMusicTrack();
@@ -73,7 +73,7 @@ namespace Rufas.MusicManagement
 
         public void StartNewTrackList(MusicTrackList newTrackList)
         {
-            if (isCurrentlyFading) { return; }
+            if (isCurrentlyFading || newTrackList == currentTrackList) { return; }
 
             crossFadeDuration = newTrackList.crossFadeDuration;
             currentTrackList = newTrackList;
@@ -93,7 +93,10 @@ namespace Rufas.MusicManagement
         private MusicInstance CreateNewMusicInstance()
         {
             MusicInstance newInstance = new GameObject("Music Instance").AddComponent<MusicInstance>();
-            
+
+
+            DontDestroyOnLoad(newInstance.gameObject);
+
             newInstance.transform.SetParent(transform, false);
             newInstance.musicVolume = musicVolume;
             //newInstance.UpdateVolume(musicVolume.Value);
