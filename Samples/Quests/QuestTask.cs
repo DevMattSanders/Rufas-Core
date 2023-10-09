@@ -15,6 +15,10 @@ namespace Rufas.Quests
         public QuestData parentQuest;
         public bool completed = false;
         public CodeEvent completeEvent;
+        [Space]
+        public float firstPromptDelayTime = 5f;
+        public float secondPromptDelayTime = 5f;
+
 
         public override void SoOnAwake()
         {
