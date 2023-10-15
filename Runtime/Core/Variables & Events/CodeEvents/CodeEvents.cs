@@ -22,8 +22,6 @@ namespace Rufas
             onEvent -= listener;
         }
 
-        
-
         [Button]
         public void Raise()
         {
@@ -47,25 +45,26 @@ namespace Rufas
         {
             onEvent -= listener;
         }
-
-       
-
+#if UNITY_EDITOR
         [HorizontalGroup("H",order: 0)]
         [SerializeField, HideLabel]
         [InlineButton("RaiseDebug","Raise")]
         private T debug;
-        
+
         private void RaiseDebug()
         {
             Raise(debug);
         }
+
         [HorizontalGroup("H",order: 2)]
         [SerializeField, HideLabel,ReadOnly] private T last;
-
-
+#endif
+        [Button]
         public void Raise(T argument)
         {
+#if UNITY_EDITOR
             last = argument;
+#endif
             onEvent?.Invoke(argument);
         }
     }
@@ -86,7 +85,7 @@ namespace Rufas
         {
             onEvent -= listener;
         }
-
+#if UNITY_EDITOR
         [HorizontalGroup("H", order: 0)]
         [SerializeField, HideLabel]
         private T debugOne;
@@ -105,12 +104,13 @@ namespace Rufas
 
         [HorizontalGroup("H", order: 3)]
         [SerializeField, HideLabel, ReadOnly] public Y lastYArgument;
-
+#endif
         public void Raise(T tArgument, Y yArgument)
         {
+#if UNITY_EDITOR
             lastTArgument = tArgument;
             lastYArgument = yArgument;
-
+#endif
             onEvent?.Invoke(tArgument, yArgument);
         }
     }

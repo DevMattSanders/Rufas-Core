@@ -8,6 +8,8 @@ namespace Rufas
     [CreateAssetMenu(menuName = "Rufas/SuperScriptableDatabase")]
     public class SuperScriptableDatabase : PreAwakeBehaviour
     {
+        public List<string> exceptions = new List<string>();
+
         public List<SuperScriptable> superScriptables = new List<SuperScriptable>();
 
         public override void BehaviourToRunBeforeStart()
@@ -18,9 +20,7 @@ namespace Rufas
 
             DontDestroyOnLoad(monobehaviourLink);
 
-            monobehaviourLink.AddComponent<SuperScriptableMonobehaviourEvents>();//.database = this;
-
-            //monobehaviourLink.
+            monobehaviourLink.AddComponent<SuperScriptableMonobehaviourEvents>();
         }
 
 
@@ -42,23 +42,52 @@ namespace Rufas
 
         public void TriggerAll_SoOnAwake()
         {
+            exceptions.Clear();
+
 #if UNITY_EDITOR
 
             FindAllSuperScriptables();
-
 #endif
 
-            foreach (var superScriptable in superScriptables) { superScriptable.SoOnAwake(); }
+            foreach (var superScriptable in superScriptables)
+            {
+                try
+                {
+                    Debug.Log("Awake: " + superScriptable.name);
+                    superScriptable.SoOnAwake();
+                }
+                catch (System.Exception ex)
+                {
+                    exceptions.Add("OnAwake(" + superScriptable.GetType() + ")_" + superScriptable.name + "_" + ex.Message+ " " + ex.Source);
+                    Debug.Log("OnAwake(" + superScriptable.GetType() + ")_" + superScriptable.name + "_" + ex.Message + " " + ex.Source);
+                   // throw;
+                }
+           
+            }
         }
 
         public void TriggerAll_SoOnStart()
         {
-            foreach (var superScriptable in superScriptables) { superScriptable.SoOnStart(); }
+            foreach (var superScriptable in superScriptables)
+            {
+                try
+                {
+                    superScriptable.SoOnStart();
+                }
+                catch (System.Exception ex)
+                {
+                    exceptions.Add("OnStart(" + superScriptable.GetType() + ")_" + superScriptable.name + "_" + ex.Message);
+                    Debug.Log("OnStart(" + superScriptable.GetType() + ")_" + superScriptable.name + "_" + ex.Message);
+                    throw;
+                }
+
+            }
         }
 
         public void TriggerAll_SoOnEnd()
         {
             foreach (var superScriptable in superScriptables) { superScriptable.SoOnEnd(); }
+
         }
     }
 }
