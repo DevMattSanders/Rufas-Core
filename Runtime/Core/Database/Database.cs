@@ -36,6 +36,7 @@ public class Database : SuperScriptable
         }
     }
 
+    /*
     public List<DatabaseEntry> databaseEntries = new List<DatabaseEntry>();
 
     public override void SoOnAwake()
@@ -66,11 +67,6 @@ public class Database : SuperScriptable
     [FoldoutGroup("ReplicaitonObject History & Recovery")]
     [ReadOnly]
     public Dictionary<string, string> IDandNameRecord = new Dictionary<string, string>();
-
-
-   // [FoldoutGroup("ReplicaitonObject History & Recovery")]
-   // [ReadOnly]
-    //public List<string> previouslyUsedIDs = new List<string>();
 
 
     [FoldoutGroup("ReplicaitonObject History & Recovery")]
@@ -105,8 +101,10 @@ public class Database : SuperScriptable
                     previouslyUsedIDs.Remove(next.Key);
                 }
                 */
+    /*
             }
         } 
+
         /*
       //  replication_KeyToObject.Clear();
 
@@ -122,6 +120,7 @@ public class Database : SuperScriptable
             }
         }
         */
+    /*
     }
 
     private void RemoveNullKeyEntries(Dictionary<object, string> inputDictionary)
@@ -153,7 +152,7 @@ public class Database : SuperScriptable
                 Debug.Log(replicationObject.UniqueID + "-|-" + readKey);
 
                 Debug.Log("Registered replication objects Key has changed since last check. Resetting back to database value...");
-                replicationObject.UniqueID = readKey;
+                replicationObject.ManuallySetID_OnlyForDatabase(readKey);
             }
 
             if(replication_KeyToObject.ContainsKey(readKey))
@@ -178,15 +177,15 @@ public class Database : SuperScriptable
         else
         {
             //Need to add it to the database.
-            if (string.IsNullOrEmpty(replicationObject.UniqueID))
+            if (string.IsNullOrEmpty(replicationObject.uniqueID))
             {
                 Debug.Log("No ID, assigning");
                 //Not present in the primary database and has no unique ID. Most likely new.
                 NewIDAndAddToReplicationDatabase(replicationObject);
             }
-            else if (replication_KeyToObject.ContainsKey(replicationObject.UniqueID))
+            else if (replication_KeyToObject.ContainsKey(replicationObject.uniqueID))
             {
-                if (replication_KeyToObject[replicationObject.UniqueID] == replicationObject)
+                if (replication_KeyToObject[replicationObject.uniqueID] == replicationObject)
                 {
                     //all good.
                 }
@@ -223,8 +222,9 @@ public class Database : SuperScriptable
     private void NewIDAndAddToReplicationDatabase(GameContentObject replicationObject, bool giveNewID = true)
     {
         //Not present in the primary database and has no unique ID. Most likely new.
-        if (giveNewID) { replicationObject.UniqueID = Guid.NewGuid().ToString(); }
+        if (giveNewID) { replicationObject.ManuallySetID_OnlyForDatabase(Guid.NewGuid().ToString()); }
         replication_ObjectToKey.Add(replicationObject, replicationObject.UniqueID);
         replication_KeyToObject.Add(replicationObject.UniqueID, replicationObject);
     }
+    */
 }

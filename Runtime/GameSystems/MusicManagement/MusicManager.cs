@@ -66,7 +66,10 @@ namespace Rufas.MusicManagement
                     if (currentInstance != null) { Destroy(currentInstance.gameObject); }
                     currentInstance = upcommingInstance;
                     upcommingInstance = null;
-                    currentTrack = currentInstance.GetMusicTrack();
+                    if (currentInstance != null)
+                    {
+                        currentTrack = currentInstance.GetMusicTrack();
+                    }
                 }
             }
         }

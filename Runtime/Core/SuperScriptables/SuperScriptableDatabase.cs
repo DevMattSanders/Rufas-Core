@@ -9,8 +9,8 @@ namespace Rufas
     public class SuperScriptableDatabase : PreAwakeBehaviour
     {
         public List<string> exceptions = new List<string>();
-
         public List<SuperScriptable> superScriptables = new List<SuperScriptable>();
+
 
         public override void BehaviourToRunBeforeStart()
         {
@@ -22,7 +22,6 @@ namespace Rufas
 
             monobehaviourLink.AddComponent<SuperScriptableMonobehaviourEvents>();
         }
-
 
         private void OnEnable()
         {
@@ -53,7 +52,7 @@ namespace Rufas
             {
                 try
                 {
-                    Debug.Log("Awake: " + superScriptable.name);
+                   // Debug.Log("Awake: " + superScriptable.name);
                     superScriptable.SoOnAwake();
                 }
                 catch (System.Exception ex)
