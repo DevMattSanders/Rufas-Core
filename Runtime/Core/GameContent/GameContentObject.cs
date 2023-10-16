@@ -36,8 +36,8 @@ namespace Rufas
         //[HorizontalGroup("TopLine", width: 100, order: 1)]
         //[ReadOnly,SerializeField,HideLabel] private GameContentObject myself;
 
-        [HorizontalGroup("TopLine", width: 100, order: 1)]
-        [ReadOnly, SerializeField, HideLabel] private int recordedInstanceID = -1;
+        //[HorizontalGroup("TopLine", width: 100, order: 1)]
+        //[ReadOnly, SerializeField, HideLabel] private int recordedInstanceID = -1;
 
         [ShowIf("AlwaysShow")]
         [HorizontalGroup("TopLine", width: 30, order: 2)]
@@ -60,20 +60,20 @@ namespace Rufas
         }
         public void Refresh()
         {
-            if (recordedInstanceID == -1)
-            {
+           // if (recordedInstanceID == -1)
+            //{
                 AuthorisedRefresh();
-            }
-            else if (recordedInstanceID != this.GetInstanceID())
-            {
-                AuthorisedRefresh();
-            }
+            //}
+           // else if (recordedInstanceID != this.GetInstanceID())
+           // {
+              //  AuthorisedRefresh();
+           // }
         }
 
         public void AuthorisedRefresh(bool refreshAssetDatabase = true)
         {
 
-            recordedInstanceID = this.GetInstanceID();
+           // recordedInstanceID = this.GetInstanceID();
 
             EditorUtility.SetDirty(this);
             GameContentDatabase.Instance.RefreshReplicationKey(this);
