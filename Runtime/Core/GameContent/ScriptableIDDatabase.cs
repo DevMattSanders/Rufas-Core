@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/GameContent/Database")]
-    public class GameContentDatabase : SuperScriptable
+    public class ScriptableIDDatabase : SuperScriptable
     {
-        public static GameContentDatabase instance;
-
-        private static GameContentDatabase editorInstance;
-        public static GameContentDatabase Instance
+        public static ScriptableIDDatabase instance;
+        private static ScriptableIDDatabase editorInstance;
+        public static ScriptableIDDatabase Instance
         {
             get
             {
@@ -22,7 +22,7 @@ namespace Rufas
 #if UNITY_EDITOR
                     if (editorInstance == null)
                     {
-                        editorInstance = RufasStatic.GetAllScriptables_ToList<GameContentDatabase>()[0];
+                        editorInstance = RufasStatic.GetAllScriptables_ToList<ScriptableIDDatabase>()[0];
                     }
 
                     return editorInstance;
@@ -37,43 +37,22 @@ namespace Rufas
                 }
             }
         }
-
-        public List<DatabaseEntry> databaseEntries = new List<DatabaseEntry>();
-
-        public override void SoOnAwake()
-        {
-            base.SoOnAwake();
-            instance = this;
-        }
-
-        public void RegisterDatabaseEntry(DatabaseEntry entry)
-        {
-
-        }
-
-        public void UnregisterDatabaseEntry(DatabaseEntry entry)
-        {
-
-        }
-
-
-     //   public List<GameContentObject> gameContentObjects = new List<GameContentObject>();
-
+                
         [PropertySpace(spaceBefore: 20)]
 
-        [Header("Replication Objects")]
+        [Header("Editor Game Content Objects")]
         [ReadOnly]
-        public Dictionary<string, GameContentObject> replication_KeyToObject = new Dictionary<string, GameContentObject>();
+        public Dictionary<string, GameContentObject> gameContentObjects_KeyToObject = new Dictionary<string, GameContentObject>();
        
         [ReadOnly]
-        public Dictionary<GameContentObject, string> replication_ObjectToKey = new Dictionary<GameContentObject, string>();
+        public Dictionary<GameContentObject, string> gameContentObjects_ObjectToKey = new Dictionary<GameContentObject, string>();
 
-        [FoldoutGroup("ReplicaitonObject History & Recovery")]
+        [FoldoutGroup("Editor Game Content Objects History & Recovery")]
         [ReadOnly]
-        public Dictionary<string, string> IDandNameRecord = new Dictionary<string, string>();
+        public Dictionary<string, string> IDAndNameRecord = new Dictionary<string, string>();
 
 
-        [FoldoutGroup("ReplicaitonObject History & Recovery")]
+        [FoldoutGroup("Editor Game Content Objects History & Recovery")]
         [Button]
         public void SyncFlippedDictionary()
         {
@@ -84,21 +63,18 @@ namespace Rufas
                 content.AuthorisedRefresh();
             }
 
-            //replication_KeyToObject.Clear();
-
-          //  List<GameContentObject> objectsToRemove = new List<GameContentObject>();
             List<string> keysToRemove = new List<string>();
 
-            foreach (string next in replication_KeyToObject.Keys)
+            foreach (string next in gameContentObjects_KeyToObject.Keys)
             {
-                if (replication_KeyToObject[next] == null)
+                if (gameContentObjects_KeyToObject[next] == null)
                 {
                     Debug.Log("Found destroyed objects. Adding to record");
-                    if (replication_KeyToObject.ContainsKey(next))
+                    if (gameContentObjects_KeyToObject.ContainsKey(next))
                     {
-                        if (IDandNameRecord.ContainsKey(next))
+                        if (IDAndNameRecord.ContainsKey(next))
                         {
-                            IDandNameRecord[next] = "-[Deleted]-" + IDandNameRecord[next];
+                            IDAndNameRecord[next] = "-[Deleted]-" + IDAndNameRecord[next];
                         }
                         else
                         {
@@ -116,14 +92,14 @@ namespace Rufas
 
             foreach(string key in keysToRemove)
             {
-                replication_KeyToObject.Remove(key);
+                gameContentObjects_KeyToObject.Remove(key);
             }
 
-            foreach (var key in replication_ObjectToKey.Keys.ToArray())
+            foreach (var key in gameContentObjects_ObjectToKey.Keys.ToArray())
             {
                 if (key == null)
                 {
-                    replication_ObjectToKey.Remove(key);
+                    gameContentObjects_ObjectToKey.Remove(key);
                 }
             }
 
@@ -260,105 +236,168 @@ namespace Rufas
             {
             */
             //Need to add it to the database.
-            if (string.IsNullOrEmpty(replicationObject.uniqueID))
+            if (string.IsNullOrEmpty(replicationObject.UniqueID))
             {
                 //if(gameContentObjects.Contains(repl))
 
-                if (replication_ObjectToKey.ContainsKey(replicationObject))
+                if (gameContentObjects_ObjectToKey.ContainsKey(replicationObject))
                 {
                     Debug.Log(replicationObject.name + " * Found existing ID in database via the object as a key");
-                    replicationObject.ManuallySetID_OnlyForDatabase(replication_ObjectToKey[replicationObject]);
+                    replicationObject.ManuallySetID_OnlyForDatabase(gameContentObjects_ObjectToKey[replicationObject],this);
+
+                    UpdateIDRecord(replicationObject);
                 }
                 else
                 {
                     Debug.Log(replicationObject.name + " * No ID, assigning");
                     //Not present in the primary database and has no unique ID. Most likely new.
-                    AddToDatabase(replicationObject,true);
+                    AddToDatabaseViaConfirmationWindow(replicationObject,true);
                 }
-            }else if (replication_ObjectToKey.ContainsKey(replicationObject))
+            }else if (gameContentObjects_ObjectToKey.ContainsKey(replicationObject))
             {
               
-                if (replicationObject.uniqueID == replication_ObjectToKey[replicationObject])
+                if (replicationObject.UniqueID == gameContentObjects_ObjectToKey[replicationObject])
                 {
-                    //all good.
-                    Debug.Log(replicationObject.name + " * All Good, but refreshing against database anyway...");
-                    AddToDatabase(replicationObject, false);
+                    if (!gameContentObjects_KeyToObject.ContainsKey(replicationObject.UniqueID))
+                    {
+                        Debug.Log(replicationObject.name + " * Exists in Object database correctly but not in Key. Adding...");
+                        AddToDatabase(replicationObject);
+                    }
+                    else
+                    {
+                        //All good!
+                    }                   
                 }
                 else
                 {
                     Debug.Log(replicationObject.name + " * Exists in database but has wrong ID assigned. Assigning ID found in database");
-                    replicationObject.uniqueID = replication_ObjectToKey[replicationObject];
+                    replicationObject.ManuallySetID_OnlyForDatabase(gameContentObjects_ObjectToKey[replicationObject], this);
+
+                    UpdateIDRecord(replicationObject);
                 }
             }
-            else if (replication_KeyToObject.ContainsKey(replicationObject.uniqueID))
+            else if (gameContentObjects_KeyToObject.ContainsKey(replicationObject.UniqueID))
             {
-               // Debug.Log(replicationObject.uniqueID);
-
-              //  Debug.Log(replication_KeyToObject[replicationObject.uniqueID].GetInstanceID() + " * " + replicationObject.GetInstanceID());
-                if (replication_KeyToObject[replicationObject.uniqueID] == replicationObject)
+                if (gameContentObjects_KeyToObject[replicationObject.UniqueID] == replicationObject)
                 {                    
-                    Debug.Log(replicationObject.name + " * Exists in Key database but not found in Object. Adding");
-                    AddToDatabase(replicationObject, false);
+                    Debug.Log(replicationObject.name + " * Exists in Key database but not found in Object. Adding...");
+                    AddToDatabase(replicationObject);
                 }
                 else
                 {
                     Debug.Log(replicationObject.name + " * Non registered objects key is found in flipped database. This is most likely a duplicated object! Giving new ID...");
-                    AddToDatabase(replicationObject,true);
+                    AddToDatabaseViaConfirmationWindow(replicationObject,true);
                 }
-                //replication_KeyToObject[replicationObject.UniqueID] = replicationObject;
             }
             else
             {
                 Debug.Log(replicationObject.name + " * Very odd. Replication object has a Unique ID but is not found in replicaiton database or flipped vairent. Adding to database using its existing ID...");
                 //Not present in the primary or secondary database and has no unique ID. Most likely new.
-                AddToDatabase(replicationObject, false);
+                AddToDatabaseViaConfirmationWindow(replicationObject,false);
             }
             //}
 
 
-            if (IDandNameRecord.ContainsKey(replicationObject.uniqueID))
-            {
-                IDandNameRecord[replicationObject.uniqueID] = replicationObject.name;
-            }
-            else
-            {
-                IDandNameRecord.Add(replicationObject.uniqueID, replicationObject.name);
-                //  Debug.Log("Adding new value to ID and Name Record: " + replicationObject.name + " " + replicationObject.UniqueID);
-            }
-
-            AssetDatabase.Refresh();
+                    
         }
 
-        private void AddToDatabase(GameContentObject replicationObject, bool giveNewID)
+        private void AddToDatabaseViaConfirmationWindow(GameContentObject replicationObject, bool giveNewID)
         {
             //Not present in the primary database and has no unique ID. Most likely new.
-            if (giveNewID) { replicationObject.ManuallySetID_OnlyForDatabase(System.Guid.NewGuid().ToString()); }
+            if (giveNewID) { replicationObject.ManuallySetID_OnlyForDatabase(System.Guid.NewGuid().ToString(),this); } //Pass in that a message needs to be passed back to 
             GameContentObject toAdd = replicationObject as GameContentObject;
-           // Debug.Log(toAdd.name + " * " + toAdd.GetInstanceID());
 
-            if (replication_ObjectToKey.ContainsKey(toAdd))
+            ScriptableIDConfirmation.ShowWindow(toAdd, toAdd.UniqueID, this);
+
+            /*
+            if (gameContentObjects_ObjectToKey.ContainsKey(toAdd))
             {
-                replication_ObjectToKey[toAdd] = toAdd.uniqueID;
+                gameContentObjects_ObjectToKey[toAdd] = toAdd.UniqueID;
             }
             else
             {
-                replication_ObjectToKey.Add(toAdd, toAdd.uniqueID);
+                gameContentObjects_ObjectToKey.Add(toAdd, toAdd.UniqueID);
             }
 
-            if (replication_KeyToObject.ContainsKey(toAdd.uniqueID))
+            if (gameContentObjects_KeyToObject.ContainsKey(toAdd.UniqueID))
             {
-                replication_KeyToObject[toAdd.uniqueID] = toAdd;
+                gameContentObjects_KeyToObject[toAdd.UniqueID] = toAdd;
             }
             else
             {
-                replication_KeyToObject.Add(toAdd.uniqueID, toAdd);
+                gameContentObjects_KeyToObject.Add(toAdd.UniqueID, toAdd);
             }
 
             EditorUtility.SetDirty(this);
-          
-           // gameContentObjects.Add(toAdd);
+            AssetDatabase.Refresh();
+            */
+        }
 
-            //this.
+      
+        public bool CheckIfIDExists(string idToCheck)
+        {
+            return gameContentObjects_KeyToObject.ContainsKey(idToCheck);            
+        }
+
+        public void PassToDatabaseFromAuthorisedConfirmationWindow(string newID, string nameID, GameContentObject objectToAdd, ScriptableIDConfirmation authorisingConfirmationWindow)
+        {
+            if(authorisingConfirmationWindow != null)
+            {
+                bool saveAssets = false;
+                if(objectToAdd.name != nameID)
+                {
+                    string assetPath = AssetDatabase.GetAssetPath(objectToAdd.GetInstanceID());
+                    AssetDatabase.RenameAsset(assetPath, nameID);
+                    saveAssets = true;
+                }
+                               
+                objectToAdd.ManuallySetID_OnlyForDatabase(newID, this);
+
+                AddToDatabase(objectToAdd,saveAssets);              
+            }
+        }
+
+        private void AddToDatabase(GameContentObject objectToAdd, bool saveAssets = false)
+        {
+            if (gameContentObjects_ObjectToKey.ContainsKey(objectToAdd))
+            {
+                gameContentObjects_ObjectToKey[objectToAdd] = objectToAdd.UniqueID;
+            }
+            else
+            {
+                gameContentObjects_ObjectToKey.Add(objectToAdd, objectToAdd.UniqueID);
+            }
+
+            if (gameContentObjects_KeyToObject.ContainsKey(objectToAdd.UniqueID))
+            {
+                gameContentObjects_KeyToObject[objectToAdd.UniqueID] = objectToAdd;
+            }
+            else
+            {
+                gameContentObjects_KeyToObject.Add(objectToAdd.UniqueID, objectToAdd);
+            }
+
+            UpdateIDRecord(objectToAdd);
+
+            EditorUtility.SetDirty(this);
+            AssetDatabase.Refresh();
+
+            if (saveAssets)
+            {
+                AssetDatabase.SaveAssets();
+            }
+        }
+
+        private void UpdateIDRecord(GameContentObject objectToUpdate)
+        {
+            if (IDAndNameRecord.ContainsKey(objectToUpdate.UniqueID))
+            {
+                IDAndNameRecord[objectToUpdate.UniqueID] = objectToUpdate.name;
+            }
+            else
+            {
+                IDAndNameRecord.Add(objectToUpdate.UniqueID, objectToUpdate.name);
+            }
         }
     }
 }

@@ -11,33 +11,19 @@ namespace Rufas
     public class GameContentObject : SuperScriptable
     {
 
-        //[HorizontalGroup("TopLine", order: 0)]
+        [HorizontalGroup("TopLine", order: 0)]
         [ReadOnly, SerializeField]        
-        public string uniqueID;
-
-
-        /*
+        private string uniqueID;
+                
         public string UniqueID
         {
             get
             {
                 return uniqueID;
             }
-        }
-        */
-
-       // public string GetID()
-       // {
-        //    return uniqueID;
-       // }
+        }        
 
 #if UNITY_EDITOR
-
-        //[HorizontalGroup("TopLine", width: 100, order: 1)]
-        //[ReadOnly,SerializeField,HideLabel] private GameContentObject myself;
-
-        //[HorizontalGroup("TopLine", width: 100, order: 1)]
-        //[ReadOnly, SerializeField, HideLabel] private int recordedInstanceID = -1;
 
         [ShowIf("AlwaysShow")]
         [HorizontalGroup("TopLine", width: 30, order: 2)]
@@ -47,36 +33,30 @@ namespace Rufas
             AuthorisedRefresh();
         }
 
-      //  private void OnEnable()
-        //{
-        //    Debug.Log(this.name + " * " + uniqueID);
-           // Debug.Log(this.name + " " + counter);
-       // }
-
-
-        public void ManuallySetID_OnlyForDatabase(string newID)
+        /*
+        public void SetIDFromConfirmationWindow(string id, ScriptableIDConfirmation authorisingConfirmationWindow)
         {
-            uniqueID = newID;
+            if(authorisingConfirmationWindow != null)
+            {
+                uniqueID = id;
+                EditorUtility.SetDirty(this);
+            }
         }
-        public void Refresh()
+        */
+
+        public void ManuallySetID_OnlyForDatabase(string newID, ScriptableIDDatabase authorisingIDDatabase)
         {
-           // if (recordedInstanceID == -1)
-            //{
-                AuthorisedRefresh();
-            //}
-           // else if (recordedInstanceID != this.GetInstanceID())
-           // {
-              //  AuthorisedRefresh();
-           // }
+            // ScriptableIDConfirmation.ShowWindow(this, newID, authorisingIDDatabase);
+            if (authorisingIDDatabase != null)
+            {
+                uniqueID = newID;
+                EditorUtility.SetDirty(this);
+            }
         }
 
-        public void AuthorisedRefresh(bool refreshAssetDatabase = true)
+        public void AuthorisedRefresh()
         {
-
-           // recordedInstanceID = this.GetInstanceID();
-
-            EditorUtility.SetDirty(this);
-            GameContentDatabase.Instance.RefreshReplicationKey(this);
+            ScriptableIDDatabase.Instance.RefreshReplicationKey(this);
         }
 
         private int counter = -1;
@@ -89,8 +69,7 @@ namespace Rufas
                 if (counter >= 3)
                 {
                     counter = 0;
-                    //Debug.Log(name + " CREATED!");
-                    Refresh();
+                   // AuthorisedRefresh();
                 }                
             }
 

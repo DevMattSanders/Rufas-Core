@@ -11,7 +11,6 @@ namespace Rufas
         public List<string> exceptions = new List<string>();
         public List<SuperScriptable> superScriptables = new List<SuperScriptable>();
 
-
         public override void BehaviourToRunBeforeStart()
         {
             base.BehaviourToRunBeforeStart();
@@ -28,7 +27,6 @@ namespace Rufas
             FindAllSuperScriptables();
         }
 
-
         [Button]
         public void FindAllSuperScriptables()
         {
@@ -37,7 +35,6 @@ namespace Rufas
             superScriptables = RufasStatic.GetAllScriptables_ToList<SuperScriptable>();
 #endif
         }
-
 
         public void TriggerAll_SoOnAwake()
         {
