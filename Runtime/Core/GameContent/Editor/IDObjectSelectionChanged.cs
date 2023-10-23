@@ -1,10 +1,13 @@
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+
 namespace Rufas
 {
+
     [InitializeOnLoad]
     public class IDObjectSelectionChanged
     {
@@ -19,11 +22,11 @@ namespace Rufas
             if (Selection.activeObject != null)
             {
               //  Debug.Log("Selected Object: " + Selection.activeObject.name);
-                if(Selection.activeObject is GameContentObject)
+                if(Selection.activeObject is ScriptableIDObject)
                 {
-                    GameContentObject gameContentObject = (GameContentObject)Selection.activeObject;
+                    ScriptableIDObject gameContentObject = (ScriptableIDObject)Selection.activeObject;
 
-                    gameContentObject.AuthorisedRefresh();
+                  //  gameContentObject.AuthorisedRefresh();
                 }
             }
             else
@@ -33,3 +36,4 @@ namespace Rufas
         }
     }
 }
+#endif

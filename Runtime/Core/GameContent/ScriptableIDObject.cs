@@ -7,8 +7,7 @@ using UnityEngine;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/GameContent/GameContentObject")]
-    [InitializeOnLoad]
-    public class GameContentObject : SuperScriptable
+    public class ScriptableIDObject : SuperScriptable
     {
 
         [HorizontalGroup("TopLine", order: 0)]
@@ -21,11 +20,17 @@ namespace Rufas
             {
                 return uniqueID;
             }
-        }        
+        }
+
+
 
 #if UNITY_EDITOR
 
-        [ShowIf("AlwaysShow")]
+        [HideInInspector] public string proposed_NameValue;
+        [HideInInspector] public string proposed_ID;
+        [HideInInspector] public bool markedForDeletion;
+        [HideInInspector] public bool IDAlreadyExists;
+
         [HorizontalGroup("TopLine", width: 30, order: 2)]
         [Button("R")]
         void RefreshButton()
@@ -46,7 +51,6 @@ namespace Rufas
 
         public void ManuallySetID_OnlyForDatabase(string newID, ScriptableIDDatabase authorisingIDDatabase)
         {
-            // ScriptableIDConfirmation.ShowWindow(this, newID, authorisingIDDatabase);
             if (authorisingIDDatabase != null)
             {
                 uniqueID = newID;
@@ -56,26 +60,8 @@ namespace Rufas
 
         public void AuthorisedRefresh()
         {
-            ScriptableIDDatabase.Instance.RefreshReplicationKey(this);
+            ScriptableIDDatabase.Instance.RefreshDatabase();
         }
-
-        private int counter = -1;
-        private bool AlwaysShow()
-        {
-            //Debug.Log(counter);
-            if (counter < 3)
-            {
-                counter++;
-                if (counter >= 3)
-                {
-                    counter = 0;
-                   // AuthorisedRefresh();
-                }                
-            }
-
-            return true;
-        }
-
 #endif
 
     }

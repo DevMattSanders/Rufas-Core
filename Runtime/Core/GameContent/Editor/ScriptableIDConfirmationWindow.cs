@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,43 +8,40 @@ using UnityEngine;
 
 namespace Rufas
 {
-    public class ScriptableIDConfirmation : EditorWindow
+    public class ScriptableIDConfirmationWindow : EditorWindow
     {
         public ScriptableIDDatabase database;
-        public GameContentObject IDObject;
+        public ScriptableIDObject IDObject;
         public string nameValue;
         public string idValue;
         
-        public static void ShowWindow(GameContentObject _IDObject, string _givenID, ScriptableIDDatabase _database)
+        public static void ShowWindow(ScriptableIDObject _IDObject, string _givenID, ScriptableIDDatabase _database)
         {
-            ScriptableIDConfirmation window = null;
+            ScriptableIDConfirmationWindow window = null;
 
-            //GetWindow<ScriptableIDConfirmation>(true, "S", true);
-
-            if (_IDObject == null)
-            {
-                window = (ScriptableIDConfirmation)GetWindow(typeof(ScriptableIDConfirmation), true, "Create New: " + _IDObject.GetType().ToString(), true);
-            }
-            else
-            {
-                window = (ScriptableIDConfirmation)GetWindow(typeof(ScriptableIDConfirmation), true, "Create New: " + _IDObject.GetType().ToString(), true);
-            }
+            
+                window = (ScriptableIDConfirmationWindow)GetWindow(typeof(ScriptableIDConfirmationWindow), true, "Create New: " + _IDObject.GetType().ToString(), true);
+            
 
             window.IDObject = _IDObject;
             window.nameValue = _IDObject.name;
             window.idValue = _givenID;
             window.database = _database;
             window.minSize = new Vector2(300, 150);
-           // window.ShowAuxWindow();
-            window.ShowModal();
+            if (window != null)
+            {
+                window.ShowModal();
+            }
         }
+
+        //private void Setup
 
         private void OnGUI()
         {
             //Add a scriptable object reference here
 
             EditorGUI.BeginDisabledGroup(true);
-            IDObject = (GameContentObject)EditorGUILayout.ObjectField("Object:", IDObject,typeof(GameContentObject),false);
+            IDObject = (ScriptableIDObject)EditorGUILayout.ObjectField("Object:", IDObject,typeof(ScriptableIDObject),false);
             EditorGUI.EndDisabledGroup();
 
             GUILayout.Label("Confirm Name");
@@ -68,7 +66,7 @@ namespace Rufas
                 GUI.backgroundColor = Color.green;
                 if (GUILayout.Button("Confirm"))
                 {
-                    database.PassToDatabaseFromAuthorisedConfirmationWindow(idValue, nameValue, IDObject, this);
+                    database.PassToDatabaseFromAuthorisedConfirmationWindow(idValue, nameValue, IDObject);
                     Close();
                 }
             }
@@ -93,3 +91,4 @@ namespace Rufas
         }
     }
 }
+#endif
