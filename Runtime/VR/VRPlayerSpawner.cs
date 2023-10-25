@@ -24,6 +24,8 @@ namespace Rufas.VR {
         [Required, SerializeField]
         private GameObject prefab;
 
+        
+
         [HorizontalGroup("H")]
         [HideIf("useScriptable")]
         [Button]
@@ -64,6 +66,8 @@ namespace Rufas.VR {
         [PropertyTooltip("If true, this will match the player instance to the playerPrefab field, therefore destorying it if the prefab value is null")]
         public bool removePlayerInstanceIfPrefabNull = false;
 
+        [Range(0.5f,64f)]
+        public float scalePlayerOnStart = 1;
 
         private bool ShowNewPlayerOptions()
         {
@@ -98,7 +102,12 @@ namespace Rufas.VR {
 
         }
 
-       // public 
+        private void Start()
+        {
+            playerInstance.transform.localScale = Vector3.one * scalePlayerOnStart;
+        }
+
+        // public 
 
         private void CreateOrMovePlayer()
         {
