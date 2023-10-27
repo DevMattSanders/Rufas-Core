@@ -11,8 +11,10 @@ using UnityEngine;
 
 namespace Rufas
 {
+#if UNITY_EDITOR
     [InitializeOnLoad]
     [CreateAssetMenu(menuName = "Rufas/GameContent/Database")]
+#endif
     public class ScriptableIDDatabase : SuperScriptable
     {
         private static ScriptableIDDatabase instance;
@@ -435,6 +437,7 @@ namespace Rufas
                 IDAndNameRecord.Add(objectToUpdate.UniqueID, objectToUpdate.name);
             }
         }
-    }
 #endif
+    }
+
 }
