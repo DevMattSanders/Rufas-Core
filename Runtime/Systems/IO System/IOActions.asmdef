@@ -1,0 +1,16 @@
+{
+    "name": "IOActions",
+    "rootNamespace": "IOActions",
+    "references": [
+        "Rufas"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
