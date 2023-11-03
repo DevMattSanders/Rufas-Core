@@ -18,19 +18,22 @@ namespace IOActions
 
         private void Start()
         {
-            if (!IOActionManager.Instance.inputComponents.Contains(this)) { 
-                IOActionManager.Instance.inputComponents.Add(this); 
+            if (!IOActionManager.Instance.inputComponents.Contains(this))
+            {
+                IOActionManager.Instance.inputComponents.Add(this);
             }
         }
 
         private void OnDestroy()
         {
-            if (IOActionManager.Instance.inputComponents.Contains(this)) {
+            if (IOActionManager.Instance.inputComponents.Contains(this))
+            {
                 IOActionManager.Instance.inputComponents.Remove(this);
             }
         }
-        
-        [Button()] public void ConncetToOutput(OutputComponent outputComponent)
+
+        [Button()]
+        public void ConncetToOutput(OutputComponent outputComponent)
         {
             if (connectedOutputs.Contains(outputComponent)) { return; }
 
@@ -39,20 +42,10 @@ namespace IOActions
             OnOutputConnected.Invoke(outputComponent);
         }
 
-        [Button()] public void SendInputSignal()
+        [Button()]
+        public virtual void SendInputSignal()
         {
             OnInputSignal.Invoke(this);
         }
-
-#if UNITY_EDITOR
-        private void OnDrawGizmosSelected()
-        {
-            //foreach (var item in connectedOutputs)
-            //{
-            //    Handles.color = Color.red;
-            //    Handles.DrawLine(transform.position, item.transform.position, 5f);
-            //}
-        }
-#endif
     }
 }
