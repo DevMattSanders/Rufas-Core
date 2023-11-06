@@ -1,9 +1,6 @@
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 using UnityEngine;
 
 namespace IOActions
@@ -47,16 +44,5 @@ namespace IOActions
         {
             Debug.Log(this.gameObject.name + " recived a input from " + inputComponent.gameObject.name);
         }
-
-#if UNITY_EDITOR
-        private void OnDrawGizmosSelected()
-        {
-            foreach (var item in connectedInputs)
-            {
-                Handles.color = Color.red;
-                Handles.DrawLine(transform.position, item.transform.position, 5f);
-            }
-        }
-#endif
     }
 }
