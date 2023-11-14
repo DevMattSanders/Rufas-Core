@@ -73,11 +73,16 @@ namespace Rufas
         {
             if (Value == null) { Debug.Log("STATE NULL!"); return true; }
 
-            if (Value.Value == compareTo)
+           // Debug.Log(Value.Value + " " + compareTo);
+
+            if (Value.Value == true && compareTo == true)// == compareTo)
             {
                 return true;
             }
-            else
+            else if(Value.Value == false && compareTo == false)
+            {
+                return true;
+            }else
             {
                 return false;
             }
