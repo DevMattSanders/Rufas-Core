@@ -35,7 +35,7 @@ namespace Rufas.Achivements
             ////Oculus.Platform.Models.AchievementDefinitionList defintionList = Oculus.Platform.Achievements.GetDefinitionsByName(namesArray);
 
             Debug.Log("Getting Achivement Data");
-            Achievements. (namesArray).OnComplete(
+            Achievements.GetProgressByName(namesArray).OnComplete(
             (Message<AchievementProgressList> msg) =>
             {
                 Debug.Log(msg.Data.Count);
