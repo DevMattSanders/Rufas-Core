@@ -13,13 +13,11 @@ namespace Rufas.Achivements
         [Space]
         public UnlockType unlockType;
 
-        [ShowIf("unlockType", UnlockType.Count), SerializeField, ReadOnly] private int counter;
-        [ShowIf("unlockType", UnlockType.Count), SerializeField, ReadOnly] private int counterUnlockValue;
+        [ShowIf("unlockType", UnlockType.Count), SerializeField, ReadOnly] private ulong counter;
         
         [ShowIf("unlockType", UnlockType.Bitfield), SerializeField, ReadOnly] private string bitField = "0000000";
-        [ShowIf("unlockType", UnlockType.Bitfield), SerializeField, ReadOnly] private int bitFieldUnlockValue;
 
-        public int GetCounterProgress() {
+        public ulong GetCounterProgress() {
             return counter;
         }
 
@@ -32,12 +30,12 @@ namespace Rufas.Achivements
             return unlocked;
         }
 
-        [ShowIf("unlockType", UnlockType.Count), Button()] private void SetCounter(int newValue)
+        [ShowIf("unlockType", UnlockType.Count), Button()] public void SetCounter(ulong newValue)
         {
             counter = newValue;
         }
 
-        [ShowIf("unlockType", UnlockType.Bitfield), Button()] private void SetBitfield(string newValue)
+        [ShowIf("unlockType", UnlockType.Bitfield), Button()] public void SetBitfield(string newValue)
         {
             bitField = newValue;
         }
