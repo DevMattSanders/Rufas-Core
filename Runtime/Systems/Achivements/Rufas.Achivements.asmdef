@@ -2,7 +2,8 @@
     "name": "Rufas.Achivements",
     "rootNamespace": "Rufas.Achivements",
     "references": [
-        "Oculus.Platform"
+        "Oculus.Platform",
+        "Rufas"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
