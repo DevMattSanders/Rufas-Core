@@ -13,8 +13,9 @@ namespace Rufas
 {
 #if UNITY_EDITOR
     [InitializeOnLoad]
-    [CreateAssetMenu(menuName = "Rufas/GameContent/Database")]
 #endif
+    [CreateAssetMenu(menuName = "Rufas/GameContent/Database")]
+
     public class ScriptableIDDatabase : SuperScriptable
     {
         private static ScriptableIDDatabase instance;
@@ -25,16 +26,19 @@ namespace Rufas
             {
                 if (Application.isPlaying == false)
                 {
-#if UNITY_EDITOR
+
                     if (editorInstance == null)
                     {
+#if UNITY_EDITOR
                         editorInstance = RufasStatic.GetAllScriptables_ToList<ScriptableIDDatabase>()[0];
+#endif
                     }
 
                     return editorInstance;
-#else
-                return instance;
-#endif
+
+                    //#else
+                    //return instance;
+
                 }
                 else
                 {
@@ -306,9 +310,9 @@ namespace Rufas
             //Not present in the primary database and has no unique ID. Most likely new.
             if (giveNewID) { replicationObject.ManuallySetID_OnlyForDatabase(System.Guid.NewGuid().ToString(),this); } //Pass in that a message needs to be passed back to 
             ScriptableIDObject toAdd = replicationObject as ScriptableIDObject;
-
+//#if UNITY_EDITOR
             ScriptableIDConfirmationWindow.ShowWindow(toAdd, toAdd.UniqueID, this);
-
+//#endif
             /*
             if (gameContentObjects_ObjectToKey.ContainsKey(toAdd))
             {
@@ -335,7 +339,9 @@ namespace Rufas
 
         private void OpenBuldConfirmationWindow()
         {
+//#if UNITY_EDITOR
             BulkScriptableIDConfirmationWindow.ShowWindow(this);
+//#endif
         }
 
         public void PassToDatabaseFromBulkConfirmationWindow()

@@ -22,12 +22,11 @@ namespace Rufas
 
         }
 
-#if UNITY_EDITOR
+
         //A method that is found and called before a build is started
         public virtual void SoOnBeforeBuild()
         {
-
         }
-#endif
+
     }
 }

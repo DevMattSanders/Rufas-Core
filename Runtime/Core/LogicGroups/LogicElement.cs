@@ -267,12 +267,11 @@ namespace Rufas
 #if UNITY_EDITOR
         [HorizontalGroup("Top")]
         private string debugState;
- 
 
+#endif
 
         [Title("$debugState", titleAlignment: TitleAlignments.Left, horizontalLine: true, bold: true)]
         [PropertySpace(5)]
-#endif
         [HorizontalGroup("Top")]
         [DisableInPlayMode]
         [SerializeField] private bool listenerOnly;
