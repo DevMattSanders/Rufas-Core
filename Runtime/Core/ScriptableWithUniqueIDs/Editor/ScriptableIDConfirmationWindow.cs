@@ -10,12 +10,12 @@ namespace Rufas
 {
     public class ScriptableIDConfirmationWindow : EditorWindow
     {
-        public ScriptableIDDatabase database;
-        public ScriptableIDObject IDObject;
+        public ScriptablesUniqueIDDatabase database;
+        public ScriptableWithUniqueID IDObject;
         public string nameValue;
         public string idValue;
         
-        public static void ShowWindow(ScriptableIDObject _IDObject, string _givenID, ScriptableIDDatabase _database)
+        public static void ShowWindow(ScriptableWithUniqueID _IDObject, string _givenID, ScriptablesUniqueIDDatabase _database)
         {
             ScriptableIDConfirmationWindow window = null;
 
@@ -41,7 +41,7 @@ namespace Rufas
             //Add a scriptable object reference here
 
             EditorGUI.BeginDisabledGroup(true);
-            IDObject = (ScriptableIDObject)EditorGUILayout.ObjectField("Object:", IDObject,typeof(ScriptableIDObject),false);
+            IDObject = (ScriptableWithUniqueID)EditorGUILayout.ObjectField("Object:", IDObject,typeof(ScriptableWithUniqueID),false);
             EditorGUI.EndDisabledGroup();
 
             GUILayout.Label("Confirm Name");

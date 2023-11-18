@@ -108,11 +108,12 @@ namespace Rufas
             SaveLoad.Instance.TryLoad<T>(UniqueID, out _value);
         }
 
-#if UNITY_EDITOR
+
 
         [ShowInInspector,SerializeField, TitleGroup("Save Load Options", Order = 1), HideInInlineEditors]
         private (bool,string) DebugIfSaveDataExists()
         {
+#if UNITY_EDITOR
             if (ES3.KeyExists(UniqueID, SaveLoad.Instance.fileName))
             {
                 Debug.Log(UniqueID);
@@ -134,8 +135,11 @@ namespace Rufas
             {
                 return (false,"");
             }
+#endif
+
+            return (false, "");
         }
 
-#endif
+
     }
 }

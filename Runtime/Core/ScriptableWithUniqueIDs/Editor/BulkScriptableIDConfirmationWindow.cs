@@ -13,7 +13,7 @@ namespace Rufas
     {
 
         public static BulkScriptableIDConfirmationWindow confirmationWindow;
-        public static void ShowWindow(ScriptableIDDatabase _database)
+        public static void ShowWindow(ScriptablesUniqueIDDatabase _database)
         {
             /*
             BulkScriptableIDConfirmationWindow window = (BulkScriptableIDConfirmationWindow)EditorWindow.GetWindow(
@@ -38,7 +38,7 @@ namespace Rufas
 
         //public void Setup
 
-        public ScriptableIDDatabase database;
+        public ScriptablesUniqueIDDatabase database;
 
         private void OnGUI()
         {
@@ -82,7 +82,7 @@ namespace Rufas
             GUILayout.EndHorizontal();
         }
 
-        private void IndividualGroup(string titleText, List<ScriptableIDObject> reference)//, ref int currentIndex)
+        private void IndividualGroup(string titleText, List<ScriptableWithUniqueID> reference)//, ref int currentIndex)
         {
             
 
@@ -110,13 +110,13 @@ namespace Rufas
 
 
 
-                    ScriptableIDObject IDObject = reference[i];
+                    ScriptableWithUniqueID IDObject = reference[i];
 
 
                     GUILayout.BeginHorizontal();
 
                     EditorGUI.BeginDisabledGroup(true);
-                    IDObject = (ScriptableIDObject)EditorGUILayout.ObjectField("", IDObject, typeof(ScriptableIDObject), false);
+                    IDObject = (ScriptableWithUniqueID)EditorGUILayout.ObjectField("", IDObject, typeof(ScriptableWithUniqueID), false);
                     EditorGUI.EndDisabledGroup();
                     GUILayout.Label("Confirm Name");
                     IDObject.proposed_NameValue = EditorGUILayout.TextField(IDObject.proposed_NameValue);

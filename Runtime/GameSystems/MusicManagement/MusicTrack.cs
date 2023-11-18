@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Rufas.MusicManagement
 {
-    public class MusicTrack : SuperScriptable
+    [CreateAssetMenu(menuName = "Rufas/Music/MusicTrack")]
+    public class MusicTrack : ScriptableObject
     {
         public string trackName;
         [Space]

@@ -16,11 +16,11 @@ namespace Rufas
 #endif
     [CreateAssetMenu(menuName = "Rufas/GameContent/Database")]
 
-    public class ScriptableIDDatabase : SuperScriptable
+    public class ScriptablesUniqueIDDatabase : SuperScriptable
     {
-        private static ScriptableIDDatabase instance;
-        private static ScriptableIDDatabase editorInstance;
-        public static ScriptableIDDatabase Instance
+        private static ScriptablesUniqueIDDatabase instance;
+        private static ScriptablesUniqueIDDatabase editorInstance;
+        public static ScriptablesUniqueIDDatabase Instance
         {
             get
             {
@@ -30,7 +30,7 @@ namespace Rufas
                     if (editorInstance == null)
                     {
 #if UNITY_EDITOR
-                        editorInstance = RufasStatic.GetAllScriptables_ToList<ScriptableIDDatabase>()[0];
+                        editorInstance = RufasStatic.GetAllScriptables_ToList<ScriptablesUniqueIDDatabase>()[0];
 #endif
                     }
 
@@ -52,10 +52,10 @@ namespace Rufas
 
         [Header("Editor Game Content Objects")]
         [ReadOnly]
-        public Dictionary<string, ScriptableIDObject> gameContentObjects_KeyToObject = new Dictionary<string, ScriptableIDObject>();
+        public Dictionary<string, ScriptableWithUniqueID> gameContentObjects_KeyToObject = new Dictionary<string, ScriptableWithUniqueID>();
        
         [ReadOnly]
-        public Dictionary<ScriptableIDObject, string> gameContentObjects_ObjectToKey = new Dictionary<ScriptableIDObject, string>();
+        public Dictionary<ScriptableWithUniqueID, string> gameContentObjects_ObjectToKey = new Dictionary<ScriptableWithUniqueID, string>();
 
         private void OnEnable()
         {
@@ -86,7 +86,7 @@ namespace Rufas
         [Button]
         public void RefreshDatabase()
         {
-            ScriptableIDObject[] allContent = RufasStatic.GetAllScriptables_ToArray<ScriptableIDObject>();
+            ScriptableWithUniqueID[] allContent = RufasStatic.GetAllScriptables_ToArray<ScriptableWithUniqueID>();
 
             potentialNewObjects.Clear();
             potentialExistingObjectsThatNeedAdding.Clear();
@@ -94,7 +94,7 @@ namespace Rufas
 
             Debug.Log("Refreshing Database");
 
-            foreach(ScriptableIDObject content in allContent)
+            foreach(ScriptableWithUniqueID content in allContent)
             {
                 RefreshReplicationKey(content, true);
                 //content.AuthorisedRefresh();
@@ -171,11 +171,11 @@ namespace Rufas
             }
         }
 
-        public List<ScriptableIDObject> potentialNewObjects = new List<ScriptableIDObject>();
-        public List<ScriptableIDObject> potentialExistingObjectsThatNeedAdding = new List<ScriptableIDObject>();
-        public List<ScriptableIDObject> potentialDuplications = new List<ScriptableIDObject>();
+        public List<ScriptableWithUniqueID> potentialNewObjects = new List<ScriptableWithUniqueID>();
+        public List<ScriptableWithUniqueID> potentialExistingObjectsThatNeedAdding = new List<ScriptableWithUniqueID>();
+        public List<ScriptableWithUniqueID> potentialDuplications = new List<ScriptableWithUniqueID>();
 
-        public void RefreshReplicationKey(ScriptableIDObject replicationObject, bool buildingBulkConfirmationList = false)
+        public void RefreshReplicationKey(ScriptableWithUniqueID replicationObject, bool buildingBulkConfirmationList = false)
         {
             /*
             if (replication_ObjectToKey.ContainsKey(replicationObject))
@@ -305,11 +305,11 @@ namespace Rufas
             }      
         }
 
-        private void AddToDatabaseViaConfirmationWindow(ScriptableIDObject replicationObject, bool giveNewID)
+        private void AddToDatabaseViaConfirmationWindow(ScriptableWithUniqueID replicationObject, bool giveNewID)
         {
             //Not present in the primary database and has no unique ID. Most likely new.
             if (giveNewID) { replicationObject.ManuallySetID_OnlyForDatabase(System.Guid.NewGuid().ToString(),this); } //Pass in that a message needs to be passed back to 
-            ScriptableIDObject toAdd = replicationObject as ScriptableIDObject;
+            ScriptableWithUniqueID toAdd = replicationObject as ScriptableWithUniqueID;
 //#if UNITY_EDITOR
             ScriptableIDConfirmationWindow.ShowWindow(toAdd, toAdd.UniqueID, this);
 //#endif
@@ -346,17 +346,17 @@ namespace Rufas
 
         public void PassToDatabaseFromBulkConfirmationWindow()
         {
-            foreach (ScriptableIDObject next in potentialNewObjects)
+            foreach (ScriptableWithUniqueID next in potentialNewObjects)
             {
                 PassToDatabaseFromAuthorisedConfirmationWindow(next.proposed_ID, next.proposed_NameValue, next, false);
             }
 
-            foreach (ScriptableIDObject next in potentialExistingObjectsThatNeedAdding)
+            foreach (ScriptableWithUniqueID next in potentialExistingObjectsThatNeedAdding)
             {
                 PassToDatabaseFromAuthorisedConfirmationWindow(next.proposed_ID, next.proposed_NameValue, next, false);
             }
 
-            foreach (ScriptableIDObject next in potentialDuplications)
+            foreach (ScriptableWithUniqueID next in potentialDuplications)
             {
                 PassToDatabaseFromAuthorisedConfirmationWindow(next.proposed_ID, next.proposed_NameValue, next, false);
             }
@@ -372,7 +372,7 @@ namespace Rufas
             return gameContentObjects_KeyToObject.ContainsKey(idToCheck);            
         }
 
-        public void PassToDatabaseFromAuthorisedConfirmationWindow(string newID, string nameID, ScriptableIDObject objectToAdd, bool refreshDatabaseNow = true)
+        public void PassToDatabaseFromAuthorisedConfirmationWindow(string newID, string nameID, ScriptableWithUniqueID objectToAdd, bool refreshDatabaseNow = true)
         {
            // if(authorisingConfirmationWindow != null)
            // {
@@ -398,7 +398,7 @@ namespace Rufas
           //  }
         }
 
-        private void AddToDatabase(ScriptableIDObject objectToAdd, bool saveAssets = false)
+        private void AddToDatabase(ScriptableWithUniqueID objectToAdd, bool saveAssets = false)
         {
             if (gameContentObjects_ObjectToKey.ContainsKey(objectToAdd))
             {
@@ -432,7 +432,7 @@ namespace Rufas
            // RefreshDatabase();
         }
 
-        private void UpdateIDRecord(ScriptableIDObject objectToUpdate)
+        private void UpdateIDRecord(ScriptableWithUniqueID objectToUpdate)
         {
             if (IDAndNameRecord.ContainsKey(objectToUpdate.UniqueID))
             {

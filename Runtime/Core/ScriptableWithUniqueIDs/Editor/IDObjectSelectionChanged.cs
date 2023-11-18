@@ -22,9 +22,9 @@ namespace Rufas
             if (Selection.activeObject != null)
             {
               //  Debug.Log("Selected Object: " + Selection.activeObject.name);
-                if(Selection.activeObject is ScriptableIDObject)
+                if(Selection.activeObject is ScriptableWithUniqueID)
                 {
-                    ScriptableIDObject gameContentObject = (ScriptableIDObject)Selection.activeObject;
+                    ScriptableWithUniqueID gameContentObject = (ScriptableWithUniqueID)Selection.activeObject;
 
                   //  gameContentObject.AuthorisedRefresh();
                 }

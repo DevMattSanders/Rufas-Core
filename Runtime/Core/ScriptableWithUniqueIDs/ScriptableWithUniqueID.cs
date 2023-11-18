@@ -7,9 +7,11 @@ using UnityEngine;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/GameContent/GameContentObject")]
-    public class ScriptableIDObject : SuperScriptable
+    public class ScriptableWithUniqueID : ScriptableObjectWithCallbacks
     {
+       
 
+        //SuperScriptable
         [HorizontalGroup("TopLine", order: 0)]
         [ReadOnly, SerializeField]        
         private string uniqueID;
@@ -31,11 +33,15 @@ namespace Rufas
         [HideInInspector] public bool markedForDeletion;
         [HideInInspector] public bool IDAlreadyExists;
 
+#endif
+
         [HorizontalGroup("TopLine", width: 30, order: 2)]
         [Button("R")]
         void RefreshButton()
         {
+#if UNITY_EDITOR
             AuthorisedRefresh();
+#endif
         }
 
         /*
@@ -49,20 +55,24 @@ namespace Rufas
         }
         */
 
-        public void ManuallySetID_OnlyForDatabase(string newID, ScriptableIDDatabase authorisingIDDatabase)
+        public void ManuallySetID_OnlyForDatabase(string newID, ScriptablesUniqueIDDatabase authorisingIDDatabase)
         {
+#if UNITY_EDITOR
             if (authorisingIDDatabase != null)
             {
                 uniqueID = newID;
                 EditorUtility.SetDirty(this);
             }
+#endif
         }
 
         public void AuthorisedRefresh()
         {
-            ScriptableIDDatabase.Instance.RefreshDatabase();
-        }
+#if UNITY_EDITOR
+            ScriptablesUniqueIDDatabase.Instance.RefreshDatabase();
 #endif
+        }
 
+       
     }
 }

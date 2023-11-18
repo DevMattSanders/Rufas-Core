@@ -40,10 +40,10 @@ namespace Rufas
         {
             exceptions.Clear();
 
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
 
             FindAllSuperScriptables();
-#endif
+//#endif
 
             foreach (var superScriptable in superScriptables)
             {
