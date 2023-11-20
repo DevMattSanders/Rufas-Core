@@ -17,6 +17,11 @@ namespace Rufas
             return EditorIcons.ArrowRight;
         }
 #endif
+
+        public virtual void OnEnable()
+        {
+            
+        }
         /*
         /// <summary>
         /// Internal use! This will hide the system in the manager editor (revealed with the 'showRufasHiddenSystems' bool on the manager)
@@ -44,6 +49,7 @@ namespace Rufas
         {
 
         }
+
 
         public virtual string DesiredName()
         {

@@ -48,9 +48,7 @@ namespace Rufas
                 }
             }
         }
-                */
-
-
+        */
 
         [PropertySpace(spaceBefore: 20)]
 
@@ -62,12 +60,24 @@ namespace Rufas
         public Dictionary<ScriptableWithUniqueID, string> gameContentObjects_ObjectToKey = new Dictionary<ScriptableWithUniqueID, string>();
 
       //  public override bool RufasBackendSystem() { return true; }
-        public override bool AutogenerateGameSystem() { return base.AutogenerateGameSystem(); }
+        public override bool AutogenerateGameSystem() { return true; }
 
+        /*
         private void OnEnable()
         {
+            Debug.Log("Run!");
             RefreshEditorDatabase();
         }
+        */
+
+        //override o
+
+        public override void OnCreatedByEditor()
+        {
+            base.OnCreatedByEditor();
+            RefreshDatabase();
+        }
+
         public override void BehaviourToRunBeforeAwake()
         {
             base.BehaviourToRunBeforeAwake();
@@ -237,8 +247,16 @@ namespace Rufas
                     {
                         potentialNewObjects.Add(replicationObject);
                         replicationObject.proposed_NameValue = replicationObject.name;
-                        replicationObject.proposed_ID = RufasStatic.ShortGUID_FromRandomLong();
-                    }
+                        if (string.IsNullOrEmpty(replicationObject.UniqueID))
+                        {
+                            replicationObject.proposed_ID = RufasStatic.ShortGUID_FromRandomLong();
+                        }
+                        else
+                        {
+                            replicationObject.proposed_ID = replicationObject.UniqueID;
+                        }
+                        
+                        }
                     else
                     {
                         Debug.Log(replicationObject.name + " * No ID, assigning");
@@ -283,7 +301,14 @@ namespace Rufas
                     {
                         potentialDuplications.Add(replicationObject);
                         replicationObject.proposed_NameValue = replicationObject.name;
-                        replicationObject.proposed_ID = RufasStatic.ShortGUID_FromRandomLong();
+                        if (string.IsNullOrEmpty(replicationObject.UniqueID))
+                        {
+                            replicationObject.proposed_ID = RufasStatic.ShortGUID_FromRandomLong();
+                        }
+                        else
+                        {
+                            replicationObject.proposed_ID = replicationObject.UniqueID;
+                        }
                     }
                     else
                     {
@@ -294,7 +319,8 @@ namespace Rufas
             }
             else
             {
-                //Debug.Log(replicationObject.name + " * Very odd. Replication object has a Unique ID but is not found in replicaiton database or flipped vairent");//. Adding to database using its existing ID...");
+                //Debug.Log(gameContentObjects_KeyToObject.Count);
+               // Debug.Log(replicationObject.name + " * Very odd. Replication object has a Unique ID but is not found in replicaiton database or flipped vairent");//. Adding to database using its existing ID...");
                 //Not present in the primary or secondary database and has no unique ID. Most likely new.
                 if (buildingBulkConfirmationList)
                 {
@@ -383,11 +409,13 @@ namespace Rufas
                 bool saveAssets = false;
                 if(objectToAdd.name != nameID)
                 {
+                
                     string assetPath = AssetDatabase.GetAssetPath(objectToAdd.GetInstanceID());
                     AssetDatabase.RenameAsset(assetPath, nameID);
                     saveAssets = true;
                 }
-                               
+                objectToAdd.proposed_NameValue = nameID;
+                
                 objectToAdd.ManuallySetID_OnlyForDatabase(newID, this);
 
             if (refreshDatabaseNow)

@@ -15,6 +15,7 @@ namespace Rufas
         public static BulkScriptableIDConfirmationWindow confirmationWindow;
         public static void ShowWindow(ScriptablesUniqueIDDatabase _database)
         {
+            Debug.Log("Called open!");
             /*
             BulkScriptableIDConfirmationWindow window = (BulkScriptableIDConfirmationWindow)EditorWindow.GetWindow(
         typeof(BulkScriptableIDConfirmationWindow), true, "Bulk Confirmation: " + _database.GetType().ToString(), true);
@@ -32,7 +33,7 @@ namespace Rufas
             confirmationWindow.minSize = new Vector2(300, 450);
             if (confirmationWindow != null)
             {
-                confirmationWindow.ShowAuxWindow();
+                confirmationWindow.ShowTab();
             }
         }
 
@@ -40,25 +41,23 @@ namespace Rufas
 
         public ScriptablesUniqueIDDatabase database;
 
+        private Vector2 scrollPosition = Vector2.zero;
+
         private void OnGUI()
         {
             GUILayout.Space(10);
 
-            IndividualGroup("New Objects Found: ", database.potentialNewObjects);//,
-                //potentialNewObjects_NameValue, potentialNewObjects_IDValue,
-               // ref potentialNewObjects_Index);
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+
+            IndividualGroup("New Objects Found: ", database.potentialNewObjects);
 
             GUILayout.Space(10);
 
-            IndividualGroup("Existing Objects Found: ", database.potentialExistingObjectsThatNeedAdding);//,
-                //potentialExistingObjects_NameValue, potentialExistingObjects_IDValue,
-               // ref potentialExistingObjects_Index);
+            IndividualGroup("Existing Objects Found: ", database.potentialExistingObjectsThatNeedAdding);
 
             GUILayout.Space(10);
 
-            IndividualGroup("Duplicates Found: ", database.potentialDuplications);//,
-                //potentialDuplications_NameValue, potentialDuplications_IDValue,
-               // ref potentialDuplications_Index);
+            IndividualGroup("Duplicates Found: ", database.potentialDuplications);
 
             GUILayout.FlexibleSpace();
 
@@ -70,16 +69,16 @@ namespace Rufas
                 Close();
             }
 
-            GUI.backgroundColor = new Color(0.5597f,0.9056f,0.3708f);//Blue
+            GUI.backgroundColor = new Color(0.5597f, 0.9056f, 0.3708f); // Blue
             if (GUILayout.Button("Confirm & Update Database"))
             {
                 Close();
-                database.PassToDatabaseFromBulkConfirmationWindow();              
+                database.PassToDatabaseFromBulkConfirmationWindow();
             }
 
-           
-
             GUILayout.EndHorizontal();
+
+            EditorGUILayout.EndScrollView();
         }
 
         private void IndividualGroup(string titleText, List<ScriptableWithUniqueID> reference)//, ref int currentIndex)
