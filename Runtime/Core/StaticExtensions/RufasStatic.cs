@@ -1,6 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace Rufas
@@ -29,7 +33,19 @@ namespace Rufas
             }
         }
 
+        static System.Random random = new System.Random();
+
+        public static string ShortGUID_FromRandomLong()
+        {                     
+            return random.Next().ToString("x");
+        }
+
 #if UNITY_EDITOR
+
+        public static IEnumerable<Type> FindDerivedTypes(Type baseType)
+        {
+            return baseType.Assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t));
+        }
 
         public static T[] GetAllScriptables_ToArray<T>() where T : ScriptableObject
         {

@@ -6,8 +6,7 @@ using UnityEngine;
 
 namespace Rufas
 {
-    [CreateAssetMenu(menuName = "Rufas/GameContent/GameContentObject")]
-    public class ScriptableWithUniqueID : ScriptableObjectWithCallbacks
+    public class ScriptableWithUniqueID : ScriptableWithCallbacks
     {
        
 

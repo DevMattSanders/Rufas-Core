@@ -11,6 +11,9 @@ namespace Rufas
         public List<string> exceptions = new List<string>();
         public List<SuperScriptable> superScriptables = new List<SuperScriptable>();
 
+     //   public static SuperScriptableDatabase instance;
+   //     public GameSystemParentClass[] gameSystems;
+
         public override void BehaviourToRunBeforeStart()
         {
             base.BehaviourToRunBeforeStart();
@@ -40,7 +43,11 @@ namespace Rufas
         {
             exceptions.Clear();
 
+      //      instance = this;
 //#if UNITY_EDITOR
+ //           gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
+//#endif
+            //#if UNITY_EDITOR
 
             FindAllSuperScriptables();
 //#endif

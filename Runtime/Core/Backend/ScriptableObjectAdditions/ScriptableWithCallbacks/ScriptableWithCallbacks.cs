@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rufas
 {
-    public class ScriptableObjectWithCallbacks : ScriptableObject
+    public class ScriptableWithCallbacks : ScriptableObject
     {
         public virtual void SoOnAwake() { }
 
