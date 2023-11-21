@@ -60,6 +60,7 @@ namespace Rufas
             if (authorisingIDDatabase != null)
             {
                 uniqueID = newID;
+                proposed_ID = uniqueID;
                 EditorUtility.SetDirty(this);
             }
 #endif
