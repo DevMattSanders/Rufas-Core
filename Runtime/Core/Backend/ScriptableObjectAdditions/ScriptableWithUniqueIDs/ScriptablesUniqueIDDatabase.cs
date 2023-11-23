@@ -75,7 +75,9 @@ namespace Rufas
         public override void OnCreatedByEditor()
         {
             base.OnCreatedByEditor();
+#if UNITY_EDITOR
             RefreshDatabase();
+#endif
         }
 
         public override void BehaviourToRunBeforeAwake()

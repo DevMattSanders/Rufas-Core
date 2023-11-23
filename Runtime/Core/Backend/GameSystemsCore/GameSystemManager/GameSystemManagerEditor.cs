@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
 using Sirenix.OdinInspector.Editor;
+#endif
 using System.IO;
 
 namespace Rufas
 {
+#if UNITY_EDITOR
     public class GameSystemManagerEditor : OdinMenuEditorWindow
     {
         [MenuItem("Rufas/Game System Manager")]
@@ -63,4 +66,5 @@ namespace Rufas
             return tree;
         }
     }
+#endif
 }

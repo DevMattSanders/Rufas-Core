@@ -1,8 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using BrainFailProductions.PolyFew.AsImpL;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 
 
@@ -28,16 +32,22 @@ namespace Rufas
         public FloatWithCallback percentAmount;
 
         [ReadOnly, SerializeField] private string currentScene;
-        [ReadOnly, SerializeField] private string sceneToLoadNext;
+       // [ReadOnly, SerializeField] private SceneInstance currnetActiveScene;
+        [ReadOnly, SerializeField] private string sceneToLoadNextName;
+        [ReadOnly, SerializeField] private AssetReference sceneToLoadNextAssetReference;
 
         [ReadOnly,SerializeField] private List<string> currentOpenScenes = new List<string>();
+
+        [ReadOnly,SerializeField] public List<AsyncOperationHandle> currentlyOpenScenes = new List<AsyncOperationHandle>();
 
         [DisableInPlayMode]
         public LogicGroup sceneLoadingLogicGroup;
 
         public SceneReference loadingScene;
 
-        public AsyncOperation operation;
+       // public AsyncOperation operation;
+
+        public AsyncOperationHandle<SceneInstance> operation;
 
         //Whilst there are objects in this list, don't load next scene. Useful for adding functionality for fade to black.
         [ReadOnly]
@@ -66,7 +76,7 @@ namespace Rufas
             {
                 if (soScene == null) return "--Null--";
 
-                return soScene.sceneByReference.SceneName;
+                return soScene.name;// sceneByReference.SceneName;
             }
 
             [HorizontalGroup("H")]
@@ -84,15 +94,18 @@ namespace Rufas
             base.SoOnAwake();
             
             currentScene = null;
+          //  currnetActiveScene = null;
             currentOpenScenes.Clear();
+            currentlyOpenScenes = new List<AsyncOperationHandle>();
             instance = this;
 
             percentAmount.Value = 0;
             isCurrentlyLoadingScene.Value = false;
             showLoadingScreen.Value = false;
-            sceneToLoadNext = "";
+            sceneToLoadNextName = "";
+            sceneToLoadNextAssetReference = null;
 
-            GetCurrentScenes_EditorOnly();
+            GetCurrentScenes();
 
            
         }
@@ -107,24 +120,30 @@ namespace Rufas
         {
             base.SoOnEnd();
             currentScene = null;
+          //  currnetActiveScene = null;
             currentOpenScenes.Clear();
-
+            currentlyOpenScenes = new List<AsyncOperationHandle>();
             percentAmount.Value = 0;
             isCurrentlyLoadingScene.Value = false;
             showLoadingScreen.Value = false;
-            sceneToLoadNext = "";
+            sceneToLoadNextName = "";
+            sceneToLoadNextAssetReference = null;
 
             sceneLoadingLogicGroup?.UnregisterEnabler(this);
 
         }
 
-        private void GetCurrentScenes_EditorOnly()
+        
+
+        public void GetCurrentScenes()
         {
 #if UNITY_EDITOR
+            
 
             currentScene = null;
+          //  currnetActiveScene = null;
             currentOpenScenes.Clear();
-
+            currentlyOpenScenes = new List<AsyncOperationHandle>();
             int countLoaded = SceneManager.sceneCount;
             Scene[] loadedScenes = new Scene[countLoaded];
 
@@ -140,11 +159,13 @@ namespace Rufas
             }
 
             FindAllSoScenes_EditorOnly();
+
 #else
         currentOpenScenes.Clear();
+         currentlyOpenScenes = new List<AsyncOperationHandle>();
 
-        currentScene = SceneManager.GetActiveScene().name;        
-        currentOpenScenes.Add(currentScene);
+      //  currentScene = SceneManager.GetActiveScene().name;        
+      //  currentOpenScenes.Add(currentScene);
 #endif
         }
 
@@ -165,13 +186,32 @@ namespace Rufas
         }
 
         
-
+        /*
         public void LoadScene(SceneReference scene)
         {
             LoadScene(scene.SceneName);
         }
+        */
+        public void LoadScene(AssetReference scene,string sceneName)
+        {
+            if (scene == null) return;
+            if (currentScene == sceneName) return;
+            if (currentOpenScenes.Contains(sceneName)) return;
+            if (isCurrentlyLoadingScene.Value) return;
+                        
+            onSceneLoadTriggered.Raise();
+            sceneCalledFromScene.Raise(currentScene, sceneName);
+            percentAmount.Value = 0;
+            isCurrentlyLoadingScene.Value = true;
 
-        
+            sceneLoadingLogicGroup?.EnableFromRegisteredEnabler(this);
+
+            sceneToLoadNextAssetReference = scene;
+            sceneToLoadNextName = sceneName;
+
+            TriggerEndOfSceneBehaviours();
+        }
+        /*
         public void LoadScene(string sceneName)
         {
             if (string.IsNullOrEmpty(sceneName)) { return; }
@@ -186,11 +226,11 @@ namespace Rufas
 
             sceneLoadingLogicGroup?.EnableFromRegisteredEnabler(this);
 
-            sceneToLoadNext = sceneName;
+            sceneToLoadNextName = sceneName;
 
             TriggerEndOfSceneBehaviours();
         }
-
+        */
         private void TriggerEndOfSceneBehaviours()
         {
             endOfScene.Raise();
@@ -250,18 +290,30 @@ namespace Rufas
         {
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(loadingScene.SceneName));
 
+            /*
             //REMOVES FIRST SCENE (IF STILL ACTIVE)
             if (SceneManager.GetSceneByBuildIndex(0).IsValid() == true)
             {
                 //  SceneManager.UnloadSceneAsync(0,UnloadSceneOptions.None);
             }
-
+            */
             foreach (string next in currentOpenScenes)
             {
+                //Addressables.UnloadSceneAsync()
+#if UNITY_EDITOR
                 SceneManager.UnloadSceneAsync(next);
+#endif
+            }
+
+            foreach(AsyncOperationHandle next in currentlyOpenScenes)
+            {
+                //if(next)
+                //if(Addressables.)
+                Addressables.UnloadSceneAsync(next);
             }
 
             currentOpenScenes.Clear();
+            currentlyOpenScenes = new List<AsyncOperationHandle>();
             LoadInNextScene();
         }
       
@@ -269,9 +321,12 @@ namespace Rufas
         private void LoadInNextScene()
         {
             loadingNextSceneInProgress = true;
-            operation = SceneManager.LoadSceneAsync(sceneToLoadNext, LoadSceneMode.Additive);
 
-            operation.completed += NextSceneLoadCompleted;
+            //    operation = SceneManager.LoadSceneAsync(sceneToLoadNextName, LoadSceneMode.Additive);
+            //operation.completed += NextSceneLoadCompleted;
+
+            operation = Addressables.LoadSceneAsync(sceneToLoadNextAssetReference, LoadSceneMode.Additive);
+            operation.Completed += NextSceneLoadCompleted;
 
             StartLoadingStats();  
         }           
@@ -292,31 +347,35 @@ namespace Rufas
         {
             while (loadingNextSceneInProgress)
             {
-                percentAmount.Value = operation.progress;
-
-
+             //   Debug.Log("Scene: " + operation.PercentComplete.ToString("F3"));
+                percentAmount.Value = operation.PercentComplete;
                 yield return null;
             }
         }
 
-        private void NextSceneLoadCompleted(AsyncOperation obj)
+        private void NextSceneLoadCompleted(AsyncOperationHandle<SceneInstance> obj)
         {
             loadingNextSceneInProgress = false;
 
-            LoadOutLoadingScreen();
-        }
-
-        private void LoadOutLoadingScreen()
-        {
-            currentScene = sceneToLoadNext;
-           // Debug.Log(currentScene);
+            currentScene = sceneToLoadNextName;
             onSceneEntered.Raise(currentScene);
-
             currentOpenScenes.Add(currentScene);
-            SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentScene));
+            currentlyOpenScenes.Add(obj);
+
+            SceneManager.SetActiveScene(obj.Result.Scene);
+
             SceneManager.UnloadSceneAsync(loadingScene.SceneName).completed += Finished;
 
-        }      
+           // LoadOutLoadingScreen();
+            //Set the obj scene as the active scene?
+        }
+
+      //  private void LoadOutLoadingScreen()
+     //   {
+            
+          //  SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentScene));
+          
+       // }      
 
         private void Finished(AsyncOperation obj)
         {

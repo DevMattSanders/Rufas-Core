@@ -12,15 +12,25 @@ using UnityEditor;
 using Sirenix.OdinInspector.Editor;
 #endif
 
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Linq;
+
 namespace Rufas
 {
 
     public static class TriggerGameSystemManagerBeforeStart
-    {
+    {/*
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void FindAndTriggerGameSystemManager()
         {
-            GameSystemManager[] loadableGameSystemManagers = Resources.LoadAll<GameSystemManager>("");
+            // GameSystemManager loadableGameSystemManagers = Resources.Load<GameSystemManager>("");
+
+            var loadOperation = Addressables.LoadAssets<GameSystemManager>("LoadOnInit", null);
+
+            GameSystemManager[] loadableGameSystemManagers = loadOperation.Result.ToArray();
+            
+            //Debug.Log()
 
             if (loadableGameSystemManagers.Length == 0)
             {
@@ -33,8 +43,9 @@ namespace Rufas
             else
             {
                 Debug.LogError("Too many game system managers found!");
-            }
+            }            
         }
+        */
     }
 
     public class GameSystemManager : ScriptableObject

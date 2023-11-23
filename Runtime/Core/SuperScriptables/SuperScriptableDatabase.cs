@@ -8,6 +8,7 @@ namespace Rufas
     [CreateAssetMenu(menuName = "Rufas/SuperScriptableDatabase")]
     public class SuperScriptableDatabase : PreAwakeBehaviour
     {
+        public static SuperScriptableDatabase superScriptableDatabaseInstance;
         public List<string> exceptions = new List<string>();
         public List<SuperScriptable> superScriptables = new List<SuperScriptable>();
 
@@ -18,11 +19,20 @@ namespace Rufas
         {
             base.BehaviourToRunBeforeStart();
 
-            GameObject monobehaviourLink = new GameObject("SuperScriptableMonobehaviourEvents");
+            if (superScriptableDatabaseInstance == null)
+            {
 
-            DontDestroyOnLoad(monobehaviourLink);
+                superScriptableDatabaseInstance = this;
 
-            monobehaviourLink.AddComponent<SuperScriptableMonobehaviourEvents>();
+                GameObject monobehaviourLink = new GameObject("SuperScriptableMonobehaviourEvents");
+
+
+                DontDestroyOnLoad(monobehaviourLink);
+
+                monobehaviourLink.AddComponent<SuperScriptableMonobehaviourEvents>();
+
+            }
+           // monobehaviourLink.GetComponent<SuperScriptableMonobehaviourEvents>().database = this;
         }
 
         private void OnEnable()

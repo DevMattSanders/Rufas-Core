@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.AddressableAssets;
 
 
 #if UNITY_EDITOR
@@ -21,17 +22,26 @@ namespace Rufas
         public static UnityEvent<SoScene> SoSceneLoaderCalled = new UnityEvent<SoScene>();
 
         [HideLabel, Title("SceneByReference")]
-        [InlineButton("LoadScene")]
-        public SceneReference sceneByReference;
+       // [InlineButton("LoadScene")]
+        // public SceneReference sceneByReference;
 
+        [OnValueChanged("Refresh")]
+        public AssetReference sceneAssetReference;
 
+        [SerializeField,ReadOnly] private string sceneName;
+
+        
+
+        [HorizontalGroup("H")]
         [Button]
         public void LoadScene()
         {
+            Refresh();
+
             SoSceneLoaderCalled.Invoke(this);
-            if (sceneByReference != null)
+            if (sceneAssetReference != null)
             {
-                SoSceneManager.instance.LoadScene(sceneByReference);
+                SoSceneManager.instance.LoadScene(sceneAssetReference,sceneName);
             }
             else
             {
@@ -39,6 +49,38 @@ namespace Rufas
             }
         }
 
+        [HorizontalGroup("H")]
+        [Button]
+        private void Refresh()
+        {
+#if UNITY_EDITOR
+
+            if (sceneAssetReference != null)
+            {
+
+                if (sceneAssetReference.editorAsset is not SceneAsset)
+                {
+                    sceneAssetReference = null;
+                    Debug.LogError("Field: SceneAssetReference is for scene files only!");
+                }
+                else
+                {
+                    sceneName = sceneAssetReference.editorAsset.name;
+                }
+            }
+            else
+            {
+                sceneName = "";
+            }
+#endif
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            Refresh();
+        }
+#endif
     }
 
     [System.Serializable]
