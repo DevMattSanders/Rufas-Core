@@ -26,12 +26,13 @@ namespace Rufas
 
             GameSystemManager foundManager = null;
 
+
             if(managers.Length == 0)
             {
                 foundManager = ScriptableObject.CreateInstance<GameSystemManager>();
 
-                Directory.CreateDirectory("Assets/Rufas/Resources");
-                string path = "Assets/Rufas/Resources/GameSystemManager.asset";
+                Directory.CreateDirectory("Assets/Rufas");
+                string path = "Assets/Rufas/GameSystemManager.asset";
                 AssetDatabase.CreateAsset(foundManager, path);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();

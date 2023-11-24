@@ -48,15 +48,18 @@ namespace Rufas
         */
     }
 
-    public class GameSystemManager : ScriptableObject
+    public class GameSystemManager : PreAwakeBehaviour
     {
         public static GameSystemManager instance;
 
         [HideInInspector]
         public GameSystemParentClass[] gameSystems;
 
+        
+
         public void BehaviourToRunBeforeStart()
         {
+            base.BehaviourToRunBeforeStart();
 #if UNITY_EDITOR
             gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
 #endif

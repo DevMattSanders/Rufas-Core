@@ -35,7 +35,7 @@ namespace Rufas
         [ReadOnly, SerializeField] private string sceneToLoadNextName;
         [ReadOnly, SerializeField] private AssetReference sceneToLoadNextAssetReference;
 
-        [ReadOnly,SerializeField] private List<string> currentOpenScenes = new List<string>();
+        [ReadOnly,SerializeField] public List<string> currentOpenScenes = new List<string>();
 
         [ReadOnly,SerializeField] public List<AsyncOperationHandle> currentlyOpenScenes = new List<AsyncOperationHandle>();
 
@@ -300,6 +300,7 @@ namespace Rufas
             {
                 //Addressables.UnloadSceneAsync()
 #if UNITY_EDITOR
+                //SceneManager
                 SceneManager.UnloadSceneAsync(next);
 #endif
             }

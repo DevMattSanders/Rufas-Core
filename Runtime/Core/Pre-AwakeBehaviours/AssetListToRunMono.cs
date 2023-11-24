@@ -28,6 +28,8 @@ namespace Rufas
         float assetListLoadVal = 0;
         float sceneLoadVal = 0;
 
+        public string sceneName;
+
        // public FadeScreenOnSceneTransition fadeScreen;
 
         //public 
@@ -42,6 +44,8 @@ namespace Rufas
             //#if UNITY_EDITOR
             //   onCompletedAssetLoad.Invoke();
             //#else
+
+            sceneName = gameObject.scene.name;
 
             DontDestroyOnLoad(gameObject);
 
@@ -85,6 +89,7 @@ namespace Rufas
         {
             if(percentageImage != null)
             {
+                if (additionalPercent > 1) additionalPercent = 1;
 
                 targetPercent = (additionalPercent + assetListLoadVal + sceneLoadVal) / 3f;
 
@@ -116,8 +121,6 @@ namespace Rufas
 
             StartCoroutine(LoadingAssetList());
         }
-
-
 
         private IEnumerator LoadingAssetList()
         {
@@ -162,6 +165,9 @@ namespace Rufas
         {
             loadingScene = false;
             sceneLoadVal = 1;
+
+            additionalPercent = 1;
+
             StartCoroutine(HideAlpha(obj));
         }
 
@@ -174,6 +180,15 @@ namespace Rufas
             }
 
             SoSceneManager.instance.GetCurrentScenes();
+
+#if UNITY_EDITOR
+            Debug.Log(gameObject.scene.name);
+            if (SoSceneManager.instance.currentOpenScenes.Contains(sceneName))
+            {
+                SoSceneManager.instance.currentOpenScenes.Remove(sceneName);
+            }
+#endif
+
             SoSceneManager.instance.currentlyOpenScenes.Add(obj);
 
             obj.Result.ActivateAsync().completed += CompletedNewSceneLoad;

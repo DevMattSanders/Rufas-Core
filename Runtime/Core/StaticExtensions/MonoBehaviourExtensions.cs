@@ -14,7 +14,7 @@ namespace Rufas
         {
             yield return new WaitForSeconds(delay);
             method();
-        }
+        }        
 
         public static void CallWithFrameDelay(this MonoBehaviour mono, Action method, int framesToSkip)
             => mono.StartCoroutine(CallWithDelayRoutine(method, framesToSkip));
@@ -25,6 +25,7 @@ namespace Rufas
 
             method();            
         }
+
 
         public class WaitForFrames : CustomYieldInstruction
 	{
