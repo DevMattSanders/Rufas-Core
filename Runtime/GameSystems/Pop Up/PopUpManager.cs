@@ -69,5 +69,21 @@ namespace Rufas
             queuedPopUpData.Remove(nextPopUp);
             SetCurrentPopUp(nextPopUp);
         }
+
+        public void ShowPopUpNow(PopUpData popUpData)
+        {
+            queuedPopUpData.Insert(0, popUpData);
+
+            PopUpData cacheCurrent = null;
+            if (currentPopUp != null) { }
+            {
+                cacheCurrent = currentPopUp;
+                RemoveCurrentPopUp();
+            }
+
+            SetNextUpToActive();
+
+            queuedPopUpData.Insert(0, cacheCurrent);
+        }
     }
 }

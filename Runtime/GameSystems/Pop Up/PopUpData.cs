@@ -45,12 +45,16 @@ namespace Rufas
 
         [Button()] public void Show()
         {
-
+            if (PopUpManager.Instance != null) {
+                PopUpManager.Instance.QueuePopUp(this);
+            }
         }
 
         [Button()] public void ShowNow()
         {
-
+            if (PopUpManager.Instance != null) {
+                PopUpManager.Instance.ShowPopUpNow(this);
+            }
         }
     }
 }
