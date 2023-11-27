@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/SuperScriptableDatabase")]
-    public class SuperScriptableDatabase : PreAwakeBehaviour
+    public class SuperScriptableDatabase : BootstrapBehaviour
     {
         public static SuperScriptableDatabase superScriptableDatabaseInstance;
         public List<string> exceptions = new List<string>();

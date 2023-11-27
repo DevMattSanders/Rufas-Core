@@ -41,7 +41,7 @@ namespace Rufas
             SoSceneLoaderCalled.Invoke(this);
             if (sceneAssetReference != null)
             {
-                SoSceneManager.instance.LoadScene(sceneAssetReference,sceneName);
+                SoSceneManager.Instance.LoadScene(sceneAssetReference,sceneName);
             }
             else
             {

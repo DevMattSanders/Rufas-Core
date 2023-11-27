@@ -11,9 +11,9 @@ using UnityEngine.UI;
 
 namespace Rufas
 {
-    public class AssetListToRunMono : MonoBehaviour
+    public class RufasBootstrapSceneLoader : MonoBehaviour
     {
-        public static AssetListToRunMono instance;
+        public static RufasBootstrapSceneLoader instance;
 
         public AssetReference sceneToLoad;
 
@@ -28,7 +28,7 @@ namespace Rufas
         float assetListLoadVal = 0;
         float sceneLoadVal = 0;
 
-        public string sceneName;
+        [SerializeField] private string sceneName;
 
        // public FadeScreenOnSceneTransition fadeScreen;
 
@@ -107,39 +107,50 @@ namespace Rufas
 
         private bool loadingAssets;
 
-        private AsyncOperationHandle<AssetListToRun> loadOp;
+      //  private AsyncOperationHandle<RunAllPreawakeBehaviours> loadOp;
 
         [Button]
         public void Init()
         {
             if (Application.isPlaying == false) return;
 
-            loadingAssets = true;
-            loadOp = Addressables.LoadAssetAsync<AssetListToRun>("AssetListToRun");// on completed, send to another method  
+           // RunAllPreawakeBehaviours runAll = Resources.LoadAll<RunAllPreawakeBehaviours>();
 
-            loadOp.Completed += OnCompletedMethod;
+            loadingAssets = true;
+           // loadOp = RunAllPreawakeBehaviours.loadOp; // Addressables.LoadAssetAsync<RunAllPreawakeBehaviours>("AssetListToRun");// on completed, send to another method  
+
+           // loadOp.Completed += OnCompletedMethod;
 
             StartCoroutine(LoadingAssetList());
         }
 
         private IEnumerator LoadingAssetList()
         {
-            while (loadingAssets)
+            while (RufasBootstrapper.loadOp.IsDone == false)
             {
-                assetListLoadVal = loadOp.PercentComplete;
+                assetListLoadVal = RufasBootstrapper.loadOp.PercentComplete;
                 yield return null;                
             }
+
+            Debug.Log("Starting wait for init");
+            while(GameSystemManager.instance.allSystemsInitialised.Value == false)
+            {                
+                yield return null;
+            }
+
+            Debug.Log("Finishing wait for init");
+            OnCompletedMethod();
         }
 
         private bool loadingScene;
 
         AsyncOperationHandle<SceneInstance> sceneInst;
-        private void OnCompletedMethod(AsyncOperationHandle<AssetListToRun> operation)
+        private void OnCompletedMethod()//AsyncOperationHandle<RunAllPreawakeBehaviours> operation)
         {
             loadingAssets = false;
             assetListLoadVal = 1;
 
-            operation.Result.Run();
+  //          operation.Result.LoadAddressablesAndRunPreawakeBehaviours();
 
 
 
@@ -179,17 +190,17 @@ namespace Rufas
                 yield return null;
             }
 
-            SoSceneManager.instance.GetCurrentScenes();
+            SoSceneManager.Instance.GetCurrentScenes();
 
 #if UNITY_EDITOR
             Debug.Log(gameObject.scene.name);
-            if (SoSceneManager.instance.currentOpenScenes.Contains(sceneName))
+            if (SoSceneManager.Instance.currentOpenScenes.Contains(sceneName))
             {
-                SoSceneManager.instance.currentOpenScenes.Remove(sceneName);
+                SoSceneManager.Instance.currentOpenScenes.Remove(sceneName);
             }
 #endif
 
-            SoSceneManager.instance.currentlyOpenScenes.Add(obj);
+            SoSceneManager.Instance.currentlyOpenScenes.Add(obj);
 
             obj.Result.ActivateAsync().completed += CompletedNewSceneLoad;
         }

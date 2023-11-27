@@ -8,14 +8,7 @@ namespace Rufas
     {
         public static List<GameSystemParentClass> gameSystems = new List<GameSystemParentClass>();
 
-        /// <summary>
-        /// Forces any GameSystem managers to not use OnEnable! OnEnable is used when processing game system managers and can be called accidentally for generated instances!
-        /// </summary>
-        public sealed override void OnEnable()
-        {
-            base.OnEnable();
-        }
-
+           
         public override void BehaviourToRunBeforeAwake()
         {
             base.BehaviourToRunBeforeAwake();
@@ -25,7 +18,7 @@ namespace Rufas
         }
 
         
-        public void TriggerInstance() { bool tempTrigger = Instance; }
+        public override void TriggerInstance() { base.TriggerInstance(); bool tempTrigger = Instance; }
 
         private static T instance;
         public static T Instance

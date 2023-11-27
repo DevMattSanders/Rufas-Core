@@ -22,16 +22,23 @@ namespace Rufas
             }
         }
 
-        public static void StartCoroutine(IEnumerator Routine, IEnumerator routineInstance)
+        public static void StartCoroutine(IEnumerator Routine, IEnumerator routineInstance = null)
         {
-            if(routineInstance != null)
+            if (routineInstance == null)
             {
-                i.StopCoroutine(routineInstance);
+                i.StartCoroutine(Routine);
             }
+            else
+            {
+                if (routineInstance != null)
+                {
+                    i.StopCoroutine(routineInstance);
+                }
 
-            routineInstance = Routine;
+                routineInstance = Routine;
 
-            i.StartCoroutine(routineInstance);
+                i.StartCoroutine(routineInstance);
+            }
         } 
     }
 }

@@ -60,7 +60,14 @@ namespace Rufas
 
                 if (next.showInManager)
                 {
-                    tree.Add(next.DesiredPath(), next);
+                    if (next.IsRufasSystem() && next.AutogenerateGameSystem())
+                    {
+                        tree.Add("Rufas Core Systems/" + next.DesiredPath(), next, next.EditorIcon());// Sirenix.OdinInspector.SdfIconType.App);
+                    }
+                    else
+                    {
+                        tree.Add(next.DesiredPath(), next);
+                    }
                 }
             }
 

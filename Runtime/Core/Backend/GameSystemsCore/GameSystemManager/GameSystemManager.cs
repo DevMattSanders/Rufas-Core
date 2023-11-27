@@ -18,59 +18,128 @@ using System.Linq;
 
 namespace Rufas
 {
-
-    public static class TriggerGameSystemManagerBeforeStart
-    {/*
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void FindAndTriggerGameSystemManager()
-        {
-            // GameSystemManager loadableGameSystemManagers = Resources.Load<GameSystemManager>("");
-
-            var loadOperation = Addressables.LoadAssets<GameSystemManager>("LoadOnInit", null);
-
-            GameSystemManager[] loadableGameSystemManagers = loadOperation.Result.ToArray();
-            
-            //Debug.Log()
-
-            if (loadableGameSystemManagers.Length == 0)
-            {
-                Debug.LogError("No game system managers found!");
-            }
-            else if (loadableGameSystemManagers.Length == 1)
-            {
-                loadableGameSystemManagers[0].BehaviourToRunBeforeStart();
-            }
-            else
-            {
-                Debug.LogError("Too many game system managers found!");
-            }            
-        }
-        */
-    }
-
-    public class GameSystemManager : PreAwakeBehaviour
+    public class GameSystemManager : BootstrapBehaviour
     {
         public static GameSystemManager instance;
+
+        [HideInEditorMode]
+        public BoolWithCallback allSystemsInitialised;
+
+        public static CodeEvent OnAllGameSystemsInitialized;
+
+        [HideInEditorMode]
+        public List<GameSystemParentClass> systemsInitializing = new List<GameSystemParentClass>();
 
         [HideInInspector]
         public GameSystemParentClass[] gameSystems;
 
-        
-
-        public void BehaviourToRunBeforeStart()
+        public override void BehaviourToRunBeforeStart()
         {
             base.BehaviourToRunBeforeStart();
+
+            if (instance == null)
+            {
+                instance = this;
+            }else if (instance != this)
+            {
+                Debug.LogError("Multiple GameSystemManagers found!");                
+            }
+
 #if UNITY_EDITOR
             gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
 #endif
-            //Debug.Log("Here!");
+
+            allSystemsInitialised.Value = false;
+
+            foreach (GameSystemParentClass next in gameSystems)
+            {
+                systemsInitializing.Add(next);
+                next.TriggerInstance();
+            }
+
+            //Loop once for rufas systems (they have priority)
             foreach(GameSystemParentClass next in gameSystems)
             {
-                next.BehaviourToRunBeforeAwake();
+                if (next.IsRufasSystem())
+                {
+                    next.BehaviourToRunBeforeAwake();
+                }
+            }
+
+            //Loop again for non rufas systems (just to make sure nothing comes before any rufas managers)
+            foreach(GameSystemParentClass next in gameSystems)
+            {
+                if (next.IsRufasSystem() == false)
+                {
+                    next.BehaviourToRunBeforeAwake();
+                }
+            }
+
+            foreach(GameSystemParentClass next in gameSystems)
+            {
+                next.FinaliseInitialisation();               
+            }
+
+            CoroutineMonoBehaviour.StartCoroutine(WaitForAllInitialisationToFinish(), null);
+        }
+
+        public void TriggerEndOfApplicationBehaviour()
+        {
+            foreach (GameSystemParentClass next in gameSystems)
+            {
+                next.EndOfApplicaitonBehaviour();
+            }
+        }
+
+        private IEnumerator WaitForAllInitialisationToFinish()
+        {
+            while(systemsInitializing.Count > 0)
+            {
+
+                yield return null;
+            }
+
+            allSystemsInitialised.Value = true;
+            OnAllGameSystemsInitialized.Raise();
+
+            foreach (GameSystemParentClass next in gameSystems)
+            {
+                next.PostInitialisationBehaviour();
+            }
+
+            GameObject gameSystemManagerLink = new GameObject("GameSystemManagerLink");
+            gameSystemManagerLink.AddComponent<GameSystemManagerMonoLink>();
+        }
+
+        private void OnEnable()
+        {
+            if (Application.isPlaying)
+            {
+                //OnPlaymodeInit
+            }
+            else
+            {
+                //OnEditorInit
+                foreach(GameSystemParentClass next in gameSystems)
+                {
+                    next.OnEnable_EditorModeOnly();
+                }
             }
         }
 
 #if UNITY_EDITOR
+
+        //[ShowIf()]
+        // [HorizontalGroup("Lists")]
+        // [VerticalGroup("Lists/Left")]
+        // [TitleGroup("Lists/Left/Rufas Systems")]
+        //[TitleGroup("Left/Game Systems")]
+        [DisableInPlayMode]
+        [FoldoutGroup("Rufas Core Systems")]
+        [ListDrawerSettings(Expanded = true, HideAddButton = true, HideRemoveButton = true)]
+        public List<GameSystemManagerToggle> rufasSystemToggles = new List<GameSystemManagerToggle>();
+
+        [DisableInPlayMode]
         [HorizontalGroup("Lists")]
         [VerticalGroup("Lists/Left")]
         [TitleGroup("Lists/Left/Game Systems")]
@@ -78,23 +147,13 @@ namespace Rufas
         [ListDrawerSettings(Expanded = true, HideAddButton = true, HideRemoveButton = true)]        
         public List<GameSystemManagerToggle> gameSystemToggles = new List<GameSystemManagerToggle>();
 
+
+        [HideInPlayMode]
         [TitleGroup("Lists/Left/Game Systems")]
         //[TitleGroup("Left/Game Systems")]
         [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
         public List<GameManagerSystemAddOptions> additionalGameSystems = new List<GameManagerSystemAddOptions>();
-
-        /*
-        [VerticalGroup("Lists/Right")]
-        [TitleGroup("Lists/Right/Rufas Systems")]
-        //[TitleGroup("Right/Rufas Backend Systems")]
-        [OnValueChanged("RefreshWindowOnHiddenSystemsChange")]
-        public bool showRufasHiddenSystems;
-
-        [TitleGroup("Lists/Right/Rufas Systems")]
-        // [TitleGroup("Right/Rufas Backend Systems")]
-        [ShowIf("showRufasHiddenSystems"), ListDrawerSettings(Expanded = true, HideAddButton = true, HideRemoveButton = true)]
-        public List<GameSystemManagerToggle> rufasBackendSystems = new List<GameSystemManagerToggle>();
-        */        
+                    
 
         private void RefreshWindowOnHiddenSystemsChange()
         {
@@ -113,13 +172,12 @@ namespace Rufas
                 if(t == typeof(GameSystem<>))
                 {
                     continue;
-                }           
+                }
+
+              //  string scriptNamespace = t.Namespace;               
 
                 GameSystemParentClass instance = (GameSystemParentClass)Activator.CreateInstance(t);
-           //     if (showRufasHiddenSystems == false && instance.RufasBackendSystem() == true)
-            //    {
-            //        continue;
-            //    }
+           
                 gameSystemsList.Add(instance);
             }
 
@@ -166,22 +224,24 @@ namespace Rufas
                 }
             }
 
-
+            rufasSystemToggles.Clear();
             gameSystemToggles.Clear();// = new GameSystemManagerToggle[standardToggleSize];//gameSystems.Length];
           //  rufasBackendSystems.Clear();
 
             foreach (GameSystemParentClass next in gameSystems)
             {
-           //     if (next.RufasBackendSystem())
-           //     {
-           //         rufasBackendSystems.Add(new GameSystemManagerToggle(this, next, next.showInManager));
-           //     }
-           //     else
-           //     {
+
+                if (next.IsRufasSystem() && next.AutogenerateGameSystem())
+                {
+                    rufasSystemToggles.Add(new GameSystemManagerToggle(this, next, next.showInManager));
+                }
+                else
+                {
                     gameSystemToggles.Add(new GameSystemManagerToggle(this, next, next.showInManager));
-           //     }
+                }
             }
         }
+
 
         private void Create(string systemName, string displayName)
         {

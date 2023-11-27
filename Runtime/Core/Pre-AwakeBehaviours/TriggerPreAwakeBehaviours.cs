@@ -22,16 +22,18 @@ namespace Rufas
 
             // AssetListToRun assetList = Resources.Load<AssetListToRun>("AssetListToRunResources");
 
+            /*
             if (EditorSceneManager.GetActiveScene().name != "FirstScene")
             {
 
-                AssetListToRun[] assetLists = RufasStatic.GetAllScriptables_ToArray<AssetListToRun>();
-                assetLists[0].Run();
+                RunAllPreawakeBehaviours[] assetLists = RufasStatic.GetAllScriptables_ToArray<RunAllPreawakeBehaviours>();
+                assetLists[0].LoadAddressablesAndRunPreawakeBehaviours();
             }
             else
             {
                 Debug.Log("On First Scene. Not loading asset lists");
             }
+            */
 
             /*
             var loadOp = Addressables.LoadAsset<AssetListToRun>("Assets/Rufas/AssetListToRun.asset");

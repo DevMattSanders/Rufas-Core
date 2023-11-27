@@ -2,6 +2,7 @@ using Sirenix.OdinInspector;
 
 #if UNITY_EDITOR
 using Sirenix.Utilities.Editor;
+using System.Reflection;
 #endif
 
 using UnityEngine;
@@ -17,22 +18,33 @@ namespace Rufas
         {
             return EditorIcons.ArrowRight;
         }
-#endif
 
-        public virtual void OnEnable()
+        public string GetNamespace()
         {
-            
+            return this.GetType().Namespace;
         }
-        /*
+#endif
+        
         /// <summary>
         /// Internal use! This will hide the system in the manager editor (revealed with the 'showRufasHiddenSystems' bool on the manager)
         /// </summary>
         /// <returns></returns>
-        public virtual bool RufasBackendSystem()
+        public virtual bool IsRufasSystem()
         {
             return false;
         }
-        */
+        
+        public virtual void TriggerInstance()
+        {
+
+        }
+
+        //public virtual bool IsRufasSystem()
+        //{
+
+       // }
+
+
 
         /// <summary>
         /// Autogenerates this scriptable manager without asking
@@ -47,6 +59,31 @@ namespace Rufas
         /// This method is called on initialization during the first frame. Before any monobehaviour callbacks!
         /// </summary>
         public virtual void BehaviourToRunBeforeAwake()
+        {
+
+        }
+
+        public virtual void AwakeBehaviour()
+        {
+
+        }
+
+        public virtual void PostInitialisationBehaviour()
+        {
+
+        }
+
+        public virtual void EndOfApplicaitonBehaviour()
+        {
+
+        }
+
+        public virtual void FinaliseInitialisation()
+        {
+            GameSystemManager.instance.systemsInitializing.Remove(this);
+        }
+
+        public virtual void OnEnable_EditorModeOnly()
         {
 
         }

@@ -11,11 +11,11 @@ namespace Rufas
 
         private void Awake()
         {
-            ScriptableCallbacksHandler.Instance.TriggerAll_SoOnAwake();
+         //   ScriptableCallbacksHandler.Instance.TriggerAll_SoOnAwake();
         }
         private void Start()
         {
-            ScriptableCallbacksHandler.Instance.TriggerAll_SoOnStart();
+         //   ScriptableCallbacksHandler.Instance.TriggerAll_SoOnStart();
         }
 
         private void OnDestroy()

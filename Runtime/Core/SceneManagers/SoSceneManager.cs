@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/Scene/SoSceneManager")]
-    public class SoSceneManager : SuperScriptable
+    public class SoSceneManager : GameSystem<SoSceneManager>
     {            
 
 
@@ -24,7 +24,7 @@ namespace Rufas
         public CodeEvent<string, string> sceneCalledFromScene;
 
 
-        public static SoSceneManager instance;
+      //  public static SoSceneManager instance;
 
         public BoolWithCallback isCurrentlyLoadingScene;       
         public BoolWithCallback showLoadingScreen;
@@ -88,15 +88,15 @@ namespace Rufas
             }
         }
 
-        public override void SoOnAwake()
+        public override void BehaviourToRunBeforeAwake()
         {
-            base.SoOnAwake();
-            
+            base.BehaviourToRunBeforeAwake();
+        
             currentScene = null;
-          //  currnetActiveScene = null;
+            //  currnetActiveScene = null;
             currentOpenScenes.Clear();
             currentlyOpenScenes = new List<AsyncOperationHandle>();
-            instance = this;
+            // instance = this;
 
             percentAmount.Value = 0;
             isCurrentlyLoadingScene.Value = false;
@@ -105,21 +105,21 @@ namespace Rufas
             sceneToLoadNextAssetReference = null;
 
             GetCurrentScenes();
-
-           
         }
 
-        public override void SoOnStart()
+        public override void PostInitialisationBehaviour()
         {
-            base.SoOnStart();
+            base.PostInitialisationBehaviour();
+
             sceneLoadingLogicGroup?.RegisterEnabler(this, false, false);
         }
 
-        public override void SoOnEnd()
+        public override void EndOfApplicaitonBehaviour()
         {
-            base.SoOnEnd();
+            base.EndOfApplicaitonBehaviour();
+
             currentScene = null;
-          //  currnetActiveScene = null;
+            //  currnetActiveScene = null;
             currentOpenScenes.Clear();
             currentlyOpenScenes = new List<AsyncOperationHandle>();
             percentAmount.Value = 0;

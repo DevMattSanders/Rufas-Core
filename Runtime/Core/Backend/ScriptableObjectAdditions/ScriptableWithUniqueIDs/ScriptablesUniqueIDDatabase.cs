@@ -59,7 +59,7 @@ namespace Rufas
         [ReadOnly]
         public Dictionary<ScriptableWithUniqueID, string> gameContentObjects_ObjectToKey = new Dictionary<ScriptableWithUniqueID, string>();
 
-      //  public override bool RufasBackendSystem() { return true; }
+        public override bool IsRufasSystem() { return true; }
         public override bool AutogenerateGameSystem() { return true; }
 
         /*
@@ -80,9 +80,15 @@ namespace Rufas
 #endif
         }
 
-        public override void BehaviourToRunBeforeAwake()
+       // public override void BehaviourToRunBeforeAwake()
+       // {
+       //     base.BehaviourToRunBeforeAwake();
+       //     RefreshEditorDatabase();
+       // }
+
+        public override void OnEnable_EditorModeOnly()
         {
-            base.BehaviourToRunBeforeAwake();
+            base.OnEnable_EditorModeOnly();
             RefreshEditorDatabase();
         }
 
@@ -92,6 +98,11 @@ namespace Rufas
             RefreshDatabase();
 #endif
         }
+
+       // public override string DesiredPath()
+       // {
+            //return 
+       // }
 
 #if UNITY_EDITOR
         [FoldoutGroup("Editor Game Content Objects History & Recovery")]
@@ -113,7 +124,6 @@ namespace Rufas
             foreach(ScriptableWithUniqueID content in allContent)
             {
                 RefreshReplicationKey(content, true);
-                //content.AuthorisedRefresh();
             }
 
             int totalCount = potentialNewObjects.Count + potentialExistingObjectsThatNeedAdding.Count + potentialDuplications.Count;

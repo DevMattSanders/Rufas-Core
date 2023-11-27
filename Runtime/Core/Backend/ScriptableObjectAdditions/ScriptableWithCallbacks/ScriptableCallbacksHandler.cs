@@ -8,14 +8,13 @@ namespace Rufas
     public class ScriptableCallbacksHandler : GameSystem<ScriptableCallbacksHandler>
     {
 
-        public ScriptableWithCallbacks[] scriptablesWithCallbacks;
+        [SerializeField,ReadOnly] private ScriptableWithCallbacks[] scriptablesWithCallbacks;
 
-        /*
-        public override bool RufasBackendSystem()
+        public override bool IsRufasSystem()
         {
             return true;
         }
-        */
+
         public override bool AutogenerateGameSystem()
         {
             return true;
@@ -31,10 +30,13 @@ namespace Rufas
             DontDestroyOnLoad(monobehaviourLink);
 
             monobehaviourLink.AddComponent<ScriptableCallbacksMonobehaviourLink>();
+
+            TriggerAll_SoOnAwake();
         }
 
-        private void OnEnable()
+        public override void OnEnable_EditorModeOnly()
         {
+            base.OnEnable_EditorModeOnly();
             RefreshCallbackScriptables();
         }
 
@@ -44,6 +46,12 @@ namespace Rufas
 #if UNITY_EDITOR
             scriptablesWithCallbacks = RufasStatic.GetAllScriptables_ToArray<ScriptableWithCallbacks>();
 #endif
+        }
+
+        public override void PostInitialisationBehaviour()
+        {
+            base.PostInitialisationBehaviour();
+            TriggerAll_SoOnStart();
         }
 
         public void TriggerAll_SoOnAwake()
