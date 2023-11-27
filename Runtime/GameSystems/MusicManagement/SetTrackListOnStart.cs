@@ -4,12 +4,14 @@ using UnityEngine;
 
 namespace Rufas.MusicManagement
 {
-    public class SetTrackListOnStart : MonoBehaviour
+    public class SetTrackListOnStart : RufasMonobehaviour
     {
         [SerializeField] private MusicTrackList trackList;
 
-        private void Start()
+        public override void Start_AfterInitialisation()
         {
+            base.Start_AfterInitialisation();
+        
             if (MusicManager.Instance != null)
             {
                 MusicManager.Instance.StartNewTrackList(trackList);

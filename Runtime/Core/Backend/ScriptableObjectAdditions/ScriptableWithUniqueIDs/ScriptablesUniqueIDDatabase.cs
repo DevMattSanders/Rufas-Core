@@ -18,38 +18,6 @@ namespace Rufas
 
     public class ScriptablesUniqueIDDatabase : GameSystem<ScriptablesUniqueIDDatabase>
     {
-        /*
-        private static ScriptablesUniqueIDDatabase instance;
-        private static ScriptablesUniqueIDDatabase editorInstance;
-        public static ScriptablesUniqueIDDatabase Instance
-        {
-            get
-            {
-                if (Application.isPlaying == false)
-                {
-
-                    if (editorInstance == null)
-                    {
-#if UNITY_EDITOR
-                        editorInstance = RufasStatic.GetAllScriptables_ToList<ScriptablesUniqueIDDatabase>()[0];
-#endif
-                    }
-
-                    return editorInstance;
-
-                    //#else
-                    //return instance;
-
-                }
-                else
-                {
-
-                    return instance;
-                }
-            }
-        }
-        */
-
         [PropertySpace(spaceBefore: 20)]
 
         [Header("Editor Game Content Objects")]

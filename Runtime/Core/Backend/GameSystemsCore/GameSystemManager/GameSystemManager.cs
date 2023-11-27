@@ -319,7 +319,7 @@ namespace Rufas
             public GameSystemParentClass gameSystem;
 
             [HideInInspector]
-            public bool showGameSystem;
+            public bool showGameSystem = true;
 
             [HorizontalGroup("H")]
             [Button(Name = "$Name",Style = ButtonStyle.Box,ButtonAlignment =0,Stretch = false),GUIColor("$ButtonColour")]

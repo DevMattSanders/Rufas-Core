@@ -51,7 +51,7 @@ namespace Rufas
         {
             base.SoOnAwake();
 
-            Debug.Log("So On Awake Called");
+          //  Debug.Log("So On Awake Called");
 
             currentState = null;
             nextState = null;

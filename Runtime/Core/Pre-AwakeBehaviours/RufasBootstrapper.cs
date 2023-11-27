@@ -174,7 +174,7 @@ namespace Rufas
             Debug.Log("Found all behaviours");
             foreach (BootstrapBehaviour next in bootstrapBehaviours)
             {
-                Debug.Log(next.name);
+             //   Debug.Log(next.name);
                 next.BehaviourToRunBeforeStart();
             }
         }

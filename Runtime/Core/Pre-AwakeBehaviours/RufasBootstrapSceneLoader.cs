@@ -132,13 +132,13 @@ namespace Rufas
                 yield return null;                
             }
 
-            Debug.Log("Starting wait for init");
+          //  Debug.Log("Starting wait for init");
             while(GameSystemManager.instance.allSystemsInitialised.Value == false)
             {                
                 yield return null;
             }
 
-            Debug.Log("Finishing wait for init");
+         //   Debug.Log("Finishing wait for init");
             OnCompletedMethod();
         }
 
@@ -203,6 +203,8 @@ namespace Rufas
             SoSceneManager.Instance.currentlyOpenScenes.Add(obj);
 
             obj.Result.ActivateAsync().completed += CompletedNewSceneLoad;
+
+
         }
 
         private void CompletedNewSceneLoad(AsyncOperation obj)
