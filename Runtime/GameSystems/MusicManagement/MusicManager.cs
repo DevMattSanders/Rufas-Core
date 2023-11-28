@@ -109,7 +109,7 @@ namespace Rufas.MusicManagement
 
         [Button()] private void StartCrossFade()
         {
-            Debug.Log("Start Timer");
+            //Debug.Log("Start Timer");
             isCurrentlyFading = true;
             fadeTimer = 0f;
             upcommingInstance = CreateNewMusicInstance();

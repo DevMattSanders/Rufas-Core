@@ -171,7 +171,7 @@ namespace Rufas
 
         private void AssetsLoaded(List<BootstrapBehaviour> bootstrapBehaviours)
         {
-            Debug.Log("Found all behaviours");
+            //Debug.Log("Found all behaviours");
             foreach (BootstrapBehaviour next in bootstrapBehaviours)
             {
              //   Debug.Log(next.name);

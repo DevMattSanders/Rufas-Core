@@ -88,13 +88,16 @@ namespace Rufas
             }
         }
 
-        public override void BehaviourToRunBeforeAwake()
-        {
-            base.BehaviourToRunBeforeAwake();
         
+
+        public override void OnAwakeBehaviour()
+        {
+            base.OnAwakeBehaviour();
+
             currentScene = null;
             //  currnetActiveScene = null;
             currentOpenScenes.Clear();
+           // Debug.Log("Clear scene list");
             currentlyOpenScenes = new List<AsyncOperationHandle>();
             // instance = this;
 
@@ -107,11 +110,25 @@ namespace Rufas
             GetCurrentScenes();
         }
 
+        public override void OnStartBehaviour()
+        {
+            base.OnStartBehaviour();
+
+
+            sceneLoadingLogicGroup?.RegisterEnabler(this, false, false);
+        }
+
+        public override void BehaviourToRunBeforeAwake()
+        {
+            base.BehaviourToRunBeforeAwake();
+        
+          
+        }
+
         public override void PostInitialisationBehaviour()
         {
             base.PostInitialisationBehaviour();
 
-            sceneLoadingLogicGroup?.RegisterEnabler(this, false, false);
         }
 
         public override void EndOfApplicaitonBehaviour()
@@ -121,6 +138,7 @@ namespace Rufas
             currentScene = null;
             //  currnetActiveScene = null;
             currentOpenScenes.Clear();
+           // Debug.Log("Clear scene list");
             currentlyOpenScenes = new List<AsyncOperationHandle>();
             percentAmount.Value = 0;
             isCurrentlyLoadingScene.Value = false;
@@ -142,6 +160,7 @@ namespace Rufas
             currentScene = null;
           //  currnetActiveScene = null;
             currentOpenScenes.Clear();
+         //   Debug.Log("Clear scene list");
             currentlyOpenScenes = new List<AsyncOperationHandle>();
             int countLoaded = SceneManager.sceneCount;
             Scene[] loadedScenes = new Scene[countLoaded];
@@ -313,6 +332,7 @@ namespace Rufas
             }
 
             currentOpenScenes.Clear();
+           // Debug.Log("Clear scene list");
             currentlyOpenScenes = new List<AsyncOperationHandle>();
             LoadInNextScene();
         }
@@ -361,6 +381,7 @@ namespace Rufas
             onSceneEntered.Raise(currentScene);
             currentOpenScenes.Add(currentScene);
             currentlyOpenScenes.Add(obj);
+          //  Debug.Log("Add next");
 
             SceneManager.SetActiveScene(obj.Result.Scene);
 

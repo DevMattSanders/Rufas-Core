@@ -8,9 +8,25 @@ namespace Rufas
     public class RufasMonoBehaviourHandler : GameSystem<RufasMonoBehaviourHandler>
     {
 
-        [SerializeField, ReadOnly] private List<RufasMonobehaviour> rufasMonobehaviours = new List<RufasMonobehaviour>();
-        [SerializeField, ReadOnly] private bool awakeCalled;
-        [SerializeField,ReadOnly] private bool startCalled;
+        public static List<RufasMonoBehaviour> waitingForAwake = new List<RufasMonoBehaviour>();
+        public static List<RufasMonoBehaviour> waitingForStart = new List<RufasMonoBehaviour>();
+        public static bool awakeCalled;
+        public static bool startCalled;
+
+        [ShowInInspector]
+        [SerializeField, ReadOnly]
+        private bool debugAwakeCalled
+        {
+            get { return awakeCalled; }
+        }
+
+        [ShowInInspector]
+        [SerializeField, ReadOnly]
+        private bool debugStartCalled
+        {
+            get { return startCalled; }
+        }
+
         public override bool AutogenerateGameSystem()
         {
             return true;
@@ -25,20 +41,43 @@ namespace Rufas
         {
             base.BehaviourToRunBeforeAwake();
 
+            //Debug.Log(RufasMonoBehaviourHandler.Instance);
+
             awakeCalled = false;
 
             startCalled = false;
 
-            GameSystemManager.OnAllGameSystemsInitialized.AddListener(OnAllSystemsInitialised);
+         //   GameSystemManager.OnAllGameSystemsInitialized.AddListener(OnAllSystemsInitialised);
         }
 
+        public override void OnAwakeBehaviour()
+        {
+            base.OnAwakeBehaviour();
+            foreach (RufasMonoBehaviour next in waitingForAwake)
+            {
+                next.Awake_AfterInitialisation();
+            }
+            awakeCalled = true;
+        }
+
+        public override void OnStartBehaviour()
+        {
+            base.OnStartBehaviour();
+            foreach (RufasMonoBehaviour next in waitingForStart)
+            {
+                next.Start_AfterInitialisation();
+            }
+            startCalled = true;
+        }
+        /*
         private void OnAllSystemsInitialised()
         {
             GameObject rufasMonoBehaviourLink = new GameObject("rufasMonoBehaviourLink");
             rufasMonoBehaviourLink.AddComponent<RufasMonoBehaviourLink>();
         }
-
-        public void Register(RufasMonobehaviour mono)
+        */
+        /*
+        public static void Register(RufasMonobehaviour mono)
         {
             rufasMonobehaviours.Add(mono);
 
@@ -57,23 +96,15 @@ namespace Rufas
         {
             rufasMonobehaviours.Remove(mono);
         }
+        */
+       // public void AwakeCalled()
+       // {
+       
+       // }
 
-        public void AwakeCalled()
-        {
-            foreach(RufasMonobehaviour next in rufasMonobehaviours)
-            {
-                next.Awake_AfterInitialisation();
-            }
-            awakeCalled = true;
-        }
-
-        public void StartCalled()
-        {
-            foreach (RufasMonobehaviour next in rufasMonobehaviours)
-            {
-                next.Start_AfterInitialisation();
-            }
-            startCalled = true;
-        }
+       // public void StartCalled()
+      //  {
+       
+      //  }
     }
 }

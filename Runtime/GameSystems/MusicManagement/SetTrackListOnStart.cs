@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rufas.MusicManagement
 {
-    public class SetTrackListOnStart : RufasMonobehaviour
+    public class SetTrackListOnStart : RufasMonoBehaviour
     {
         [SerializeField] private MusicTrackList trackList;
 

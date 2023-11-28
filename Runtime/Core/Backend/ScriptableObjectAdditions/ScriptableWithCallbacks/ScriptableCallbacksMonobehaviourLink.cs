@@ -20,7 +20,7 @@ namespace Rufas
 
         private void OnDestroy()
         {
-            ScriptableCallbacksHandler.Instance.TriggerAll_SoOnEnd();
+       //     ScriptableCallbacksHandler.Instance.TriggerAll_SoOnEnd();
         }
     }
 }

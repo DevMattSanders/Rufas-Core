@@ -53,9 +53,16 @@ namespace Rufas
 
             foreach (GameSystemParentClass next in gameSystems)
             {
+                //Debug.Log(next)
+
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
+
+
             }
+
+            SoSceneManager[] sceneManagers = RufasStatic.GetAllScriptables_ToArray<SoSceneManager>();
+            //Debug.Log(sceneManagers.Length);
 
             //Loop once for rufas systems (they have priority)
             foreach(GameSystemParentClass next in gameSystems)
@@ -83,19 +90,11 @@ namespace Rufas
             CoroutineMonoBehaviour.StartCoroutine(WaitForAllInitialisationToFinish(), null);
         }
 
-        public void TriggerEndOfApplicationBehaviour()
-        {
-            foreach (GameSystemParentClass next in gameSystems)
-            {
-                next.EndOfApplicaitonBehaviour();
-            }
-        }
 
         private IEnumerator WaitForAllInitialisationToFinish()
         {
             while(systemsInitializing.Count > 0)
             {
-
                 yield return null;
             }
 
@@ -109,6 +108,32 @@ namespace Rufas
 
             GameObject gameSystemManagerLink = new GameObject("GameSystemManagerLink");
             gameSystemManagerLink.AddComponent<GameSystemManagerMonoLink>();
+            DontDestroyOnLoad(gameSystemManagerLink);
+        }
+
+
+        public void TriggerOnAwakeBehaviour()
+        {
+            foreach (GameSystemParentClass next in gameSystems)
+            {
+                next.OnAwakeBehaviour();
+            }
+        }
+
+        public void TriggerOnStartBehaviour()
+        {
+            foreach (GameSystemParentClass next in gameSystems)
+            {
+                next.OnStartBehaviour();
+            }
+        }
+
+        public void TriggerEndOfApplicationBehaviour()
+        {
+            foreach (GameSystemParentClass next in gameSystems)
+            {
+                next.EndOfApplicaitonBehaviour();
+            }
         }
 
         private void OnEnable()
@@ -164,6 +189,9 @@ namespace Rufas
         [Button]
         public void RefreshGameSystems()
         {
+            if (Application.isPlaying == true) return;
+
+
             additionalGameSystems.Clear();
             var gameSystemsList = new List<GameSystemParentClass>();
 
@@ -177,7 +205,7 @@ namespace Rufas
               //  string scriptNamespace = t.Namespace;               
 
                 GameSystemParentClass instance = (GameSystemParentClass)Activator.CreateInstance(t);
-           
+               // Debug.Log("Create instance: " + t);
                 gameSystemsList.Add(instance);
             }
 
@@ -246,6 +274,7 @@ namespace Rufas
         private void Create(string systemName, string displayName)
         {
             GameSystemParentClass objectToCreate = (GameSystemParentClass)ScriptableObject.CreateInstance(systemName);
+            Debug.Log("Create instance: " + systemName);
             Directory.CreateDirectory("Assets/Rufas/Systems");
 
             if (string.IsNullOrWhiteSpace(displayName))

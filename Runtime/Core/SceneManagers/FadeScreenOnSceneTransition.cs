@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Rufas
 {
     [RequireComponent(typeof(CanvasGroup))]
-    public class FadeScreenOnSceneTransition : RufasMonobehaviour
+    public class FadeScreenOnSceneTransition : RufasMonoBehaviour
     {        
         [SerializeField] private float duration = 0.5f;
         private CanvasGroup canvasGroup;
@@ -27,9 +27,8 @@ namespace Rufas
             base.Start_AfterInitialisation();
          SoSceneManager.Instance.isCurrentlyLoadingScene.AddListener(CurrentlyLoadingScene); SetScreenOnStart();
         }
-        public override void OnDestroy()
+        public void OnDestroy()
         {
-            base.OnDestroy();
             SoSceneManager.Instance.isCurrentlyLoadingScene.RemoveListener(CurrentlyLoadingScene);
         }
 

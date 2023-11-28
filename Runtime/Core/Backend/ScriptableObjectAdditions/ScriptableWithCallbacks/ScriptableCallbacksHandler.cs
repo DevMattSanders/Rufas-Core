@@ -25,19 +25,13 @@ namespace Rufas
             base.BehaviourToRunBeforeAwake();
             RefreshCallbackScriptables();
 
-            GameObject monobehaviourLink = new GameObject("ScriptableCallbacksMonobehaviourLink");
+       //     GameObject monobehaviourLink = new GameObject("ScriptableCallbacksMonobehaviourLink");
 
-            DontDestroyOnLoad(monobehaviourLink);
+       //     DontDestroyOnLoad(monobehaviourLink);
 
-            monobehaviourLink.AddComponent<ScriptableCallbacksMonobehaviourLink>();
+        //    monobehaviourLink.AddComponent<ScriptableCallbacksMonobehaviourLink>();
 
-            TriggerAll_SoOnAwake();
-        }
-
-        public override void OnEnable_EditorModeOnly()
-        {
-            base.OnEnable_EditorModeOnly();
-            RefreshCallbackScriptables();
+          //  TriggerAll_SoOnAwake();
         }
 
         [Button]
@@ -48,11 +42,31 @@ namespace Rufas
 #endif
         }
 
-        public override void PostInitialisationBehaviour()
+        public override void OnAwakeBehaviour()
         {
-            base.PostInitialisationBehaviour();
+            base.OnAwakeBehaviour();
+            TriggerAll_SoOnAwake();
+        }
+
+        public override void OnStartBehaviour()
+        {
+            base.OnStartBehaviour();
             TriggerAll_SoOnStart();
         }
+
+        public override void EndOfApplicaitonBehaviour()
+        {
+            base.EndOfApplicaitonBehaviour();
+            TriggerAll_SoOnEnd();
+        }
+
+        public override void OnEnable_EditorModeOnly()
+        {
+            base.OnEnable_EditorModeOnly();
+            RefreshCallbackScriptables();
+        }
+
+    
 
         public void TriggerAll_SoOnAwake()
         {

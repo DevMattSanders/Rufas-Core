@@ -193,24 +193,25 @@ namespace Rufas
             SoSceneManager.Instance.GetCurrentScenes();
 
 #if UNITY_EDITOR
-            Debug.Log(gameObject.scene.name);
+           // Debug.Log(gameObject.scene.name);
             if (SoSceneManager.Instance.currentOpenScenes.Contains(sceneName))
             {
                 SoSceneManager.Instance.currentOpenScenes.Remove(sceneName);
             }
 #endif
-
+          //  Debug.Log(obj.Result.Scene.name);
             SoSceneManager.Instance.currentlyOpenScenes.Add(obj);
+          //  Debug.Log(SoSceneManager.Instance.currentlyOpenScenes.Count);
 
             obj.Result.ActivateAsync().completed += CompletedNewSceneLoad;
+
+          //  SoSceneManager.Instance.currentOpenScenes.Add(obj.Result.Scene.name);
 
 
         }
 
         private void CompletedNewSceneLoad(AsyncOperation obj)
         {
-           
-
             StartCoroutine(ShowAlpha());
         }
 

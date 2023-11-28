@@ -61,14 +61,19 @@ namespace Rufas
         public virtual void BehaviourToRunBeforeAwake()
         {
 
-        }
+        }     
 
-        public virtual void AwakeBehaviour()
+        public virtual void PostInitialisationBehaviour()
         {
 
         }
 
-        public virtual void PostInitialisationBehaviour()
+        public virtual void OnAwakeBehaviour()
+        {
+
+        }
+
+        public virtual void OnStartBehaviour()
         {
 
         }
