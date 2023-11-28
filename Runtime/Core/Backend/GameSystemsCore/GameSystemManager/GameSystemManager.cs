@@ -61,7 +61,7 @@ namespace Rufas
 
             }
 
-            SoSceneManager[] sceneManagers = RufasStatic.GetAllScriptables_ToArray<SoSceneManager>();
+            //SoSceneManager[] sceneManagers = RufasStatic.GetAllScriptables_ToArray<SoSceneManager>();
             //Debug.Log(sceneManagers.Length);
 
             //Loop once for rufas systems (they have priority)
