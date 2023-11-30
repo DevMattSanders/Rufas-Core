@@ -12,14 +12,14 @@ namespace Rufas
     public class GameSystemParentClass : SerializedScriptableObject
     {
 #if UNITY_EDITOR
-        [HideInInspector]
-        public bool showInManager = true;
 
-     
-
-        public virtual EditorIcon EditorIcon()
-        {
-            return EditorIcons.ArrowRight;
+        [SerializeField,HideLabel] private GameSystemParentClass selfRef;
+     //   [HideInInspector]
+     //   public bool showInManager = true;
+         
+        public virtual SdfIconType EditorIcon()
+        {            
+            return SdfIconType.CircleFill;
         }
 
         public string GetNamespace()
@@ -53,10 +53,10 @@ namespace Rufas
         /// Autogenerates this scriptable manager without asking
         /// </summary>
         /// <returns></returns>
-        public virtual bool AutogenerateGameSystem()
-        {
-            return false;
-        }
+       // public virtual bool AutogenerateGameSystem()
+        //{
+        //    return false;
+        //}
 
         /// <summary>
         /// This method is called on initialization during the first frame. Before any monobehaviour callbacks!
@@ -81,10 +81,6 @@ namespace Rufas
 
         }
 
-        //pathwa
-
-        //path
-
         public virtual void EndOfApplicaitonBehaviour()
         {
 
@@ -97,7 +93,7 @@ namespace Rufas
 
         public virtual void OnEnable_EditorModeOnly()
         {
-
+            selfRef = this;
         }
 
         public virtual string DesiredName()
@@ -108,7 +104,7 @@ namespace Rufas
 
         public virtual string DesiredPath()
         {
-            return this.name;
+            return "GameSystems/" + this.name;
         }
 
         public virtual void OnCreatedByEditor()

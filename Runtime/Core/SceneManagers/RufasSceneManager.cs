@@ -20,44 +20,38 @@ namespace Rufas
         [FoldoutGroup("Debug")] public CodeEvent onSceneLoadTriggered;
         [FoldoutGroup("Debug")] public CodeEvent onSceneLoadCompleted;
         [FoldoutGroup("Debug"), ReadOnly] public BoolWithCallback isCurrentlyLoadingScene;
-        [FoldoutGroup("Debug"),ReadOnly] public FloatWithCallback sceneLoadPercent;
+        [FoldoutGroup("Debug"), ReadOnly] public FloatWithCallback sceneLoadPercent;
 
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField] private List<string> nonAddressableOpenScenes = new List<string>();
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField, SerializeReference] private AssetReference queuedSceneToLoad;
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField, SerializeReference] public List<SceneInstance> openScenes = new List<SceneInstance>();
 
-      public static void LoadScene(AssetReference sceneInstance)
+        public static void LoadScene(AssetReference sceneInstance)
         {
             RufasSceneManager.Instance.LoadSceneFromInstance(sceneInstance);
         }
 
-        [HorizontalGroup("H")]
-        [ReadOnly, SerializeField,HideInInspector] public string firstScene { get; private set; }
+        [HorizontalGroup("H")][ReadOnly, SerializeField, HideInInspector] public string firstScene { get; private set; }
 #if UNITY_EDITOR
-        [HorizontalGroup("H")]
-        [ReadOnly, SerializeField, ShowInInspector]
-        public SceneAsset firstSceneAsset;
+        [HorizontalGroup("H")][ReadOnly, SerializeField, ShowInInspector] public SceneAsset firstSceneAsset;
 #endif
-        [HorizontalGroup("H")]
-        [ReadOnly,SerializeField,HideInInspector] public string loadingScene { get; private set; }
+        [HorizontalGroup("H")][ReadOnly, SerializeField, HideInInspector] public string loadingScene { get; private set; }
 #if UNITY_EDITOR
-        [HorizontalGroup("H")]
-        [ReadOnly, SerializeField, ShowInInspector]
-        public SceneAsset loadingSceneAsset;
+        [HorizontalGroup("H")][ReadOnly, SerializeField, ShowInInspector] public SceneAsset loadingSceneAsset;
 #endif
         [PropertySpace(15)]
         [SerializeField]
         [HideReferenceObjectPicker]
-        [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true,HideAddButton = true)]
+        [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true, HideAddButton = true)]
         [InlineButton("RefreshApplicationScenesList")]
         public List<SceneInfo> applicationScenes = new List<SceneInfo>();
 
-        [ReadOnly,HideInEditorMode]
+        [ReadOnly, HideInEditorMode]
         public List<Object> sceneLoadStallers = new List<Object>();
 
-        [ReadOnly,HideInEditorMode,SerializeReference]
+        [ReadOnly, HideInEditorMode, SerializeReference]
         public List<AsyncOperation> asyncOperations = new List<AsyncOperation>();
-        [ReadOnly,HideInEditorMode,SerializeReference]
+        [ReadOnly, HideInEditorMode, SerializeReference]
         public List<AsyncOperationHandle> asyncOperationHandles = new List<AsyncOperationHandle>();
 
         [TitleGroup("Fade to black")]
@@ -67,11 +61,24 @@ namespace Rufas
         [ShowIf("screenFadePrefab")]
         public float fadeToBlackDuration = 0.2f;
 
+
+#if UNITY_EDITOR
+        public override SdfIconType EditorIcon()
+        {
+            return SdfIconType.CameraReels;
+        }
+#endif
+
+        public override string DesiredPath()
+        {
+            return "--RufasSystems--/Scene Manager";
+        }
+
         public override void BehaviourToRunBeforeAwake() { base.BehaviourToRunBeforeAwake(); ResetValues(); }
 
         public override void FinaliseInitialisation()
         {
-            if(screenFadePrefab == null)
+            if (screenFadePrefab == null)
             {
                 base.FinaliseInitialisation();
             }
@@ -79,10 +86,10 @@ namespace Rufas
             {
                 Addressables.LoadAssetAsync<GameObject>(screenFadePrefab).Completed += asset =>
                 {
-                    if(asset.Result != null) DontDestroyOnLoad(GameObject.Instantiate(asset.Result));
+                    if (asset.Result != null) DontDestroyOnLoad(GameObject.Instantiate(asset.Result));
 
                     base.FinaliseInitialisation();
-                    
+
                 };
             }
         }
@@ -113,10 +120,10 @@ namespace Rufas
 
             bool found = false;
 
-            foreach(SceneInfo next in applicationScenes)
+            foreach (SceneInfo next in applicationScenes)
             {
-               // Debug.Log(next.sceneAssetReference.AssetGUID);
-                if(string.Compare(asset.RuntimeKey.ToString(),next.sceneAssetReference.RuntimeKey.ToString()) == 0)
+                // Debug.Log(next.sceneAssetReference.AssetGUID);
+                if (string.Compare(asset.RuntimeKey.ToString(), next.sceneAssetReference.RuntimeKey.ToString()) == 0)
                 {
                     found = true;
                 }
@@ -130,13 +137,13 @@ namespace Rufas
             isCurrentlyLoadingScene.Value = true;
             queuedSceneToLoad = asset;
 
-            CoroutineMonoBehaviour.StartCoroutine(TransitionToLoadingSceneRoutine(), _transitionToLoadingSceneRoutine);  
+            CoroutineMonoBehaviour.StartCoroutine(TransitionToLoadingSceneRoutine(), _transitionToLoadingSceneRoutine);
         }
 
         private IEnumerator _transitionToLoadingSceneRoutine; private IEnumerator TransitionToLoadingSceneRoutine()
         {
             //Waiting for scene load stallers (such as fade to black handler)
-            while (sceneLoadStallers.Count > 0) { if (sceneLoadStallers.Any(next => next == null)) break; yield return null;}
+            while (sceneLoadStallers.Count > 0) { if (sceneLoadStallers.Any(next => next == null)) break; yield return null; }
 
 
             SceneManager.LoadSceneAsync(loadingScene, LoadSceneMode.Additive).completed += _loadingScene =>
@@ -192,11 +199,11 @@ namespace Rufas
             //Setting percentage
             while (_newScene.IsDone == false && isCurrentlyLoadingScene.Value == true)
             {
-                 sceneLoadPercent.Value = 0.5f + (_newScene.PercentComplete / 2);
+                sceneLoadPercent.Value = 0.5f + (_newScene.PercentComplete / 2);
                 yield return null;
             }
 
-            
+
         }
 
 #if UNITY_EDITOR
@@ -206,18 +213,22 @@ namespace Rufas
             applicationScenes.Clear();
 
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
-            if(settings == null)
+            if (settings == null)
             {
                 Debug.LogError("AddressableAssetSettings not found. Please make sure you have Addressables installed.");
                 return;
-            }       
+            }
             List<AddressableAssetEntry> sceneEntries = new List<AddressableAssetEntry>();
 
-            settings.GetAllAssets(sceneEntries,false);
+            settings.GetAllAssets(sceneEntries, false);
 
             int sceneListCount = 0;
 
-            foreach(var sceneEntry in sceneEntries)
+            //List<scene>
+
+            SoSceneReference[] references = RufasStatic.GetAllScriptables_ToArray<SoSceneReference>();
+            bool editorNeedsRefresh = false;
+            foreach (var sceneEntry in sceneEntries)
             {
                 if (sceneEntry.IsScene)
                 {
@@ -226,34 +237,65 @@ namespace Rufas
                         if (sceneListCount == 0)
                         {
                             firstScene = System.IO.Path.GetFileNameWithoutExtension(sceneEntry.address);
-#if UNITY_EDITOR
                             firstSceneAsset = sceneEntry.MainAsset as SceneAsset;
-#endif
+
                         }
 
                         if (sceneListCount == 1)
                         {
                             loadingScene = System.IO.Path.GetFileNameWithoutExtension(sceneEntry.address);
-#if UNITY_EDITOR
                             loadingSceneAsset = sceneEntry.MainAsset as SceneAsset;
-#endif
+
                         }
 
                         sceneListCount++;
                     }
                     else
                     {
-                       // AssetReference newAsset = new AssetReference(sceneEntry.guid);
-                       // scenesInApplication.Add(newAsset);
 
-                        applicationScenes.Add(new SceneInfo
+                        SceneInfo sceneInfo = new SceneInfo
                         {
                             sceneAssetReference = new AssetReference(sceneEntry.guid)
-                           // sceneName = System.IO.Path.GetFileNameWithoutExtension(sceneEntry.address),
-                           // addressableKey = sceneEntry.address
-                        });
+                        };
+
+                        applicationScenes.Add(sceneInfo);
+
+                        bool found = false;
+
+                        foreach(SoSceneReference next in references)
+                        {
+                            if(next.sceneReference != null)
+                            {
+                                if(string.Compare(next.sceneReference.RuntimeKey.ToString(),sceneInfo.sceneAssetReference.RuntimeKey.ToString()) == 0)
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (found == false)
+                        {
+                            // Create a new SoSceneReference within the folder Assets/Rufas/Scenes
+                            string folderPath = "Assets/Rufas/Scenes";
+                            string assetPath = $"{folderPath}/{sceneInfo.sceneAssetReference.editorAsset.name}.asset";
+
+                            SoSceneReference newSoSceneReference = ScriptableObject.CreateInstance<SoSceneReference>();
+                            newSoSceneReference.sceneReference = new AssetReference(sceneEntry.guid);
+
+                            // Create the folder if it doesn't exist
+                            if (!AssetDatabase.IsValidFolder(folderPath))
+                            {
+                                AssetDatabase.CreateFolder("Assets/Rufas", "Scenes");
+                            }
+
+                            editorNeedsRefresh = true;
+
+                            AssetDatabase.CreateAsset(newSoSceneReference, assetPath);
+                            
+                        }
                     }
-                }                
+                }
             }
 
             if (sceneListCount == 0) Debug.LogError("No first scene found in build settings! This should be the first scene in the list");
@@ -262,15 +304,19 @@ namespace Rufas
 
             if (sceneListCount > 2) Debug.LogError("More than two scenes found in the build settings! Please update to use addressable scenes");
 
-            
+            if (editorNeedsRefresh)
+            {
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
         }
 
 #endif
 
-        [System.Serializable]       
+        [System.Serializable]
         public class SceneInfo
         {
-            [HideLabel,ReadOnly,HorizontalGroup("H",width: 200)]
+            [HideLabel, ReadOnly, HorizontalGroup("H", width: 200)]
             public AssetReference sceneAssetReference;
 
             [HorizontalGroup("H")]
@@ -284,6 +330,8 @@ namespace Rufas
             private string SceneName()
             {
                 if (sceneAssetReference == null) return "-No Asset!-";
+
+                if (sceneAssetReference.editorAsset == null) return "-No Asset!-";
 #if UNITY_EDITOR
                 return sceneAssetReference.editorAsset.name;
 #endif

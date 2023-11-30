@@ -13,23 +13,47 @@ namespace Rufas
         public static bool awakeCalled;
         public static bool startCalled;
 
-        //[ShowInInspector]
-        [SerializeField, ReadOnly]
+
+
+        //public void
+        [ShowInInspector, ReadOnly]
+        public List<RufasMonoBehaviour> debugWaitingForAwake
+        {
+            get { return waitingForAwake; }
+        }
+        [ShowInInspector, ReadOnly]
+        public List<RufasMonoBehaviour> debugWaitingForStart
+        {
+            get { return waitingForStart; }
+        }
+
+
+        [ShowInInspector, ReadOnly]
         private bool debugAwakeCalled
         {
             get { return awakeCalled; }
         }
 
-        //[ShowInInspector]
-        [SerializeField, ReadOnly]
+        [ShowInInspector, ReadOnly]
         private bool debugStartCalled
         {
             get { return startCalled; }
         }
 
-        public override bool AutogenerateGameSystem()
+        //public override bool AutogenerateGameSystem()
+        //{
+        //     return true;
+        // }
+
+#if UNITY_EDITOR
+        public override SdfIconType EditorIcon()
         {
-            return true;
+            return SdfIconType.CodeSlash;
+        }
+#endif
+        public override string DesiredPath()
+        {
+            return "--RufasFramework--/" + "R.MonoBehaviours";// this.name;
         }
 
         public override bool IsRufasSystem()

@@ -15,10 +15,21 @@ namespace Rufas
             return true;
         }
 
-        public override bool AutogenerateGameSystem()
+#if UNITY_EDITOR
+        public override SdfIconType EditorIcon()
         {
-            return true;
+            return SdfIconType.TelephoneForwardFill;
         }
+#endif
+        public override string DesiredPath()
+        {
+            return "--RufasFramework--/Scriptable Callbacks";
+        }
+
+        // public override bool AutogenerateGameSystem()
+        // {
+        //      return true;
+        //  }
 
         public override void BehaviourToRunBeforeAwake()
         {

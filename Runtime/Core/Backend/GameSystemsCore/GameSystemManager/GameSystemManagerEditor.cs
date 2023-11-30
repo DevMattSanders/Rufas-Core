@@ -53,22 +53,22 @@ namespace Rufas
 
             foreach (GameSystemParentClass next in foundManager.gameSystems)
             {
-              //  if(foundManager.showRufasHiddenSystems == false && next.RufasBackendSystem())
-              // {
-              //      continue;
-              //  }
+                // if (next.showInManager)
+                // {
+                // if (next.IsRufasSystem())// && next.AutogenerateGameSystem())
+                // {
+                //     tree.Add("Rufas Core Systems/" + next.DesiredPath(), next, next.EditorIcon());
+                // }
+                // else
+                // {
 
-                if (next.showInManager)
-                {
-                    if (next.IsRufasSystem() && next.AutogenerateGameSystem())
-                    {
-                        tree.Add("Rufas Core Systems/" + next.DesiredPath(), next, next.EditorIcon());// Sirenix.OdinInspector.SdfIconType.App);
-                    }
-                    else
-                    {
-                        tree.Add(next.DesiredPath(), next);
-                    }
-                }
+               // GUIContent iconContent = EditorGUIUtility.IconContent(next.GetType().ToString() + " Icon");
+
+                tree.Add(next.DesiredPath(), next, next.EditorIcon());
+                   // }
+
+                    //tree.
+               // }
             }
 
             return tree;

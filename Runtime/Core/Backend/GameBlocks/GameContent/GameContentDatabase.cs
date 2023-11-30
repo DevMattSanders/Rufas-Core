@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using Sirenix.Utilities.Editor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,9 +16,44 @@ namespace Rufas
         [HideInEditorMode]
         public Dictionary<GameContentReference, string> objectsToKeys = new Dictionary<GameContentReference, string>();
 
-        public override bool AutogenerateGameSystem()
+
+
+        public override void OnEnable_EditorModeOnly()
         {
-            return true;
+            base.OnEnable_EditorModeOnly();
+
+#if UNITY_EDITOR
+            RefreshContentList();
+#endif
+
+        }
+
+#if UNITY_EDITOR
+
+        [HideInPlayMode]
+        [SerializeField] private GameContentReference[] gameContentReferences;// = new List<GameContentReference>();
+
+        [Button]
+        private void RefreshContentList()
+        {
+            gameContentReferences = RufasStatic.GetAllScriptables_ToArray<GameContentReference>();
+        }
+#endif
+
+        // public override bool AutogenerateGameSystem()
+        // {
+        //    return true;
+        // }
+#if UNITY_EDITOR
+        public override SdfIconType EditorIcon()
+        {
+            return SdfIconType.Boxes;
+        }
+#endif
+
+        public override string DesiredPath()
+        {
+            return "--RufasSystems--/Game Content Manager";
         }
 
         public override void FinaliseInitialisation()

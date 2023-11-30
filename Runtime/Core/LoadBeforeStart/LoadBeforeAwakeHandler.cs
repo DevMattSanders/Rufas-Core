@@ -15,10 +15,25 @@ namespace Rufas
             return true;
         }
 
-        public override bool AutogenerateGameSystem()
+
+#if UNITY_EDITOR
+        public override SdfIconType EditorIcon()
         {
-            return true;
+            return SdfIconType.LayerForward;
         }
+#endif
+
+        public override string DesiredPath()
+        {
+            return "--RufasFramework--/Load-Before-All";
+        }
+
+
+
+        //  public override bool AutogenerateGameSystem()
+        //  {
+        //       return true;
+        //    }
 
         public override void OnEnable_EditorModeOnly()
         {

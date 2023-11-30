@@ -28,10 +28,19 @@ namespace Rufas
         public Dictionary<ScriptableWithUniqueID, string> gameContentObjects_ObjectToKey = new Dictionary<ScriptableWithUniqueID, string>();
 
         public override bool IsRufasSystem() { return true; }
-        public override bool AutogenerateGameSystem() { return true; }
+        //   public override bool AutogenerateGameSystem() { return true; }
 
-        /*
-        private void OnEnable()
+#if UNITY_EDITOR
+        public override SdfIconType EditorIcon()
+        {
+            return SdfIconType.SortNumericDown;
+        }
+#endif
+        public override string DesiredPath()
+        {
+            return "--RufasFramework--/Unique ID Database";
+        }
+        /*        private void OnEnable()
         {
             Debug.Log("Run!");
             RefreshEditorDatabase();
