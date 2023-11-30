@@ -9,7 +9,7 @@ namespace Rufas
     [RequireComponent(typeof(CanvasGroup))]
     public class FadeScreenOnSceneTransition : RufasMonoBehaviour
     {        
-        [SerializeField] private float duration = 0.5f;
+    
         private CanvasGroup canvasGroup;
         private Tween canvasGroupTween;
 
@@ -25,17 +25,18 @@ namespace Rufas
         public override void Start_AfterInitialisation()
         {
             base.Start_AfterInitialisation();
-         SoSceneManager.Instance.isCurrentlyLoadingScene.AddListener(CurrentlyLoadingScene); SetScreenOnStart();
+         RufasSceneManager.Instance.isCurrentlyLoadingScene.AddListener(CurrentlyLoadingScene); SetScreenOnStart();
         }
         public void OnDestroy()
         {
-            SoSceneManager.Instance.isCurrentlyLoadingScene.RemoveListener(CurrentlyLoadingScene);
+            RufasSceneManager.Instance.isCurrentlyLoadingScene.RemoveListener(CurrentlyLoadingScene);
         }
 
         private void SetScreenOnStart()
         {
-            if (SoSceneManager.Instance.isCurrentlyLoadingScene.Value || startFaded)
+            if (RufasSceneManager.Instance.isCurrentlyLoadingScene.Value || startFaded)
             {
+                Debug.Log("Already started");
                 canvasGroup.alpha = 1;
                 canvasGroup.blocksRaycasts = true;
             }
@@ -45,7 +46,7 @@ namespace Rufas
                 canvasGroup.blocksRaycasts = true;
             }
 
-            CurrentlyLoadingScene(SoSceneManager.Instance.isCurrentlyLoadingScene.Value);
+            CurrentlyLoadingScene(RufasSceneManager.Instance.isCurrentlyLoadingScene.Value);
         }
 
         private void CurrentlyLoadingScene(bool loadingScene)
@@ -64,14 +65,14 @@ namespace Rufas
         [Button]
         private void FadeToBlack()
         {
-            if (!SoSceneManager.Instance.sceneLoadStallers.Contains(this))
+            if (!RufasSceneManager.Instance.sceneLoadStallers.Contains(this))
             {
-                SoSceneManager.Instance.sceneLoadStallers.Add(this);
+                RufasSceneManager.Instance.sceneLoadStallers.Add(this);
             }
 
             if (canvasGroupTween != null) canvasGroupTween.Kill();
 
-            canvasGroupTween = canvasGroup.DOFade(1, duration).OnComplete(OnFinishedFadeToBlack);
+            canvasGroupTween = canvasGroup.DOFade(1, RufasSceneManager.Instance.fadeToBlackDuration).OnComplete(OnFinishedFadeToBlack);
             canvasGroup.blocksRaycasts = true;
 
             canvasGroupTween.OnKill(ClearFromSceneLoadStallers);
@@ -90,15 +91,15 @@ namespace Rufas
 
             if (canvasGroupTween != null) canvasGroupTween.Kill();
 
-            canvasGroupTween = canvasGroup.DOFade(0, duration);
+            canvasGroupTween = canvasGroup.DOFade(0, RufasSceneManager.Instance.fadeToBlackDuration);
             canvasGroup.blocksRaycasts = false;
         }
 
         private void ClearFromSceneLoadStallers()
         {
-            if (SoSceneManager.Instance.sceneLoadStallers.Contains(this))
+            if (RufasSceneManager.Instance.sceneLoadStallers.Contains(this))
             {
-                SoSceneManager.Instance.sceneLoadStallers.Remove(this);
+                RufasSceneManager.Instance.sceneLoadStallers.Remove(this);
             }
         }
     }

@@ -13,22 +13,21 @@ namespace Rufas
 {
     public class RufasBootstrapSceneLoader : MonoBehaviour
     {
-        public static RufasBootstrapSceneLoader instance;
+        //public static RufasBootstrapSceneLoader instance;
 
         public AssetReference sceneToLoad;
 
-        public CanvasGroup hideCurrentScene;
+      //  public CanvasGroup hideCurrentScene;
 
         public Image percentageImage;
 
-        float targetPercent;
-
+       
 
         float additionalPercent = 0;
         float assetListLoadVal = 0;
         float sceneLoadVal = 0;
 
-        [SerializeField] private string sceneName;
+      //  [SerializeField] private string sceneName;
 
        // public FadeScreenOnSceneTransition fadeScreen;
 
@@ -39,19 +38,19 @@ namespace Rufas
 
         //public GameObject load
 
-        private void Awake()
-        {
+      //  private void Awake()
+      //  {
             //#if UNITY_EDITOR
             //   onCompletedAssetLoad.Invoke();
             //#else
 
-            sceneName = gameObject.scene.name;
 
-            DontDestroyOnLoad(gameObject);
 
-            Init();
+         //   DontDestroyOnLoad(gameObject);
 
-            StartCoroutine(AdditonalAmount());
+          //  Init();
+
+        
 
             /*
             if (instance == null)
@@ -66,7 +65,7 @@ namespace Rufas
             }
             */
 //#endif
-        }
+     //   }
 
         private IEnumerator AdditonalAmount()
         {
@@ -91,11 +90,11 @@ namespace Rufas
             {
                 if (additionalPercent > 1) additionalPercent = 1;
 
-                targetPercent = (additionalPercent + assetListLoadVal + sceneLoadVal) / 3f;
+                float targetPercent = (additionalPercent + assetListLoadVal + sceneLoadVal) / 3f;
 
                 if (percentageImage.fillAmount < targetPercent)
                 {
-                    percentageImage.fillAmount += Time.deltaTime * 1f;
+                    percentageImage.fillAmount += Time.deltaTime * 5f;
                 }
 
                 if(percentageImage.fillAmount > targetPercent)
@@ -105,27 +104,35 @@ namespace Rufas
             }
         }
 
-        private bool loadingAssets;
+        //  private bool loadingAssets;
 
-      //  private AsyncOperationHandle<RunAllPreawakeBehaviours> loadOp;
+        //  private AsyncOperationHandle<RunAllPreawakeBehaviours> loadOp;
 
-        [Button]
-        public void Init()
+        // [Button]
+        // public void Init()
+        // {
+
+        // loadOp = RunAllPreawakeBehaviours.loadOp; // Addressables.LoadAssetAsync<RunAllPreawakeBehaviours>("AssetListToRun");// on completed, send to another method  
+
+        // loadOp.Completed += OnCompletedMethod;
+
+        // StartCoroutine(LoadingAssetList());
+        // }
+        AsyncOperationHandle<SceneInstance> sceneInst;
+        public IEnumerator Start()
         {
-            if (Application.isPlaying == false) return;
+            // sceneName = gameObject.scene.name;
 
-           // RunAllPreawakeBehaviours runAll = Resources.LoadAll<RunAllPreawakeBehaviours>();
+            DontDestroyOnLoad(gameObject);
 
-            loadingAssets = true;
-           // loadOp = RunAllPreawakeBehaviours.loadOp; // Addressables.LoadAssetAsync<RunAllPreawakeBehaviours>("AssetListToRun");// on completed, send to another method  
+            StartCoroutine(AdditonalAmount());
 
-           // loadOp.Completed += OnCompletedMethod;
+            // if (Application.isPlaying == false) return;
 
-            StartCoroutine(LoadingAssetList());
-        }
+            // RunAllPreawakeBehaviours runAll = Resources.LoadAll<RunAllPreawakeBehaviours>();
 
-        private IEnumerator LoadingAssetList()
-        {
+           // loadingAssets = true;
+
             while (RufasBootstrapper.loadOp.IsDone == false)
             {
                 assetListLoadVal = RufasBootstrapper.loadOp.PercentComplete;
@@ -138,50 +145,50 @@ namespace Rufas
                 yield return null;
             }
 
-         //   Debug.Log("Finishing wait for init");
-            OnCompletedMethod();
-        }
+            yield return null;
 
-        private bool loadingScene;
-
-        AsyncOperationHandle<SceneInstance> sceneInst;
-        private void OnCompletedMethod()//AsyncOperationHandle<RunAllPreawakeBehaviours> operation)
-        {
-            loadingAssets = false;
             assetListLoadVal = 1;
 
-  //          operation.Result.LoadAddressablesAndRunPreawakeBehaviours();
-
-
-
-            loadingScene = true;
-           sceneInst = Addressables.LoadSceneAsync(sceneToLoad, LoadSceneMode.Single, activateOnLoad: false);
+           // sceneLoadVal = 1;
+           // RufasSceneManager.LoadScene(sceneToLoad);
             
-            sceneInst.Completed += AssetListToRunMono_Completed;
+           
 
-            StartCoroutine(LoadingScene());
-        }
+            sceneInst = Addressables.LoadSceneAsync(sceneToLoad, LoadSceneMode.Single, activateOnLoad: false);
 
-        private IEnumerator LoadingScene()
-        {
-            while (loadingScene)
+            sceneInst.Completed += sceneObj =>
+            {
+                sceneLoadVal = 1;
+                additionalPercent = 1;
+
+                RufasSceneManager.Instance.isCurrentlyLoadingScene.Value = true;
+
+                this.CallWithDelay(ActivateScene,0.1f);                
+            };
+
+            while (sceneInst.IsDone == false)
             {
                 sceneLoadVal = sceneInst.PercentComplete;
                 yield return null;
             }
-        }
 
-
-        private void AssetListToRunMono_Completed(AsyncOperationHandle<SceneInstance> obj)
-        {
-            loadingScene = false;
             sceneLoadVal = 1;
-
-            additionalPercent = 1;
-
-            StartCoroutine(HideAlpha(obj));
+           
         }
 
+        private void ActivateScene()
+        {
+
+            sceneInst.Result.ActivateAsync().completed += obj =>
+            {
+                RufasSceneManager.Instance.ResetValues();
+                RufasSceneManager.Instance.openScenes.Add(sceneInst.Result);
+            };
+            //RufasSceneManager.Instance.
+
+
+        }
+        /*
         IEnumerator HideAlpha(AsyncOperationHandle<SceneInstance> obj)
         {
             while (hideCurrentScene.alpha < 1)
@@ -203,18 +210,20 @@ namespace Rufas
             SoSceneManager.Instance.currentlyOpenScenes.Add(obj);
           //  Debug.Log(SoSceneManager.Instance.currentlyOpenScenes.Count);
 
-            obj.Result.ActivateAsync().completed += CompletedNewSceneLoad;
+          //  obj.Result.ActivateAsync().completed += CompletedNewSceneLoad;
 
           //  SoSceneManager.Instance.currentOpenScenes.Add(obj.Result.Scene.name);
 
 
         }
+        */
 
-        private void CompletedNewSceneLoad(AsyncOperation obj)
-        {
-            StartCoroutine(ShowAlpha());
-        }
-
+      //  private void CompletedNewSceneLoad(AsyncOperation obj)
+       // {
+       //     StartCoroutine(ShowAlpha());
+       // }
+    //
+        /*
         IEnumerator ShowAlpha()
         {
             while(hideCurrentScene.alpha > 0)
@@ -223,5 +232,6 @@ namespace Rufas
                 yield return null;
             }           
         }
+        */
     }
 }

@@ -13,14 +13,14 @@ namespace Rufas
         public static bool awakeCalled;
         public static bool startCalled;
 
-        [ShowInInspector]
+        //[ShowInInspector]
         [SerializeField, ReadOnly]
         private bool debugAwakeCalled
         {
             get { return awakeCalled; }
         }
 
-        [ShowInInspector]
+        //[ShowInInspector]
         [SerializeField, ReadOnly]
         private bool debugStartCalled
         {

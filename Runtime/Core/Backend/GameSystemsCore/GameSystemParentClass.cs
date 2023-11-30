@@ -8,12 +8,15 @@ using System.Reflection;
 using UnityEngine;
 
 namespace Rufas
-{
+{   
     public class GameSystemParentClass : SerializedScriptableObject
     {
 #if UNITY_EDITOR
         [HideInInspector]
-        public bool showInManager = false;
+        public bool showInManager = true;
+
+     
+
         public virtual EditorIcon EditorIcon()
         {
             return EditorIcons.ArrowRight;
@@ -78,6 +81,10 @@ namespace Rufas
 
         }
 
+        //pathwa
+
+        //path
+
         public virtual void EndOfApplicaitonBehaviour()
         {
 
@@ -92,7 +99,6 @@ namespace Rufas
         {
 
         }
-
 
         public virtual string DesiredName()
         {
