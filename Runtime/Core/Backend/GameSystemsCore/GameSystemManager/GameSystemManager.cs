@@ -10,11 +10,14 @@ using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 using Sirenix.OdinInspector.Editor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 #endif
 
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Linq;
+
 
 namespace Rufas
 {
@@ -39,8 +42,10 @@ namespace Rufas
         [ListDrawerSettings(Expanded = true, HideAddButton = true, HideRemoveButton = true)]
         public GameSystemParentClass[] gameSystems;
 
+
         public override void BehaviourToRunBeforeStart()
         {
+            Debug.Log("GAME_SYSTEM_MANAGER: 1");
             base.BehaviourToRunBeforeStart();
 
             if (instance == null)
@@ -55,23 +60,29 @@ namespace Rufas
             gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
 #endif
 
+            Debug.Log("GAME_SYSTEM_MANAGER: 2");
+
             allSystemsInitialised.Value = false;
 
             foreach (GameSystemParentClass next in gameSystems)
             {
                 //Debug.Log(next)
 
+                Debug.Log("GAME_SYSTEM_MANAGER: " + next.name);
+
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
-
+              
 
             }
+
+            Debug.Log("GAME_SYSTEM_MANAGER: 3");
 
             //SoSceneManager[] sceneManagers = RufasStatic.GetAllScriptables_ToArray<SoSceneManager>();
             //Debug.Log(sceneManagers.Length);
 
             //Loop once for rufas systems (they have priority)
-            foreach(GameSystemParentClass next in gameSystems)
+            foreach (GameSystemParentClass next in gameSystems)
             {
                 if (next.IsRufasSystem())
                 {
@@ -150,11 +161,13 @@ namespace Rufas
             }
             else
             {
+#if UNITY_EDITOR
                 //OnEditorInit
                 foreach(GameSystemParentClass next in gameSystems)
                 {
                     next.OnEnable_EditorModeOnly();
                 }
+#endif
             }
         }
 
@@ -184,7 +197,7 @@ namespace Rufas
         //[TitleGroup("Left/Game Systems")]
         [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
         public List<GameManagerSystemAddOptions> additionalGameSystems = new List<GameManagerSystemAddOptions>();
-                    
+
 
         private void RefreshWindowOnHiddenSystemsChange()
         {
@@ -195,6 +208,10 @@ namespace Rufas
         [Button]
         public void RefreshGameSystems()
         {
+           
+
+            gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
+
             if (Application.isPlaying == true) return;
 
             foreach (GameSystemParentClass next in gameSystems)
@@ -220,7 +237,7 @@ namespace Rufas
                 gameSystemsList.Add(instance);
             }
 
-            gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
+           
 
             foreach(GameSystemParentClass next in gameSystemsList)
             {
@@ -307,7 +324,8 @@ namespace Rufas
 
             objectToCreate.OnCreatedByEditor();
         }
-       
+
+    
 
         [Serializable]
         public class GameManagerSystemAddOptions

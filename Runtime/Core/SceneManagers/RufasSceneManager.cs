@@ -329,10 +329,11 @@ namespace Rufas
 
             private string SceneName()
             {
+#if UNITY_EDITOR
                 if (sceneAssetReference == null) return "-No Asset!-";
 
                 if (sceneAssetReference.editorAsset == null) return "-No Asset!-";
-#if UNITY_EDITOR
+
                 return sceneAssetReference.editorAsset.name;
 #endif
                 return "Load Scene";

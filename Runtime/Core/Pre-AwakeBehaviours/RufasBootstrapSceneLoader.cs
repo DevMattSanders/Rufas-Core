@@ -127,6 +127,8 @@ namespace Rufas
 
             StartCoroutine(AdditonalAmount());
 
+
+            Debug.Log("HERE: 1");
             // if (Application.isPlaying == false) return;
 
             // RunAllPreawakeBehaviours runAll = Resources.LoadAll<RunAllPreawakeBehaviours>();
@@ -139,13 +141,16 @@ namespace Rufas
                 yield return null;                
             }
 
-          //  Debug.Log("Starting wait for init");
-            while(GameSystemManager.instance.allSystemsInitialised.Value == false)
+            Debug.Log("HERE: 2");
+
+            //  Debug.Log("Starting wait for init");
+            while (GameSystemManager.instance.allSystemsInitialised.Value == false)
             {                
                 yield return null;
             }
 
             yield return null;
+            Debug.Log("HERE: 3");
 
             assetListLoadVal = 1;
 
@@ -156,31 +161,39 @@ namespace Rufas
 
             sceneInst = Addressables.LoadSceneAsync(sceneToLoad, LoadSceneMode.Single, activateOnLoad: false);
 
+            Debug.Log("HERE: 4");
+
             sceneInst.Completed += sceneObj =>
             {
+                Debug.Log("HERE: 6");
                 sceneLoadVal = 1;
                 additionalPercent = 1;
 
+
                 RufasSceneManager.Instance.isCurrentlyLoadingScene.Value = true;
+                Debug.Log("HERE: 7");
 
                 this.CallWithDelay(ActivateScene,0.1f);                
             };
+
+           
 
             while (sceneInst.IsDone == false)
             {
                 sceneLoadVal = sceneInst.PercentComplete;
                 yield return null;
             }
-
+            Debug.Log("HERE: 5");
             sceneLoadVal = 1;
            
         }
 
         private void ActivateScene()
         {
-
+            Debug.Log("HERE: 8");
             sceneInst.Result.ActivateAsync().completed += obj =>
             {
+                Debug.Log("HERE: 9");
                 RufasSceneManager.Instance.ResetValues();
                 RufasSceneManager.Instance.openScenes.Add(sceneInst.Result);
             };

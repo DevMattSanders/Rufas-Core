@@ -93,7 +93,9 @@ namespace Rufas
 
         public virtual void OnEnable_EditorModeOnly()
         {
+#if UNITY_EDITOR
             selfRef = this;
+#endif
         }
 
         public virtual string DesiredName()
