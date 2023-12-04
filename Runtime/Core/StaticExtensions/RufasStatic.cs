@@ -40,6 +40,18 @@ namespace Rufas
             return random.Next().ToString("x");
         }
 
+        public static void Let<T>(this T obj, Action<T> action, Action ifNull) where T : class
+        {
+            if (obj != null)
+            {
+                action(obj);
+            }
+            else
+            {
+                ifNull();
+            }
+        }
+
 #if UNITY_EDITOR
 
         public static IEnumerable<Type> FindDerivedTypes(Type baseType)

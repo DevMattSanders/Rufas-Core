@@ -45,7 +45,7 @@ namespace Rufas
 
         public override void BehaviourToRunBeforeStart()
         {
-            Debug.Log("GAME_SYSTEM_MANAGER: 1");
+         //   Debug.Log("GAME_SYSTEM_MANAGER: 1");
             base.BehaviourToRunBeforeStart();
 
             if (instance == null)
@@ -60,7 +60,7 @@ namespace Rufas
             gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
 #endif
 
-            Debug.Log("GAME_SYSTEM_MANAGER: 2");
+          //  Debug.Log("GAME_SYSTEM_MANAGER: 2");
 
             allSystemsInitialised.Value = false;
 
@@ -68,7 +68,7 @@ namespace Rufas
             {
                 //Debug.Log(next)
 
-                Debug.Log("GAME_SYSTEM_MANAGER: " + next.name);
+            //    Debug.Log("GAME_SYSTEM_MANAGER: " + next.name);
 
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
@@ -76,7 +76,7 @@ namespace Rufas
 
             }
 
-            Debug.Log("GAME_SYSTEM_MANAGER: 3");
+       //     Debug.Log("GAME_SYSTEM_MANAGER: 3");
 
             //SoSceneManager[] sceneManagers = RufasStatic.GetAllScriptables_ToArray<SoSceneManager>();
             //Debug.Log(sceneManagers.Length);
