@@ -22,6 +22,8 @@ namespace Rufas
         [FoldoutGroup("Debug"), ReadOnly] public BoolWithCallback isCurrentlyLoadingScene;
         [FoldoutGroup("Debug"), ReadOnly] public FloatWithCallback sceneLoadPercent;
 
+        public string lastOpenedScene;
+
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField] private List<string> nonAddressableOpenScenes = new List<string>();
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField, SerializeReference] private AssetReference queuedSceneToLoad;
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField, SerializeReference] public List<SceneInstance> openScenes = new List<SceneInstance>();
@@ -111,6 +113,7 @@ namespace Rufas
             isCurrentlyLoadingScene.Value = false;
             nonAddressableOpenScenes.Clear();
             queuedSceneToLoad = null;
+            lastOpenedScene = "";
             openScenes.Clear();
         }
 
@@ -186,8 +189,10 @@ namespace Rufas
 
             _newScene.Completed += _newScene =>
             {
+                lastOpenedScene = _newScene.Result.Scene.name;
                 openScenes.Add(_newScene.Result);
                 SceneManager.SetActiveScene(_newScene.Result.Scene);
+                
                 SceneManager.UnloadSceneAsync(loadingScene).completed += _loadingScene =>
                 {
                     isCurrentlyLoadingScene.Value = false;

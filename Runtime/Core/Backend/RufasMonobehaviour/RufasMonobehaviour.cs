@@ -46,10 +46,13 @@ namespace Rufas
 
         public virtual void Start_AfterInitialisation()
         {
-            if (!beingDestroyed)
+            if (beingDestroyed)
             {
                 //Don't allow init marked as complete if being destroyed
                 Debug.Log("Trying to finish initializing a Rufas MonoBehaviour that is marked to destroy!");
+            }
+            else
+            {
                 initialisationCompleted = true;
             }
         }

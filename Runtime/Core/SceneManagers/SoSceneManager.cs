@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 namespace Rufas
 {
     [CreateAssetMenu(menuName = "Rufas/Scene/SoSceneManager")]
-    public class SoSceneManager : GameSystem<SoSceneManager>
+    public class SoSceneManager : ScriptableObject// GameSystem<SoSceneManager>
     {            
 
 
@@ -90,9 +90,9 @@ namespace Rufas
 
         
 
-        public override void OnAwakeBehaviour()
+        public void OnAwakeBehaviour()
         {
-            base.OnAwakeBehaviour();
+          //  base.OnAwakeBehaviour();
 
             currentScene = null;
             //  currnetActiveScene = null;
@@ -110,30 +110,30 @@ namespace Rufas
             GetCurrentScenes();
         }
 
-        public override void OnStartBehaviour()
+        public  void OnStartBehaviour()
         {
-            base.OnStartBehaviour();
+         //   base.OnStartBehaviour();
 
 
             sceneLoadingLogicGroup?.RegisterEnabler(this, false, false);
         }
 
-        public override void BehaviourToRunBeforeAwake()
+        public  void BehaviourToRunBeforeAwake()
         {
-            base.BehaviourToRunBeforeAwake();
+          //  base.BehaviourToRunBeforeAwake();
         
           
         }
 
-        public override void PostInitialisationBehaviour()
+        public  void PostInitialisationBehaviour()
         {
-            base.PostInitialisationBehaviour();
+         //   base.PostInitialisationBehaviour();
 
         }
 
-        public override void EndOfApplicaitonBehaviour()
+        public  void EndOfApplicaitonBehaviour()
         {
-            base.EndOfApplicaitonBehaviour();
+         //   base.EndOfApplicaitonBehaviour();
 
             currentScene = null;
             //  currnetActiveScene = null;

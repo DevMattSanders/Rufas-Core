@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Rufas.BasicFunctions;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,10 +26,12 @@ namespace Rufas
         public override void Start_AfterInitialisation()
         {
             base.Start_AfterInitialisation();
-         RufasSceneManager.Instance.isCurrentlyLoadingScene.AddListener(CurrentlyLoadingScene); SetScreenOnStart();
+            RufasSceneManager.Instance.isCurrentlyLoadingScene.AddListener(CurrentlyLoadingScene); SetScreenOnStart();
         }
-        public void OnDestroy()
+
+        public override void OnDestroy()
         {
+            base.OnDestroy();
             RufasSceneManager.Instance.isCurrentlyLoadingScene.RemoveListener(CurrentlyLoadingScene);
         }
 
@@ -65,6 +68,8 @@ namespace Rufas
         [Button]
         private void FadeToBlack()
         {
+            SetScreenSpaceCameraRenderCameraAsMainCamera.RefreshCameras.Raise();
+
             if (!RufasSceneManager.Instance.sceneLoadStallers.Contains(this))
             {
                 RufasSceneManager.Instance.sceneLoadStallers.Add(this);
@@ -87,6 +92,8 @@ namespace Rufas
         [Button]
         private void FadeToClear()
         {
+            SetScreenSpaceCameraRenderCameraAsMainCamera.RefreshCameras.Raise();
+
             ClearFromSceneLoadStallers();
 
             if (canvasGroupTween != null) canvasGroupTween.Kill();

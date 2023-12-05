@@ -17,7 +17,7 @@ namespace Rufas
 {
     
     [CreateAssetMenu(menuName = "Rufas/Scene/SoScene")]
-    public class SoScene : SuperScriptable
+    public class SoScene : ScriptableObject// SuperScriptable
     {
         public static UnityEvent<SoScene> SoSceneLoaderCalled = new UnityEvent<SoScene>();
 
@@ -41,7 +41,7 @@ namespace Rufas
             SoSceneLoaderCalled.Invoke(this);
             if (sceneAssetReference != null)
             {
-                SoSceneManager.Instance.LoadScene(sceneAssetReference,sceneName);
+             //  SoSceneManager.Instance.LoadScene(sceneAssetReference,sceneName);
             }
             else
             {

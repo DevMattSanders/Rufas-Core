@@ -6,7 +6,7 @@ namespace Rufas
 {
     public class LoadSceneOnAwake : MonoBehaviour
     {
-        public SoScene sceneToLoad;
+        public SoSceneReference sceneToLoad;
 
         //public float delay = 0.5f;
         public int frames = 2;
