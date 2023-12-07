@@ -123,6 +123,8 @@ namespace Rufas
                 next.PostInitialisationBehaviour();
             }
 
+            yield return null;
+
             GameObject gameSystemManagerLink = new GameObject("GameSystemManagerLink");
             gameSystemManagerLink.AddComponent<GameSystemManagerMonoLink>();
             DontDestroyOnLoad(gameSystemManagerLink);
@@ -131,6 +133,7 @@ namespace Rufas
 
         public void TriggerOnAwakeBehaviour()
         {
+          //  Debug.Log("On Awake");
             foreach (GameSystemParentClass next in gameSystems)
             {
                 next.OnAwakeBehaviour();
@@ -139,9 +142,19 @@ namespace Rufas
 
         public void TriggerOnStartBehaviour()
         {
+           // Debug.Log("On Start");
             foreach (GameSystemParentClass next in gameSystems)
             {
                 next.OnStartBehaviour();
+            }
+        }
+
+        public void TriggerOnUpdateBehaviour()
+        {
+          //  Debug.Log("On Update");
+            foreach(GameSystemParentClass next in gameSystems)
+            {                
+                next.OnUpdateBehaviour();
             }
         }
 

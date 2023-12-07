@@ -17,9 +17,20 @@ namespace Rufas.MusicManagement
             musicVolume = volumeSO;
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
-            musicVolume.AddListener(UpdateVolume);
+            musicVolume.AddListener(UpdateVolume,true);
+
+            while (true)
+            {
+                if (musicVolume != null)
+                {
+                    UpdateVolume(musicVolume.Value);
+                    break;
+                }
+
+                yield return null;
+            }
         }
 
         private void OnDestroy()

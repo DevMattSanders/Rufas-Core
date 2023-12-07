@@ -1,11 +1,16 @@
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Rufas
 {
-    public class RufasMonoBehaviour : MonoBehaviour
+    public class RufasMonoBehaviour : SerializedMonoBehaviour
     {
+        public static CodeEvent callingAwakeAfterInit;
+
+        public static CodeEvent callingStartAfterInit;
+
         internal bool initialisationCompleted = false;
         internal bool beingDestroyed = false;
         public virtual void Awake()

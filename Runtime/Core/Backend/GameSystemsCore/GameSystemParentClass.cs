@@ -81,6 +81,11 @@ namespace Rufas
 
         }
 
+        public virtual void OnUpdateBehaviour()
+        {
+
+        }
+
         public virtual void EndOfApplicaitonBehaviour()
         {
 

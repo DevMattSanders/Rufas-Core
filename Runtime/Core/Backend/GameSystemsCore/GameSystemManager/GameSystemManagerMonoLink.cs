@@ -16,6 +16,11 @@ namespace Rufas
             GameSystemManager.instance.TriggerOnStartBehaviour();
         }
 
+        private void Update()
+        {
+            GameSystemManager.instance.TriggerOnUpdateBehaviour();
+        }
+
         private void OnDestroy()
         {
             GameSystemManager.instance.TriggerEndOfApplicationBehaviour();

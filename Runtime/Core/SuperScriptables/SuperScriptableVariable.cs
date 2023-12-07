@@ -14,6 +14,8 @@ namespace Rufas
         [SerializeField, TitleGroup("Save Load Options", Order = 1), HideInInlineEditors]
         internal bool loadOnAwake;
 
+        public bool debug;
+
         [DisableInPlayMode, SerializeField,InlineProperty, TitleGroup("$GetName")]
         private T startingValue;
         private string GetName()
@@ -40,6 +42,11 @@ namespace Rufas
             {
                 if (EqualityComparer<T>.Default.Equals(_value, value))
                 {
+                    if (debug)
+                    {
+                        Debug.Log("Changing: " + _value + " " + value);
+                    }
+
                     _value = value;
                 }
                 else
@@ -74,16 +81,38 @@ namespace Rufas
         {
             base.SoOnAwake();
 
-            _value = startingValue;
+            if (debug)
+            {
+                Debug.Log(_value + " " + startingValue);
+            }
 
-                 
+            _value = startingValue;                 
         }
 
         public override void SoOnStart()
         {
             if (loadOnAwake)
             {
-                Load();
+                if (debug)
+                {
+                    Debug.Log("PreLoad: " + _value + " " + startingValue);
+                }
+
+                bool loadSuccessful = false;
+                Load(out loadSuccessful);
+
+                if(loadSuccessful == false)
+                {
+                    _value = startingValue;
+                }
+
+
+                if (debug)
+                {
+                    Debug.Log("Successful? " + loadSuccessful);
+
+                    Debug.Log("Loaded: "+ _value + " " + startingValue);
+                }
             }
         }
 
@@ -92,6 +121,7 @@ namespace Rufas
             base.SoOnEnd();
             _value = startingValue;
         }
+
         [Button("Save"), TitleGroup("Save Load Options", Order = 1), HideInInlineEditors]
         public void Save()
         {
@@ -101,14 +131,12 @@ namespace Rufas
         }
 
         [Button("Load"), TitleGroup("Save Load Options", Order = 1), HideInInlineEditors]
-        public void Load()
+        public void Load(out bool successful)
         {
-            if (Application.isPlaying == false) { Debug.Log("Super Scriptable Variable saving & loading is runtime only"); return; }
+            if (Application.isPlaying == false) { Debug.Log("Super Scriptable Variable saving & loading is runtime only"); successful = false; return; }
 
-            SaveLoad.Instance.TryLoad<T>(UniqueID, out _value);
+            SaveLoad.Instance.TryLoad<T>(UniqueID, out _value, out successful);
         }
-
-
 
         [ShowInInspector,SerializeField, TitleGroup("Save Load Options", Order = 1), HideInInlineEditors]
         private (bool,string) DebugIfSaveDataExists()

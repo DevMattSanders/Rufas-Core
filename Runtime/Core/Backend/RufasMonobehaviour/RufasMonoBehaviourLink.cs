@@ -4,18 +4,4 @@ using UnityEngine;
 
 namespace Rufas
 {
-    public class RufasMonoBehaviourLink : MonoBehaviour
-    {
-      //  private void Awake()
-      //  {
-      //      RufasMonoBehaviourHandler.Instance.AwakeCalled();
-      //  }
-
-      //  private void Start()
-     //  {
-      //      RufasMonoBehaviourHandler.Instance.StartCalled();
-      //  }
-
-
-    }
 }

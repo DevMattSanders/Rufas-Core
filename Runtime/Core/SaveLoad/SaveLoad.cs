@@ -119,18 +119,20 @@ namespace Rufas
             //}
         }
 
-        public void TryLoad<T>(string varID, out T value)
+        public void TryLoad<T>(string varID, out T value, out bool successful)
         {
-           // try
-           // {
-                if (ES3.KeyExists(varID, fileName))
-                {
-                    value = ES3.Load<T>(varID, fileName);
-                }
-                else
-                {
-                    value = default(T);
-                }
+            // try
+            // {
+            if (ES3.KeyExists(varID, fileName))
+            {
+                successful = true;
+                value = ES3.Load<T>(varID, fileName);
+            }
+            else
+            {
+                successful = false;
+                value = default(T);
+            }
            // }
             //catch
            // {
