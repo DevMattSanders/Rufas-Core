@@ -3,6 +3,9 @@ using Sirenix.OdinInspector;
 #if UNITY_EDITOR
 using Sirenix.Utilities.Editor;
 using System.Reflection;
+using UnityEditor;
+
+using UnityEngine.Windows;
 #endif
 
 using UnityEngine;
@@ -26,8 +29,30 @@ namespace Rufas
         {
             return this.GetType().Namespace;
         }
+
+        public void CreateGameSystem(string systemName, string displayName, GameSystemManager toRefresh)
+        {
+            GameSystemParentClass objectToCreate = (GameSystemParentClass)ScriptableObject.CreateInstance(systemName);
+            Debug.Log("Create instance: " + systemName);
+            Directory.CreateDirectory("Assets/Rufas/Systems");
+
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                string[] nameSplit = systemName.Split(".");
+                displayName = nameSplit[nameSplit.Length - 1];
+            }
+
+            string path = "Assets/Rufas/Systems/" + displayName + ".asset";
+            AssetDatabase.CreateAsset(objectToCreate, path);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            toRefresh.RefreshGameSystems();
+
+            objectToCreate.OnCreatedByEditor();
+        }
 #endif
-        
+
         /// <summary>
         /// Internal use! This will hide the system in the manager editor (revealed with the 'showRufasHiddenSystems' bool on the manager)
         /// </summary>
@@ -61,7 +86,7 @@ namespace Rufas
         /// <summary>
         /// This method is called on initialization during the first frame. Before any monobehaviour callbacks!
         /// </summary>
-        public virtual void BehaviourToRunBeforeAwake()
+        public virtual void PreInitialisationBehaviour()
         {
 
         }     

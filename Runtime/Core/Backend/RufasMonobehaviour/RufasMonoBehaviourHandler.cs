@@ -62,9 +62,9 @@ namespace Rufas
             return true;
         }
 
-        public override void BehaviourToRunBeforeAwake()
+        public override void PreInitialisationBehaviour()
         {
-            base.BehaviourToRunBeforeAwake();
+            base.PreInitialisationBehaviour();
 
             //Debug.Log(RufasMonoBehaviourHandler.Instance);
 

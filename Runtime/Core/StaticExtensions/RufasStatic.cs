@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -54,9 +55,32 @@ namespace Rufas
 
 #if UNITY_EDITOR
 
-        public static IEnumerable<Type> FindDerivedTypes(Type baseType)
+        public static IEnumerable<Type> FindDerivedTypes(Type baseType, bool inThisAsseblyOnly = false)
         {
-            return baseType.Assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t));
+            if (inThisAsseblyOnly)
+            {
+                return baseType.Assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t));
+            }
+            else
+            {
+                var derivedTypes = new List<Type>();
+
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    try
+                    {
+                        var typesInAssembly = assembly.GetTypes().Where(t => baseType.IsAssignableFrom(t) && t != baseType);
+                        derivedTypes.AddRange(typesInAssembly);
+                    }
+                    catch (ReflectionTypeLoadException)
+                    {
+                        // Handle exceptions related to loading types from the assembly
+                        // You can log the exception or handle it in any other way based on your requirements
+                    }
+                }
+
+                return derivedTypes;
+            }
         }
 
         public static T[] GetAllScriptables_ToArray<T>() where T : ScriptableObject

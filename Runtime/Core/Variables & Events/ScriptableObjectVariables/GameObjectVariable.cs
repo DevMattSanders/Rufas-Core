@@ -18,8 +18,15 @@ namespace Rufas
         public override void SoOnAwake()
         {
             base.SoOnAwake();
+            if (startingValue == null)
+            {
+                value = null;
+            }
+            else
+            {
+                value = startingValue;
+            }
 
-            value = startingValue;
         }
     }
 }

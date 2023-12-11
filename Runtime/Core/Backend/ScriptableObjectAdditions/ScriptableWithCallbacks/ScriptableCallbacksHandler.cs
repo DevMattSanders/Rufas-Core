@@ -31,9 +31,9 @@ namespace Rufas
         //      return true;
         //  }
 
-        public override void BehaviourToRunBeforeAwake()
+        public override void PreInitialisationBehaviour()
         {
-            base.BehaviourToRunBeforeAwake();
+            base.PreInitialisationBehaviour();
             RefreshCallbackScriptables();
 
        //     GameObject monobehaviourLink = new GameObject("ScriptableCallbacksMonobehaviourLink");

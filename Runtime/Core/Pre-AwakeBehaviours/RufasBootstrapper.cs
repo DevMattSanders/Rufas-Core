@@ -175,7 +175,7 @@ namespace Rufas
             foreach (BootstrapBehaviour next in bootstrapBehaviours)
             {
              //   Debug.Log(next.name);
-                next.BehaviourToRunBeforeStart();
+                next.BehaviourToRunDuringBootstrap();
             }
         }
     }

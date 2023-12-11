@@ -76,7 +76,7 @@ namespace Rufas
             return "--RufasSystems--/Scene Manager";
         }
 
-        public override void BehaviourToRunBeforeAwake() { base.BehaviourToRunBeforeAwake(); ResetValues(); }
+        public override void PreInitialisationBehaviour() { base.PreInitialisationBehaviour(); ResetValues(); }
 
         public override void FinaliseInitialisation()
         {

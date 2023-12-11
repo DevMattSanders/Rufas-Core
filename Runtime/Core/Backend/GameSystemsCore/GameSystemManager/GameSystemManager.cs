@@ -43,10 +43,10 @@ namespace Rufas
         public GameSystemParentClass[] gameSystems;
 
 
-        public override void BehaviourToRunBeforeStart()
+        public override void BehaviourToRunDuringBootstrap()
         {
          //   Debug.Log("GAME_SYSTEM_MANAGER: 1");
-            base.BehaviourToRunBeforeStart();
+            base.BehaviourToRunDuringBootstrap();
 
             if (instance == null)
             {
@@ -66,27 +66,16 @@ namespace Rufas
 
             foreach (GameSystemParentClass next in gameSystems)
             {
-                //Debug.Log(next)
-
-            //    Debug.Log("GAME_SYSTEM_MANAGER: " + next.name);
-
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
-              
-
             }
-
-       //     Debug.Log("GAME_SYSTEM_MANAGER: 3");
-
-            //SoSceneManager[] sceneManagers = RufasStatic.GetAllScriptables_ToArray<SoSceneManager>();
-            //Debug.Log(sceneManagers.Length);
 
             //Loop once for rufas systems (they have priority)
             foreach (GameSystemParentClass next in gameSystems)
             {
                 if (next.IsRufasSystem())
                 {
-                    next.BehaviourToRunBeforeAwake();
+                    next.PreInitialisationBehaviour();
                 }
             }
 
@@ -95,7 +84,7 @@ namespace Rufas
             {
                 if (next.IsRufasSystem() == false)
                 {
-                    next.BehaviourToRunBeforeAwake();
+                    next.PreInitialisationBehaviour();
                 }
             }
 
@@ -133,7 +122,6 @@ namespace Rufas
 
         public void TriggerOnAwakeBehaviour()
         {
-          //  Debug.Log("On Awake");
             foreach (GameSystemParentClass next in gameSystems)
             {
                 next.OnAwakeBehaviour();
@@ -142,7 +130,6 @@ namespace Rufas
 
         public void TriggerOnStartBehaviour()
         {
-           // Debug.Log("On Start");
             foreach (GameSystemParentClass next in gameSystems)
             {
                 next.OnStartBehaviour();
@@ -151,7 +138,6 @@ namespace Rufas
 
         public void TriggerOnUpdateBehaviour()
         {
-          //  Debug.Log("On Update");
             foreach(GameSystemParentClass next in gameSystems)
             {                
                 next.OnUpdateBehaviour();
@@ -186,25 +172,6 @@ namespace Rufas
 
 #if UNITY_EDITOR
 
-        //[ShowIf()]
-        // [HorizontalGroup("Lists")]
-        // [VerticalGroup("Lists/Left")]
-        // [TitleGroup("Lists/Left/Rufas Systems")]
-        //[TitleGroup("Left/Game Systems")]
-       // [DisableInPlayMode]
-       // [FoldoutGroup("Rufas Core Systems")]
-       // [ListDrawerSettings(Expanded = true, HideAddButton = true, HideRemoveButton = true)]
-       // public List<GameSystemManagerToggle> rufasSystemToggles = new List<GameSystemManagerToggle>();
-
-        [DisableInPlayMode]
-        [HorizontalGroup("Lists")]
-        [VerticalGroup("Lists/Left")]
-        [TitleGroup("Lists/Left/Game Systems")]
-        //[TitleGroup("Left/Game Systems")]
-        [ListDrawerSettings(Expanded = true, HideAddButton = true, HideRemoveButton = true)]        
-       // public List<GameSystemManagerToggle> gameSystemToggles = new List<GameSystemManagerToggle>();
-
-
         [HideInPlayMode]
         [TitleGroup("Lists/Left/Game Systems")]
         //[TitleGroup("Left/Game Systems")]
@@ -220,9 +187,7 @@ namespace Rufas
 
         [Button]
         public void RefreshGameSystems()
-        {
-           
-
+        {          
             gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
 
             if (Application.isPlaying == true) return;
@@ -231,7 +196,6 @@ namespace Rufas
             {
                 next.OnEnable_EditorModeOnly();
             }
-
 
             additionalGameSystems.Clear();
             var gameSystemsList = new List<GameSystemParentClass>();
@@ -243,10 +207,7 @@ namespace Rufas
                     continue;
                 }
 
-              //  string scriptNamespace = t.Namespace;               
-
                 GameSystemParentClass instance = (GameSystemParentClass)Activator.CreateInstance(t);
-               // Debug.Log("Create instance: " + t);
                 gameSystemsList.Add(instance);
             }
 
@@ -277,20 +238,7 @@ namespace Rufas
                     }
                     else
                     {
-                        /*
-                        if (next.AutogenerateGameSystem())
-                        {
-                            string desiredName = next.DesiredName();
-
-                            if (string.IsNullOrWhiteSpace(desiredName)) desiredName = next.name;
-
-                            Create(next.GetType().ToString(), desiredName);
-                        }
-                        else
-                        {
-                        */
-                            additionalGameSystems.Add(new GameManagerSystemAddOptions(this, next, next.GetType().ToString()));
-                       // }
+                        additionalGameSystems.Add(new GameManagerSystemAddOptions(this, next, next.GetType().ToString()));                       
                     }
                 }
             }
@@ -315,9 +263,11 @@ namespace Rufas
             */
         }
 
-
+        /*
         private void Create(string systemName, string displayName)
         {
+
+
             GameSystemParentClass objectToCreate = (GameSystemParentClass)ScriptableObject.CreateInstance(systemName);
             Debug.Log("Create instance: " + systemName);
             Directory.CreateDirectory("Assets/Rufas/Systems");
@@ -337,8 +287,8 @@ namespace Rufas
 
             objectToCreate.OnCreatedByEditor();
         }
+        */
 
-    
 
         [Serializable]
         public class GameManagerSystemAddOptions
@@ -367,7 +317,8 @@ namespace Rufas
             [Button("Create")]
             private void CreateInstance()
             {
-                manager.Create(systemName, displayName);
+                systemToCreate.CreateGameSystem(systemName,displayName,manager);//
+               // manager.Create(systemName, displayName);
             }
 
             private string systemName;

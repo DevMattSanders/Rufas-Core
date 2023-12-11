@@ -13,7 +13,7 @@ namespace Rufas
      //   [Range(0, 10)]
      //   public int priority = 5;
 
-        public virtual void BehaviourToRunBeforeStart()
+        public virtual void BehaviourToRunDuringBootstrap()
         {
             
         }

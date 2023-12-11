@@ -15,9 +15,9 @@ namespace Rufas
      //   public static SuperScriptableDatabase instance;
    //     public GameSystemParentClass[] gameSystems;
 
-        public override void BehaviourToRunBeforeStart()
+        public override void BehaviourToRunDuringBootstrap()
         {
-            base.BehaviourToRunBeforeStart();
+            base.BehaviourToRunDuringBootstrap();
 
             if (superScriptableDatabaseInstance == null)
             {

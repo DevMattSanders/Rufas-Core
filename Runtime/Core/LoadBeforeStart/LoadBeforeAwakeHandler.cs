@@ -41,9 +41,9 @@ namespace Rufas
             Refresh();
         }
 
-        public override void BehaviourToRunBeforeAwake()
+        public override void PreInitialisationBehaviour()
         {
-            base.BehaviourToRunBeforeAwake();
+            base.PreInitialisationBehaviour();
 
 #if UNITY_EDITOR
             Refresh();

@@ -9,9 +9,9 @@ namespace Rufas
         public static List<GameSystemParentClass> gameSystems = new List<GameSystemParentClass>();
 
            
-        public override void BehaviourToRunBeforeAwake()
+        public override void PreInitialisationBehaviour()
         {
-            base.BehaviourToRunBeforeAwake();
+            base.PreInitialisationBehaviour();
 
             gameSystems.Add(this);
             TriggerInstance();

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Rufas
 {
-    [Obsolete]
+    
     public class SuperScriptable : SerializedScriptableObject
     {
         public virtual void SoOnAwake()
