@@ -25,7 +25,7 @@ namespace Rufas
 
         public override string DesiredPath()
         {
-            return "--RufasFramework--/Load-Before-All";
+            return "Rufas/Framework/Load-Before-All";
         }
 
 

@@ -23,7 +23,7 @@ namespace Rufas
 #endif
         public override string DesiredPath()
         {
-            return "--RufasFramework--/Scriptable Callbacks";
+            return "Rufas/Framework/Scriptable Callbacks";
         }
 
         // public override bool AutogenerateGameSystem()

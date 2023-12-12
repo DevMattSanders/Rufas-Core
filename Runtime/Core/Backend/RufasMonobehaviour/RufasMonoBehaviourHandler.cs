@@ -54,7 +54,7 @@ namespace Rufas
 #endif
         public override string DesiredPath()
         {
-            return "--RufasFramework--/" + "R.MonoBehaviours";// this.name;
+            return "Rufas/Framework/" + "R.MonoBehaviours";// this.name;
         }
 
         public override bool IsRufasSystem()
@@ -78,10 +78,36 @@ namespace Rufas
         public override void OnAwakeBehaviour()
         {
             base.OnAwakeBehaviour();
-            foreach (RufasMonoBehaviour next in waitingForAwake)
+            // foreach (RufasMonoBehaviour next in waitingForAwake)
+
+            while (waitingForAwake.Count > 0)
             {
-                next.Awake_AfterInitialisation();
+                for (int i = 0; i < waitingForAwake.Count; i++)
+                {
+                    RufasMonoBehaviour next = waitingForAwake[i];
+
+                    if(next == null)
+                    {
+                        waitingForAwake.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+
+                   // try
+                   // {
+                        next.Awake_AfterInitialisation();
+                   // }
+                    //catch
+                    //{
+
+                    //}
+
+                    waitingForAwake.Remove(next);
+                    i--;
+                }
             }
+
+         
 
             RufasMonoBehaviour.callingAwakeAfterInit.Raise();
 
@@ -95,7 +121,14 @@ namespace Rufas
             {
                 if (!next.enabled) continue;
 
-                next.Start_AfterInitialisation();
+                try
+                {
+                    next.Start_AfterInitialisation();
+                }
+                catch
+                {
+
+                }
             }           
 
             RufasMonoBehaviour.callingStartAfterInit.Raise();

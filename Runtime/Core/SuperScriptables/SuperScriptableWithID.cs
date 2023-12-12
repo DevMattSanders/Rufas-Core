@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace Rufas
 {
-    [Obsolete]
     public class SuperScriptableWithID : SuperScriptable, ISerializationCallbackReceiver
     {
        // [HideInInlineEditors, TitleGroup("Save Load Options", Order = 1)]//, HorizontalGroup("ID")]

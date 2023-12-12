@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
 
 #if UNITY_EDITOR
 using Sirenix.Utilities.Editor;
@@ -11,10 +12,25 @@ using UnityEngine.Windows;
 using UnityEngine;
 
 namespace Rufas
-{   
+{
+    //[InlineEditor]
     public class GameSystemParentClass : SerializedScriptableObject
     {
 #if UNITY_EDITOR
+
+        // [ShowInInlineEditors]
+        // [InlineProperty]
+        //[OnValueChanged("RefreshGameSystemEditor")]
+        //[HideInInspector]
+       // public bool showInEditor = true;
+
+      //  [Button("Show In Game System Editor")]
+      //  private void UpdateGameSystem()
+       // {
+        //    showInEditor = !showInEditor;
+
+        //    OdinEditorWindow.GetWindow<GameSystemManagerEditor>().ForceMenuTreeRebuild();
+       // }
 
         [SerializeField,HideLabel] private GameSystemParentClass selfRef;
      //   [HideInInspector]
@@ -130,7 +146,7 @@ namespace Rufas
 
         public virtual string DesiredName()
         {
-            string[] names = this.GetType().ToString().Split(".");
+            string[] names = DesiredPath().Split("/"); this.GetType().ToString().Split(".");
             return names[names.Length - 1];
         }
 

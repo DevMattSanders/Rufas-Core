@@ -43,9 +43,9 @@ namespace Rufas
             {
                 switch (referenceType)
                 {
-                    case ReferenceType.boolWithCallback: return callback.Value; break;
-                    case ReferenceType.boolVariable: if (scriptable) { return scriptable.Value; } else { return false; } break;
-                    case ReferenceType.localBoolVariable: if (local) { return local.Value; } else { return false; } break;
+                    case ReferenceType.boolWithCallback: return callback.Value;
+                    case ReferenceType.boolVariable: if (scriptable) { return scriptable.Value; } else { return false; }
+                    case ReferenceType.localBoolVariable: if (local) { return local.Value; } else { return false; }
                     default: return false;
                 }
             }

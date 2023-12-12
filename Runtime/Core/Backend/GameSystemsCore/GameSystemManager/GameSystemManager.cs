@@ -17,7 +17,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Linq;
-
+using Sirenix.Utilities;
 
 namespace Rufas
 {
@@ -34,14 +34,18 @@ namespace Rufas
         [HideInEditorMode]
         public List<GameSystemParentClass> systemsInitializing = new List<GameSystemParentClass>();
 
-        [DisableInPlayMode]
+        //public List<>
+
+        [HideInInspector]
+        public GameSystemParentClass[] gameSystems;
+
+      //  [DisableInPlayMode]
         [HorizontalGroup("Lists")]
         [VerticalGroup("Lists/Left")]
         [TitleGroup("Lists/Left/Game Systems")]
         //[TitleGroup("Left/Game Systems")]
-        [ListDrawerSettings(Expanded = true, HideAddButton = true, HideRemoveButton = true)]
-        public GameSystemParentClass[] gameSystems;
-
+        [ListDrawerSettings(ShowFoldout = false, HideAddButton = true, HideRemoveButton = true)]
+        public List<GameSystemManagerToggle> GameSystems = new List<GameSystemManagerToggle>();
 
         public override void BehaviourToRunDuringBootstrap()
         {
@@ -166,6 +170,8 @@ namespace Rufas
                 {
                     next.OnEnable_EditorModeOnly();
                 }
+
+                ResetSymbolList();
 #endif
             }
         }
@@ -178,17 +184,25 @@ namespace Rufas
         [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
         public List<GameManagerSystemAddOptions> additionalGameSystems = new List<GameManagerSystemAddOptions>();
 
-
         private void RefreshWindowOnHiddenSystemsChange()
         {
             RefreshGameSystems();
             OdinEditorWindow.GetWindow<GameSystemManagerEditor>().ForceMenuTreeRebuild();
         }
 
-        [Button]
+        [PropertyOrder(5)]
         public void RefreshGameSystems()
         {          
             gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
+
+            //GameSys
+
+            //  visibleGameSystems.Clear();
+            GameSystems.Clear();
+            foreach(GameSystemParentClass parent in gameSystems)
+            {
+                GameSystems.Add(new(this, parent));
+            }
 
             if (Application.isPlaying == true) return;
 
@@ -207,11 +221,10 @@ namespace Rufas
                     continue;
                 }
 
-                GameSystemParentClass instance = (GameSystemParentClass)Activator.CreateInstance(t);
+                GameSystemParentClass instance = (GameSystemParentClass)ScriptableObject.CreateInstance(t.Name);// (GameSystemParentClass)Activator.CreateInstance(t);
                 gameSystemsList.Add(instance);
             }
 
-           
 
             foreach(GameSystemParentClass next in gameSystemsList)
             {
@@ -261,6 +274,38 @@ namespace Rufas
                 }
             }
             */
+        }
+
+        [PropertySpace(SpaceBefore = 15),PropertyOrder(10)]
+        [InfoBox("Not all Rufas scriping define symbols are being used for the current build target. To include in the project, copy exact text into PlayerSettings -> Other -> ScriptingDefineSymbols", SdfIconType.ExclamationCircleFill, VisibleIf = "NotUsingAllDefineSymbols")]
+        [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
+        public List<RufasScriptingDefineSymbolsManager.DefineSymbolCheck> rufasDefineSymbols = RufasScriptingDefineSymbolsManager.AllDefineSymbols();
+
+
+        private void ResetSymbolList()
+        {
+            rufasDefineSymbols = RufasScriptingDefineSymbolsManager.AllDefineSymbols();
+        }
+
+
+        private bool NotUsingAllDefineSymbols()
+        {
+            foreach (RufasScriptingDefineSymbolsManager.DefineSymbolCheck next in rufasDefineSymbols)
+            {
+                if (!next.Check()) return true;
+            }
+
+            return false;
+        }
+
+        // [InfoBox("Drag systems here to hide them in this editor")]
+        // [OnValueChanged("RefreshGameSystemEditor")]
+        [HideInInspector]
+        public List<GameSystemParentClass> hiddenGameSystems = new List<GameSystemParentClass>();
+
+        private void RefreshGameSystemEditor()
+        {
+            OdinEditorWindow.GetWindow<GameSystemManagerEditor>().ForceMenuTreeRebuild();
         }
 
         /*
@@ -328,42 +373,58 @@ namespace Rufas
             public string displayName;
         }
 
-        /*
+        
         [Serializable]
         public class GameSystemManagerToggle
         {
             public GameSystemManagerToggle(GameSystemManager _manager, GameSystemParentClass _gameSystem)//, bool _showGameSystem)
             {
+                manager = _manager;
                 gameSystem = _gameSystem;
-              //  showGameSystem = _showGameSystem;
+               // showGameSystem = _showGameSystem;
             }
 
+            private GameSystemManager manager;
 
-            [HideLabel,HorizontalGroup("H")]
-            public GameSystemParentClass gameSystem;
 
-           // [HideInInspector]
-           // public bool showGameSystem = true;
 
-            
+            //  [HideInInspector]
+            // public bool showGameSystem = true;
+
+            [PropertyOrder(0)]
             [HorizontalGroup("H")]
-            [Button(Name = "$Name",Style = ButtonStyle.Box,ButtonAlignment =0,Stretch = false),GUIColor("$ButtonColour")]
+            [Button(Name = "$Name", Style = ButtonStyle.Box, ButtonAlignment = 0, Stretch = true), GUIColor("$ButtonColour")]
             public void Toggle()
             {
-                showGameSystem = !showGameSystem;
+                // showGameSystem = !showGameSystem;
 
-                UpdateGameSystem();
-            }
-            
-            private Color ButtonColour()
-            {
-                if (showGameSystem)
+                if (manager.hiddenGameSystems.Contains(gameSystem))
                 {
-                    return new Color(0.5f, 0.5f, 0.9f, 1);
+                    manager.hiddenGameSystems.Remove(gameSystem);
                 }
                 else
                 {
-                    return new Color(0.9f, 0.5f, 0.5f, 1);
+                    manager.hiddenGameSystems.Add(gameSystem);
+                }
+
+                UpdateGameSystem();
+            }
+
+            [PropertyOrder(5)]            
+            [HideLabel, HorizontalGroup("H",width: 0.3f)]
+            public GameSystemParentClass gameSystem;
+
+            //private bool ShowG
+
+            private Color ButtonColour()
+            {
+                if (!manager.hiddenGameSystems.Contains(gameSystem))
+                {
+                    return new Color(0.7f, 0.7f, 1, 1);
+                }
+                else
+                {
+                    return new Color(1, 0.7f, 0.7f, 1);
                 }
             }            
 
@@ -379,19 +440,29 @@ namespace Rufas
                 }
             }           
 
+
             private void UpdateGameSystem()
             {
+                /*
                 if (gameSystem != null)
                 {
+                    if (showGameSystem)
+                    {
+                        if (manager.hiddenGameSystems.Contains(gameSystem)) manager.hiddenGameSystems.Remove(gameSystem);
+                    }
+                    else
+                    {
+
+                    }
+                    //_manager.
                     gameSystem.showInManager = showGameSystem;
                 }
+                */
 
                 OdinEditorWindow.GetWindow<GameSystemManagerEditor>().ForceMenuTreeRebuild();
-            }
-            
-
+            }      
         }
-        */
+        
 #endif
     }
 }

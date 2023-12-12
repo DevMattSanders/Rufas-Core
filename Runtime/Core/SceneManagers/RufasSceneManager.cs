@@ -73,7 +73,7 @@ namespace Rufas
 
         public override string DesiredPath()
         {
-            return "--RufasSystems--/Scene Manager";
+            return "Rufas/Scene Manager";
         }
 
         public override void PreInitialisationBehaviour() { base.PreInitialisationBehaviour(); ResetValues(); }
@@ -340,8 +340,9 @@ namespace Rufas
                 if (sceneAssetReference.editorAsset == null) return "-No Asset!-";
 
                 return sceneAssetReference.editorAsset.name;
-#endif
+#else
                 return "Load Scene";
+#endif
 
             }
         }

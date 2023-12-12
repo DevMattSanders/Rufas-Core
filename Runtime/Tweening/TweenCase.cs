@@ -106,7 +106,7 @@ namespace Rufas
 
         [SerializeReference]
         [HideReferenceObjectPicker]
-        [ListDrawerSettings(Expanded = true, HideRemoveButton = true)]
+        [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true)]
         [OnValueChanged("UpdateBaseTweens")]
         [InlineButton("GoToValuesImmediate", label: "Go")]
         [InlineButton("GetCurrentValues", label: "Get")]

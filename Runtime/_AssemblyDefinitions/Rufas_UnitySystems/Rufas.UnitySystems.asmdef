@@ -1,16 +1,13 @@
 {
-    "name": "Rufas",
-    "rootNamespace": "Rufas",
+    "name": "Rufas.UnitySystems",
+    "rootNamespace": "Rufas.UnitySystems",
     "references": [
-        "Plugins",
-        "Unity.TextMeshPro",
-        "Unity.InputSystem",
-        "Unity.ResourceManager",
-        "Unity.Addressables",
-        "Unity.Addressables.Editor",
+        "Rufas",
         "Unity.Services.Core",
         "Unity.Services.Authentication",
-        "Unity.Services.Ugc"
+        "Unity.Services.Core.Analytics",
+        "Unity.Services.Ugc",
+        "Unity.Services.Analytics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -18,7 +15,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "RUFAS_UNITY_SYSTEMS"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

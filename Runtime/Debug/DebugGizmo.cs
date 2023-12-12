@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Rufas
@@ -29,6 +30,9 @@ namespace Rufas
                 Gizmos.color = gizmoColour;
                 Gizmos.DrawCube(transform.position, new Vector3(gizmoSize, gizmoSize, gizmoSize));
             }
+
+            //UnityEditor.EditorSettings
+
         }
     }
 }

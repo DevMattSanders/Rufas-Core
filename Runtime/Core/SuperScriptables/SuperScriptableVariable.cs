@@ -163,9 +163,10 @@ namespace Rufas
             {
                 return (false,"");
             }
-#endif
+#else
 
             return (false, "");
+#endif
         }
 
 

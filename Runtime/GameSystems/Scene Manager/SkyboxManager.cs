@@ -16,7 +16,7 @@ namespace Rufas
 
             RenderSettings.skybox = material;
 
-            RenderSettings.customReflection = reflectionMap;
+            RenderSettings.customReflectionTexture = reflectionMap;
 
             //RenderSettings.
         }

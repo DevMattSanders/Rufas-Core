@@ -9,22 +9,12 @@ namespace Rufas
         public override void Start()
         {
             base.Start();
-
-            //if (RufasMonoBehaviourHandler.startCalled)
-            // {
-            //     Start_AfterInitialisation();
-            // }
-            // else
-            // {
-            Debug.Log("Here");
-                RufasMonoBehaviourHandler.updateBehaviours.Add(this);
-           // }
+            RufasMonoBehaviourHandler.updateBehaviours.Add(this);
         }
 
         public override void OnDestroy()
         {
             base.OnDestroy();
-
             RufasMonoBehaviourHandler.updateBehaviours.Remove(this);
         }
 

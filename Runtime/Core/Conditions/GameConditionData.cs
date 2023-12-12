@@ -126,7 +126,7 @@ namespace Rufas
         [SerializeReference]
         [OdinSerialize]
         [HideReferenceObjectPicker]
-        [ListDrawerSettings(Expanded = true, HideRemoveButton = true)]
+        [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true)]
         public List<GenericCondition> conditions = new List<GenericCondition>();
 
         //public System.Action<bool> onConditionChanged;

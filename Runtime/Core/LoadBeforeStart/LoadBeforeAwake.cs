@@ -18,8 +18,8 @@ namespace Rufas
 
         //public BoolWithCallback finishedLoading = new BoolWithCallback(false);
 
-        [Obsolete]
-        public List<GameObject> ddolBeforeScene = new List<GameObject>();
+        //[Obsolete]
+       // public List<GameObject> ddolBeforeScene = new List<GameObject>();
 
         public List<AssetReferenceGameObject> addressablesToLoad = new List<AssetReferenceGameObject>();
 
@@ -52,7 +52,7 @@ namespace Rufas
                     createdObject.SendMessage("OnCreatedBeforeScene", SendMessageOptions.DontRequireReceiver);
                 };
             }
-
+            /*
             foreach(GameObject nextPrefab in ddolBeforeScene)
             {
                 return;
@@ -69,6 +69,7 @@ namespace Rufas
                 newGameobject.SendMessage("OnCreatedBeforeScene", SendMessageOptions.DontRequireReceiver);
                 
             }
+            */
         }        
     }
 }

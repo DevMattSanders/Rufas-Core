@@ -38,7 +38,7 @@ namespace Rufas
 #endif
         public override string DesiredPath()
         {
-            return "--RufasFramework--/Unique ID Database";
+            return "Rufas/Framework/Unique ID Database";
         }
         /*        private void OnEnable()
         {

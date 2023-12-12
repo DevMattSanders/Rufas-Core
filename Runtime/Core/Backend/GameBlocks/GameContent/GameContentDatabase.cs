@@ -52,7 +52,7 @@ namespace Rufas
 
         public override string DesiredPath()
         {
-            return "--RufasSystems--/Game Content Manager";
+            return "Rufas/Game Content Manager";
         }
 
         public override void FinaliseInitialisation()

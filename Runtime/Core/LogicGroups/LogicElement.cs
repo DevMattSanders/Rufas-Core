@@ -266,7 +266,7 @@ namespace Rufas
 
 #if UNITY_EDITOR
         [HorizontalGroup("Top")]
-        private string debugState;
+        private string debugState = "";
 
 #endif
 
@@ -281,7 +281,7 @@ namespace Rufas
         [ListDrawerSettings(ShowFoldout = false)]
         public LogicGroupReference[] logicGroups;
 
-        [ListDrawerSettings(Expanded = true)]//,ShowIndexLabels = true)]
+        [ListDrawerSettings(ShowFoldout = false)]//,ShowIndexLabels = true)]
         public List<LogicElementConditionCase> cases = new List<LogicElementConditionCase>();
 
         

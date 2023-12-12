@@ -24,7 +24,7 @@ namespace Rufas
         }
 
         [Title("$CurrentOverride", subtitle:"Higer overrides lower", titleAlignment: TitleAlignments.Left, horizontalLine: true, bold: true)]
-        [ListDrawerSettings(Expanded = true)]
+        [ListDrawerSettings(ShowFoldout = false)]
         public List<LogicGroup> logicGroups = new List<LogicGroup>();
 
         public override void SoOnAwake()

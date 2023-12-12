@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 using Sirenix.OdinInspector.Editor;
@@ -51,7 +52,9 @@ namespace Rufas
 
             foundManager.RefreshGameSystems();
 
-            foreach (GameSystemParentClass next in foundManager.gameSystems)
+            var sortedList = foundManager.gameSystems.OrderBy(obj => obj.DesiredPath()).ToList();
+
+            foreach (GameSystemParentClass next in sortedList)
             {
                 // if (next.showInManager)
                 // {
@@ -62,9 +65,16 @@ namespace Rufas
                 // else
                 // {
 
-               // GUIContent iconContent = EditorGUIUtility.IconContent(next.GetType().ToString() + " Icon");
-
-                tree.Add(next.DesiredPath(), next, next.EditorIcon());
+                // GUIContent iconContent = EditorGUIUtility.IconContent(next.GetType().ToString() + " Icon");
+                // string desiredPath = next.DesiredPath();
+                if (!foundManager.hiddenGameSystems.Contains(next))
+               {
+                    string[] split = next.DesiredPath().Split("/");
+                    tree.Add(
+                        //next.DesiredPath().Replace("/", "-"),
+                        split[split.Length - 1],
+                        next, next.EditorIcon());
+                }
                    // }
 
                     //tree.

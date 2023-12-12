@@ -8,7 +8,7 @@ using UnityEngine.Events;
 namespace Rufas
 {
     public class Popup_YesNoCancel : PopupMonoBehaviour
-    {
+    {/*
         [System.Serializable]
         public class Popup_YesNoCancelData
         {
@@ -17,7 +17,7 @@ namespace Rufas
             string info = "";
 
         }
-
+        */
         public UnityEvent<string> title;
         public UnityEvent<string> subTitle;
         public UnityEvent<string> info;
