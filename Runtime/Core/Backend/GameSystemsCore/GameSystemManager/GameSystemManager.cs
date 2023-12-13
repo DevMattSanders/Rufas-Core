@@ -34,18 +34,75 @@ namespace Rufas
         [HideInEditorMode]
         public List<GameSystemParentClass> systemsInitializing = new List<GameSystemParentClass>();
 
-        //public List<>
-
         [HideInInspector]
         public GameSystemParentClass[] gameSystems;
 
-      //  [DisableInPlayMode]
-        [HorizontalGroup("Lists")]
-        [VerticalGroup("Lists/Left")]
-        [TitleGroup("Lists/Left/Game Systems")]
-        //[TitleGroup("Left/Game Systems")]
+        #region GameSystemsList
+        [TitleGroup("Game Systems")]
+        [ListDrawerSettings(ShowFoldout = true, HideAddButton = true, HideRemoveButton = true)]        
+        public List<GameSystemManagerToggle> ShowIndividualGameSystems = new List<GameSystemManagerToggle>();
+
+#if UNITY_EDITOR
+        [TitleGroup("Game Systems")]
+        [HideInPlayMode]
+        [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
+        public List<GameManagerSystemAddOptions> additionalGameSystems = new List<GameManagerSystemAddOptions>();
+#endif
+        #endregion
+
+        #region GameSystemGroups
+        [TitleGroup("Game System Groups")]
+
         [ListDrawerSettings(ShowFoldout = false, HideAddButton = true, HideRemoveButton = true)]
-        public List<GameSystemManagerToggle> GameSystems = new List<GameSystemManagerToggle>();
+        public List<GameSystemGroup> GameSystemGroups = new List<GameSystemGroup>();
+
+        [TitleGroup("Game System Groups")]
+        [Button(name: "Create Group (Game System)")]
+        private void CreateGroup(string groupName, int groupSize, SdfIconType icon)
+        {
+#if UNITY_EDITOR
+            GameSystemGroup objectToCreate = (GameSystemGroup)ScriptableObject.CreateInstance("GameSystemGroup");
+            Debug.Log("Create instance: " + groupName);
+            Directory.CreateDirectory("Assets/Rufas/Systems/Groups");
+
+            if (string.IsNullOrWhiteSpace(groupName))
+            {
+                groupName = "New Game System Group";
+            }
+
+            string path = "Assets/Rufas/Systems/Groups/" + groupName + ".asset";
+            AssetDatabase.CreateAsset(objectToCreate, path);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            objectToCreate.gameSystems.SetLength(groupSize);
+            objectToCreate.iconType = icon;
+            Selection.activeObject = objectToCreate;
+
+            GameSystemGroups.Add(objectToCreate);
+            RefreshUI();
+#endif
+        }
+#if UNITY_EDITOR
+        [TitleGroup("Game System Groups")]
+        [PropertyOrder(11)]
+        [Button]
+        private void SetGroupIcon(GameSystemGroup group, SdfIconType icon)
+        {
+            if (group) { group.iconType = icon; OdinEditorWindow.GetWindow<GameSystemManagerEditor>().ForceMenuTreeRebuild(); }
+        }
+#endif
+        #endregion
+
+        #region DefineSymbols
+#if UNITY_EDITOR
+        [TitleGroup("Define Symbols")]
+        [PropertySpace(SpaceBefore = 15), PropertyOrder(10)]
+        [InfoBox("Not all Rufas scriping define symbols are being used for the current build target. To include in the project, copy exact text into PlayerSettings -> Other -> ScriptingDefineSymbols", SdfIconType.ExclamationCircleFill, VisibleIf = "NotUsingAllDefineSymbols")]
+        [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
+        public List<RufasScriptingDefineSymbolsManager.DefineSymbolCheck> rufasDefineSymbols = RufasScriptingDefineSymbolsManager.AllDefineSymbols();
+#endif
+        #endregion
 
         public override void BehaviourToRunDuringBootstrap()
         {
@@ -176,21 +233,16 @@ namespace Rufas
             }
         }
 
+
+
 #if UNITY_EDITOR
-
-        [HideInPlayMode]
-        [TitleGroup("Lists/Left/Game Systems")]
-        //[TitleGroup("Left/Game Systems")]
-        [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
-        public List<GameManagerSystemAddOptions> additionalGameSystems = new List<GameManagerSystemAddOptions>();
-
         private void RefreshWindowOnHiddenSystemsChange()
         {
             RefreshGameSystems();
             OdinEditorWindow.GetWindow<GameSystemManagerEditor>().ForceMenuTreeRebuild();
         }
 
-        [PropertyOrder(5)]
+        //[PropertyOrder(5)]
         public void RefreshGameSystems()
         {          
             gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
@@ -198,10 +250,10 @@ namespace Rufas
             //GameSys
 
             //  visibleGameSystems.Clear();
-            GameSystems.Clear();
+            ShowIndividualGameSystems.Clear();
             foreach(GameSystemParentClass parent in gameSystems)
             {
-                GameSystems.Add(new(this, parent));
+                ShowIndividualGameSystems.Add(new(this, parent));
             }
 
             if (Application.isPlaying == true) return;
@@ -255,31 +307,9 @@ namespace Rufas
                     }
                 }
             }
-
-            /*
-            //rufasSystemToggles.Clear();
-            gameSystemToggles.Clear();// = new GameSystemManagerToggle[standardToggleSize];//gameSystems.Length];
-          //  rufasBackendSystems.Clear();
-
-            foreach (GameSystemParentClass next in gameSystems)
-            {
-
-                if (next.IsRufasSystem() && next.AutogenerateGameSystem())
-                {
-                    rufasSystemToggles.Add(new GameSystemManagerToggle(this, next, next.showInManager));
-                }
-                else
-                {
-                    gameSystemToggles.Add(new GameSystemManagerToggle(this, next)//, next.showInManager));
-                }
-            }
-            */
         }
 
-        [PropertySpace(SpaceBefore = 15),PropertyOrder(10)]
-        [InfoBox("Not all Rufas scriping define symbols are being used for the current build target. To include in the project, copy exact text into PlayerSettings -> Other -> ScriptingDefineSymbols", SdfIconType.ExclamationCircleFill, VisibleIf = "NotUsingAllDefineSymbols")]
-        [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
-        public List<RufasScriptingDefineSymbolsManager.DefineSymbolCheck> rufasDefineSymbols = RufasScriptingDefineSymbolsManager.AllDefineSymbols();
+
 
 
         private void ResetSymbolList()
@@ -333,6 +363,13 @@ namespace Rufas
             objectToCreate.OnCreatedByEditor();
         }
         */
+
+        [PropertyOrder(100)]
+        [Button]
+        public void RefreshUI()
+        {
+            OdinEditorWindow.GetWindow<GameSystemManagerEditor>().ForceMenuTreeRebuild();
+        }
 
 
         [Serializable]

@@ -27,7 +27,6 @@ namespace Rufas
 
             GameSystemManager foundManager = null;
 
-
             if(managers.Length == 0)
             {
                 foundManager = ScriptableObject.CreateInstance<GameSystemManager>();
@@ -52,33 +51,22 @@ namespace Rufas
 
             foundManager.RefreshGameSystems();
 
+            foreach (GameSystemGroup group in foundManager.GameSystemGroups)
+            {
+                tree.Add(group.name, group,group.iconType);                
+            }
+
             var sortedList = foundManager.gameSystems.OrderBy(obj => obj.DesiredPath()).ToList();
 
             foreach (GameSystemParentClass next in sortedList)
             {
-                // if (next.showInManager)
-                // {
-                // if (next.IsRufasSystem())// && next.AutogenerateGameSystem())
-                // {
-                //     tree.Add("Rufas Core Systems/" + next.DesiredPath(), next, next.EditorIcon());
-                // }
-                // else
-                // {
-
-                // GUIContent iconContent = EditorGUIUtility.IconContent(next.GetType().ToString() + " Icon");
-                // string desiredPath = next.DesiredPath();
                 if (!foundManager.hiddenGameSystems.Contains(next))
                {
                     string[] split = next.DesiredPath().Split("/");
                     tree.Add(
-                        //next.DesiredPath().Replace("/", "-"),
                         split[split.Length - 1],
                         next, next.EditorIcon());
                 }
-                   // }
-
-                    //tree.
-               // }
             }
 
             return tree;

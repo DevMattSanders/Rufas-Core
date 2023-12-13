@@ -17,13 +17,19 @@ namespace Rufas
 {
     public class RufasSceneManager : GameSystem<RufasSceneManager>
     {
+        
+        [SerializeField]
+        [HideReferenceObjectPicker]
+        [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true, HideAddButton = true)]
+        [InlineButton("RefreshApplicationScenesList")]
+        public List<SceneInfo> applicationScenes = new List<SceneInfo>();
+        [PropertySpace(15)]
         [FoldoutGroup("Debug")] public CodeEvent onSceneLoadTriggered;
         [FoldoutGroup("Debug")] public CodeEvent onSceneLoadCompleted;
         [FoldoutGroup("Debug"), ReadOnly] public BoolWithCallback isCurrentlyLoadingScene;
         [FoldoutGroup("Debug"), ReadOnly] public FloatWithCallback sceneLoadPercent;
 
-        public string lastOpenedScene;
-
+        [FoldoutGroup("Current Snapshot")] public string lastOpenedScene;
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField] private List<string> nonAddressableOpenScenes = new List<string>();
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField, SerializeReference] private AssetReference queuedSceneToLoad;
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField, SerializeReference] public List<SceneInstance> openScenes = new List<SceneInstance>();
@@ -33,20 +39,15 @@ namespace Rufas
             RufasSceneManager.Instance.LoadSceneFromInstance(sceneInstance);
         }
 
-        [HorizontalGroup("H")][ReadOnly, SerializeField, HideInInspector] public string firstScene { get; private set; }
+        [HorizontalGroup("Debug/H")][ReadOnly, SerializeField, HideInInspector] public string firstScene { get; private set; }
 #if UNITY_EDITOR
-        [HorizontalGroup("H")][ReadOnly, SerializeField, ShowInInspector] public SceneAsset firstSceneAsset;
+        [HorizontalGroup("Debug/H")][ReadOnly, SerializeField, ShowInInspector] public SceneAsset firstSceneAsset;
 #endif
-        [HorizontalGroup("H")][ReadOnly, SerializeField, HideInInspector] public string loadingScene { get; private set; }
+        [HorizontalGroup("Debug/H")][ReadOnly, SerializeField, HideInInspector] public string loadingScene { get; private set; }
 #if UNITY_EDITOR
-        [HorizontalGroup("H")][ReadOnly, SerializeField, ShowInInspector] public SceneAsset loadingSceneAsset;
+        [HorizontalGroup("Debug/H")][ReadOnly, SerializeField, ShowInInspector] public SceneAsset loadingSceneAsset;
 #endif
-        [PropertySpace(15)]
-        [SerializeField]
-        [HideReferenceObjectPicker]
-        [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true, HideAddButton = true)]
-        [InlineButton("RefreshApplicationScenesList")]
-        public List<SceneInfo> applicationScenes = new List<SceneInfo>();
+        
 
         [ReadOnly, HideInEditorMode]
         public List<Object> sceneLoadStallers = new List<Object>();

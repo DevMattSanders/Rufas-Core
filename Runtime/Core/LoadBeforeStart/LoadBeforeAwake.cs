@@ -19,8 +19,9 @@ namespace Rufas
         //public BoolWithCallback finishedLoading = new BoolWithCallback(false);
 
         //[Obsolete]
-       // public List<GameObject> ddolBeforeScene = new List<GameObject>();
+        // public List<GameObject> ddolBeforeScene = new List<GameObject>();
 
+        [ListDrawerSettings(ShowFoldout = false)]
         public List<AssetReferenceGameObject> addressablesToLoad = new List<AssetReferenceGameObject>();
 
         public static Transform loadBeforeStartParent;

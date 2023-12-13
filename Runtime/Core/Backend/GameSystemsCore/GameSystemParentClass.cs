@@ -13,29 +13,32 @@ using UnityEngine;
 
 namespace Rufas
 {
-    //[InlineEditor]
     public class GameSystemParentClass : SerializedScriptableObject
     {
 #if UNITY_EDITOR
 
-        // [ShowInInlineEditors]
-        // [InlineProperty]
-        //[OnValueChanged("RefreshGameSystemEditor")]
-        //[HideInInspector]
-       // public bool showInEditor = true;
-
-      //  [Button("Show In Game System Editor")]
-      //  private void UpdateGameSystem()
-       // {
-        //    showInEditor = !showInEditor;
-
-        //    OdinEditorWindow.GetWindow<GameSystemManagerEditor>().ForceMenuTreeRebuild();
-       // }
-
+        [HideInInlineEditors]
         [SerializeField,HideLabel] private GameSystemParentClass selfRef;
-     //   [HideInInspector]
-     //   public bool showInManager = true;
-         
+
+        [PropertySpace(5)]
+        [ShowInInlineEditors]
+        [GUIColor("#7994a0")]
+        [PropertyOrder(-1)]
+        [ReadOnly,Button(ButtonHeight = 10,Style = ButtonStyle.Box,ButtonAlignment = 0.5f,Stretch = true,Name ="$TitleText")]
+        private void Title()
+        {
+#if UNITY_EDITOR
+            Selection.activeObject = this;
+#endif
+        }
+        
+        private string TitleText()
+        {
+            return "<b><size=14><color=white>" + DesiredName() + "</color></size></b>";
+        }
+
+        //public static SdfIconType editorI;
+
         public virtual SdfIconType EditorIcon()
         {            
             return SdfIconType.CircleFill;
@@ -159,6 +162,6 @@ namespace Rufas
         {
 
         }
-
+        
     }
 }

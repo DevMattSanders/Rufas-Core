@@ -13,13 +13,16 @@ namespace Rufas.UnitySystems
     {
         public static CodeEvent UnityAuthenticationCompleted;
 
-        [Header("Void Event that triggers Unitys Authentication!")]
+        //[Header("Void Event that triggers Unitys Authentication!")]
         [Required]
         public VoidEvent onPlatformCompletedLogin;
 
-        [Header("Oculus")]
-        public ULongVariable oculusLogin;
-        public StringVariable oculusProof;
+
+        [TitleGroup("Oculus Auth", horizontalLine: true)]
+        [HorizontalGroup("Oculus Auth/H")] public ULongVariable oculusLogin;
+        [HorizontalGroup("Oculus Auth/H")] public StringVariable oculusProof;
+
+       
 
         public override SdfIconType EditorIcon() { return SdfIconType.Globe2; }
 
