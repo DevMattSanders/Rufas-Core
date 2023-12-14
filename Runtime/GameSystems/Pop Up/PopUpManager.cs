@@ -10,11 +10,9 @@ namespace Rufas
 {
     public class PopUpManager : GameSystem<PopUpManager>
     {
-        //public static PopUpManager Instance;
-
-        [SerializeField, ReadOnly] private PopupReference currentPopUp;
-        [SerializeField, ReadOnly] private List<PopupReference> queuedPopUpData = new List<PopupReference>();
-        [SerializeField, ReadOnly] private List<PopupMonoBehaviour> instantiatedPopups = new List<PopupMonoBehaviour>();
+        [FoldoutGroup("Debug"),SerializeField, ReadOnly] private PopupReference currentPopUp;
+        [FoldoutGroup("Debug"), SerializeField, ReadOnly] private List<PopupReference> queuedPopUpData = new List<PopupReference>();
+        [FoldoutGroup("Debug"), SerializeField, ReadOnly] private List<PopupMonoBehaviour> instantiatedPopups = new List<PopupMonoBehaviour>();
 
         [HideInInspector] public CodeEvent<PopupReference> OnNewCurrentPopUpSet;
         [HideInInspector] public CodeEvent OnPopUpRemoved;

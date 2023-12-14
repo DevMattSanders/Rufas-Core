@@ -10,14 +10,15 @@ namespace Rufas.UnitySystems
     public class UnityAnalytics : GameSystem<UnityAnalytics>
     {
         [SerializeField] private bool unityAnalyticsEnabled = true;
-        [ReadOnly, SerializeField] private bool analyticsStartedDataCollection;
+        [ReadOnly, SerializeField] private bool analyticsStartedDataCollection = false;
 
         public override SdfIconType EditorIcon() { return SdfIconType.BarChartSteps; }
         public override string DesiredPath() { return "Platform & Third Party/Unity/Analytics"; }
 
         public override void PreInitialisationBehaviour()
         {
-            base.PreInitialisationBehaviour();            
+            base.PreInitialisationBehaviour();
+            ResetVals();
             UnityAuthenticationSystem.UnityAuthenticationCompleted.AddListener(OnUnityLoggedIn);
         }
 
@@ -25,6 +26,13 @@ namespace Rufas.UnitySystems
         {
             base.EndOfApplicaitonBehaviour();
             if (analyticsStartedDataCollection == false) AnalyticsService.Instance.StopDataCollection();
+
+            ResetVals();
+        }
+
+        private void ResetVals()
+        {
+            analyticsStartedDataCollection = false;
         }
 
         public void OnUnityLoggedIn()

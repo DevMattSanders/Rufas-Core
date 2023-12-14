@@ -15,6 +15,7 @@ namespace Rufas.UnitySystems
 
         [SerializeField] private bool ugcSystemReadyToGo;
 
+
         public override string DesiredPath()
         {
             return "Platform & Third Party/Unity/User Generated Content";
@@ -40,6 +41,14 @@ namespace Rufas.UnitySystems
         {
             base.EndOfApplicaitonBehaviour();
             ugcSystemReadyToGo = false;
+            jsonFile = null;
+            uploadName = "";
+            uploadDescription = "";
+            thumbnail = null;
+        }
+
+        private void ResetVals()
+        {
             jsonFile = null;
             uploadName = "";
             uploadDescription = "";
@@ -106,7 +115,6 @@ namespace Rufas.UnitySystems
 
             // (thumbnailBytes);
 
-
             try
             {
                 if (thumbnailBytes != null)
@@ -148,12 +156,6 @@ namespace Rufas.UnitySystems
         }
 
 
-        private void ResetVals()
-        {
-            jsonFile = null;
-            uploadName = "";
-            uploadDescription = "";
-            thumbnail = null;
-        }
+      
     }
 }

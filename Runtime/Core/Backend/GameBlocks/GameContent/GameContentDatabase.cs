@@ -7,11 +7,11 @@ namespace Rufas
 {
     public class GameContentDatabase : GameSystem<GameContentDatabase>
     {
-        [TitleGroup("UniqueIDs to GameContent")]
+       // [TitleGroup("UniqueIDs to GameContent")]
         [HideInEditorMode]
         public Dictionary<string, GameContentReference> keysToObjects = new Dictionary<string, GameContentReference>();
 
-        [TitleGroup("GameContent to UniqueIDs")]
+       // [TitleGroup("GameContent to UniqueIDs")]
         [HideInEditorMode]
         public Dictionary<GameContentReference, string> objectsToKeys = new Dictionary<GameContentReference, string>();
 
