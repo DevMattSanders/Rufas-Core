@@ -187,7 +187,7 @@ namespace Rufas.UnitySystems
             }
 
 
-            [ReadOnly, HideLabel] public string id;
+            [HideInInspector] public string id;
             [HideLabel, ShowIf("thumbnail"), HorizontalGroup("H"),PreviewField]            public Texture2D thumbnail;
             [ReadOnly, HideLabel, HorizontalGroup("H")] public string title;
             [ReadOnly, HideLabel, HorizontalGroup("H")] public string description;

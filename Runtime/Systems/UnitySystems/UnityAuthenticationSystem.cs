@@ -46,6 +46,8 @@ namespace Rufas.UnitySystems
 
             Debug.Log("Unity Authentification Completed! PlayerID: " + AuthenticationService.Instance.PlayerId);
             UnityAuthenticationCompleted.Raise();
+
+
         }
     }
 }
