@@ -15,7 +15,6 @@ namespace Rufas.UnitySystems
 
         [SerializeField] private bool ugcSystemReadyToGo;
 
-
         public override string DesiredPath()
         {
             return "Platform & Third Party/Unity/User Generated Content";
@@ -29,26 +28,20 @@ namespace Rufas.UnitySystems
         public override void PreInitialisationBehaviour()
         {
             base.PreInitialisationBehaviour();
-            ugcSystemReadyToGo = false;
-            jsonFile = null;
-            uploadName = "";
-            uploadDescription = "";
-            thumbnail = null;
+            ResetVals();
             UnityAuthenticationSystem.UnityAuthenticationCompleted.AddListener(OnUnityLoggedIn);
         }
 
         public override void EndOfApplicaitonBehaviour()
         {
             base.EndOfApplicaitonBehaviour();
-            ugcSystemReadyToGo = false;
-            jsonFile = null;
-            uploadName = "";
-            uploadDescription = "";
-            thumbnail = null;
+            ResetVals();
         }
 
         private void ResetVals()
         {
+            contentIds.Clear();
+            ugcSystemReadyToGo = false;
             jsonFile = null;
             uploadName = "";
             uploadDescription = "";
@@ -58,8 +51,36 @@ namespace Rufas.UnitySystems
         private void OnUnityLoggedIn()
         {
             ugcSystemReadyToGo = true;
+
+            RefreshFromServer();
         }
 
+        public List<ContentReference> contentIds = new List<ContentReference>();
+
+      
+
+        [Button,EnableIf("ugcSystemReadyToGo")]
+        public async void RefreshFromServer()
+        {
+            
+            try
+            {
+                contentIds.Clear();
+
+                PagedResults<Content> contentPagedResults = await UgcService.Instance.GetContentsAsync();
+
+                foreach (Content content in contentPagedResults.Results)
+                {
+                    contentIds.Add(new ContentReference(content.Id, content.Name, content.Description));
+                }
+            }
+            catch (UgcException e)
+            {
+                Debug.Log(e);
+            }
+        }
+
+        #region DebugCreateAndUpload
         [Space]
         [EnableIf("ugcSystemReadyToGo")]
         public TextAsset jsonFile;
@@ -127,7 +148,6 @@ namespace Rufas.UnitySystems
                         Thumbnail = thumbnailStream
                     });
                     Debug.Log("Created Content with Thumbnail: " + content.Id);
-                    ResetVals();
                 }
                 else
                 {
@@ -136,7 +156,6 @@ namespace Rufas.UnitySystems
                         IsPublic = true
                     });
                     Debug.Log("Created Content: " + content.Id);
-                    ResetVals();
                 }
 
 
@@ -147,6 +166,8 @@ namespace Rufas.UnitySystems
             }
         }
 
+        #endregion
+
         [PropertySpace(spaceBefore: 10)]
         [EnableIf("ugcSystemReadyToGo")]
         [Button]
@@ -155,7 +176,101 @@ namespace Rufas.UnitySystems
             await UgcService.Instance.DeleteContentAsync(contentID);
         }
 
+        [Serializable,InlineEditor(InlineEditorObjectFieldModes.Hidden)]
+        public class ContentReference
+        {
+            public ContentReference(string _id, string _title, string _description)
+            {
+                id = _id;
+                title = _title;
+                description = _description;
+            }
 
-      
+
+            [ReadOnly, HideLabel] public string id;
+            [HideLabel, ShowIf("thumbnail"), HorizontalGroup("H"),PreviewField]            public Texture2D thumbnail;
+            [ReadOnly, HideLabel, HorizontalGroup("H")] public string title;
+            [ReadOnly, HideLabel, HorizontalGroup("H")] public string description;
+            
+            public Content downloadedContent;
+            //public 
+
+
+            [ReadOnly]
+            public bool IsThumbnailDownloaded;
+            [Button]
+            [HideIf("thumbnail")]
+            public async void DownloadThumbnail()
+            {
+                try
+                {
+                    if (IsThumbnailDownloaded || string.IsNullOrEmpty(id)) return;
+
+                    Content content = await UgcService.Instance.GetContentAsync(new GetContentArgs(id));
+                    await UgcService.Instance.DownloadContentDataAsync(content, false, true);
+                    // byte[] downloadedThumbnailData = ;
+
+                    if (thumbnail == null) thumbnail = new Texture2D(1,1);//ScreenshotUtility.Instance.pixelWidth, ScreenshotUtility.Instance.pixelHeight);
+                    thumbnail.LoadImage(content.DownloadedThumbnail);
+                    IsThumbnailDownloaded = true;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(ex);                    
+                }
+            }
+            [Button]
+            [ShowIf("thumbnail")]
+            public void DeleteDownloadedThumbnail()
+            {
+                if (!IsThumbnailDownloaded) return;              
+                //thumbnail = null;
+                Destroy(thumbnail);
+                //thumbnail.
+                IsThumbnailDownloaded = false;
+            }
+
+            [ReadOnly]
+            public bool IsContentDownloaded;
+            bool downloading = false;
+            
+            [Button]
+            [HideIf("downloadedContent")]
+            public async void DownloadContent()
+            {
+                if (downloading) return;
+
+                downloading = true;
+                try
+                {
+                    if (IsContentDownloaded || string.IsNullOrEmpty(id)) return;
+
+                    Content content = await UgcService.Instance.GetContentAsync(new GetContentArgs(id));
+                    await UgcService.Instance.DownloadContentDataAsync(content, true, false);
+                    //Example here
+                    downloadedContent = content;
+                    string modText = System.Text.Encoding.UTF8.GetString(content.DownloadedContent);
+                    Debug.Log(modText);
+
+                    IsContentDownloaded = true;
+                    downloading = false;
+                }
+                catch(Exception ex) 
+                {
+                    Debug.LogError(ex);
+                    downloading = false;
+                }
+            }
+
+            [Button]
+            [ShowIf("downloadedContent")]
+            public void DeleteDownloadedContent()
+            {
+                if (!IsContentDownloaded) return;
+                downloadedContent = null;
+                IsContentDownloaded = false;
+            }
+        }
+
     }
 }
