@@ -120,8 +120,6 @@ namespace Rufas.UnitySystems
                 return;
             }
 
-            //   using FileStream contentFileStream = File.Open(Application.dataPath + "/UGC/" + jsonFile.name, FileMode.Open, FileAccess.Read, FileShare.Read)
-
             string jsonContent = jsonFile.text;
 
             byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonContent);
@@ -133,8 +131,6 @@ namespace Rufas.UnitySystems
             {
                 thumbnailBytes = thumbnail.EncodeToPNG();
             }
-
-            // (thumbnailBytes);
 
             try
             {
@@ -226,6 +222,7 @@ namespace Rufas.UnitySystems
                 if (!IsThumbnailDownloaded) return;              
                 //thumbnail = null;
                 Destroy(thumbnail);
+                thumbnail = null;
                 //thumbnail.
                 IsThumbnailDownloaded = false;
             }

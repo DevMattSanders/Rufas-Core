@@ -29,63 +29,95 @@ namespace Rufas
             return "Screenshot Utility";
         }
 
-        public static void CaptureScreenshotNow() { ScreenshotUtility.Instance?.CaptureDefaultScreenshot(); }
-
-
-        public override void PreInitialisationBehaviour()
-        {
-            base.PreInitialisationBehaviour();        
-            RefreshFolder();
-        }
+        public static void CaptureScreenshotNow() { ScreenshotUtility.Instance?.CaptureScreenshot(); }
+        public override void PreInitialisationBehaviour() { base.PreInitialisationBehaviour(); RefreshFolder(); }
 
         [Button]
-        public void CaptureDefaultScreenshot()
+        public void CaptureScreenshot()
         {
-            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot("Screenshot" + screenshots.Count,(Texture2D screenshot) =>
+            CaptureScreenshot((Texture2D tex) =>
+            {
+                if (tex != null)
+                {
+                    Debug.Log("Captured texture successfully!");
+
+                    Debug.Log(tex.mipmapCount + " " + tex.dimension);
+
+                }
+                else
+                {
+                    Debug.LogError("Failed to capture texture!");
+                }
+            });
+        }
+
+        public void CaptureScreenshot(Action<Texture2D> returnTexture)
+        {
+            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot("Screenshot" + screenshots.Count, pixelWidth, pixelHeight, returnTexture));
+        }
+
+        public void CaptureScreenshot(string _screenshotName, Action<Texture2D> returnTexture)
+        {
+            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, pixelWidth, pixelHeight, returnTexture));
+        }
+
+        public void CaptureScreenshot(string _screenshotName, int _pixelWidth, int _pixelHeight, Action<Texture2D> returnTexture)
+        {
+
+            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, _pixelWidth, _pixelHeight, returnTexture));
+
+            /*
+            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, _pixelWidth, _pixelHeight, (Texture2D screenshot) =>
             {
                 if (screenshot != null)
                 {
                     screenshots.Add(screenshot);
                     mostRecentScreenshot = screenshot;
                     Debug.Log("Screenshot captured with default width and height!");
+                    //Call returnTexture here with result?
                 }
                 else
                 {
                     Debug.LogError("Failed to capture screenshot!");
+                    //Call returnTexture here with null?
                 }
             }));
-            /*
-            CaptureScreenshot(pixelWidth, pixelHeight, "Screenshot: " + screenshots.Count, (Texture2D screenshot) =>
-            {
-                // Handle the captured screenshot
-                if (screenshot != null)
-                {
-                    Debug.Log("Screenshot captured with default width and height!");
-                }
-                else
-                {
-                    Debug.LogError("Failed to capture screenshot!");
-                }
-            });
             */
         }
 
-        private IEnumerator CoroutineScreenshot(string screenshotName, Action<Texture2D> onComplete)
+        private IEnumerator CoroutineScreenshot(string screenshotName, int _pixelWidth, int _pixelHeight, Action<Texture2D> onComplete)
         {
+
             yield return new WaitForEndOfFrame();
 
-            Texture2D screenshotTexture = new Texture2D(Screen.width, Screen.height, TextureFormat.ARGB32, false);
+            Texture2D screenshotTexture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGBA32, true);
 
             // Capture the full screen
             screenshotTexture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
             screenshotTexture.Apply();
 
             // Resize the texture to the lower resolution on the GPU
-            Texture2D resizedTexture = ResizeTextureGPU(screenshotTexture, pixelWidth, pixelHeight);
+            Texture2D resizedTexture = ResizeTextureGPU(screenshotTexture, _pixelWidth, _pixelHeight);
 
             // Save the resized texture
             byte[] byteArray = resizedTexture.EncodeToPNG();
-            System.IO.File.WriteAllBytes(DataPath() + "/" + screenshotName + ".png", byteArray);
+
+            string pathToCreate = DataPath() + "/" + screenshotName + ".png";
+
+            // Split the path after the last "/"
+            int lastSeparatorIndex = pathToCreate.LastIndexOf('/');
+            string directoryPart = pathToCreate.Substring(0, lastSeparatorIndex);
+
+            // Check if the directory exists, and create it if it doesn't
+            if (!Directory.Exists(directoryPart))
+            {
+                Directory.CreateDirectory(directoryPart);
+            }
+
+            System.IO.File.WriteAllBytes(pathToCreate, byteArray);
+
+            screenshots.Add(resizedTexture);
+            mostRecentScreenshot = resizedTexture;
 
             // Invoke the onComplete callback with the resized texture
             onComplete?.Invoke(resizedTexture);
@@ -93,19 +125,23 @@ namespace Rufas
 
         private Texture2D ResizeTextureGPU(Texture2D sourceTexture, int targetWidth, int targetHeight)
         {
-            RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight, 0, RenderTextureFormat.ARGB32);
+            RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight, 0, RenderTextureFormat.Default,RenderTextureReadWrite.Linear);
             rt.filterMode = FilterMode.Bilinear;
 
             Graphics.Blit(sourceTexture, rt);
 
-            Texture2D resultTexture = new Texture2D(targetWidth, targetHeight, TextureFormat.ARGB32, false);
+            Texture2D resultTexture = new Texture2D(targetWidth, targetHeight);//, TextureFormat.RGBA32, true); // Set isReadable to true
+            resultTexture.filterMode = FilterMode.Bilinear;
+            resultTexture.wrapMode = TextureWrapMode.Clamp;
             RenderTexture.active = rt;
             resultTexture.ReadPixels(new Rect(0, 0, targetWidth, targetHeight), 0, 0);
-            resultTexture.Apply();
 
+            resultTexture.Apply();
             RenderTexture.active = null;
             RenderTexture.ReleaseTemporary(rt);
 
+
+            Debug.Log(resultTexture.isReadable);
             return resultTexture;
         }
         /*
