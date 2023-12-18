@@ -123,6 +123,43 @@ namespace Rufas
             onComplete?.Invoke(resizedTexture);
         }
 
+        public void DeleteScreenshot(string screenshotAddress)
+        {
+            // Construct the full path to the screenshot file
+            string screenshotPath = DataPath() + "/" + screenshotAddress + ".png";
+
+            // Check if the file exists before attempting to delete
+            if (File.Exists(screenshotPath))
+            {
+                // Delete the file
+                File.Delete(screenshotPath);
+                Debug.Log("Screenshot deleted: " + screenshotAddress);
+
+                // Optional: Remove the screenshot from the list
+                RemoveScreenshotFromList(screenshotAddress);
+            }
+            else
+            {
+                Debug.LogWarning("Screenshot not found: " + screenshotAddress);
+            }
+        }
+
+        private void RemoveScreenshotFromList(string screenshotName)
+        {
+            // Optional: Remove the screenshot from your internal list
+            Texture2D screenshotToRemove = screenshots.Find(tex => tex.name == screenshotName);
+
+            if (screenshotToRemove != null)
+            {
+                screenshots.Remove(screenshotToRemove);
+                Debug.Log("Screenshot removed from the list: " + screenshotName);
+            }
+            else
+            {
+                Debug.LogWarning("Screenshot not found in the list: " + screenshotName);
+            }
+        }
+
         private Texture2D ResizeTextureGPU(Texture2D sourceTexture, int targetWidth, int targetHeight)
         {
             RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight, 0, RenderTextureFormat.Default,RenderTextureReadWrite.Linear);

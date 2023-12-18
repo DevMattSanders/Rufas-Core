@@ -121,7 +121,7 @@ namespace Rufas
             gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
 #endif
 
-          //  Debug.Log("GAME_SYSTEM_MANAGER: 2");
+            Debug.Log("GAME_SYSTEM_MANAGER: 2");
 
             allSystemsInitialised.Value = false;
 
