@@ -3,67 +3,88 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
-[System.Serializable]
-public class GameSaveFile
+[Serializable]
+public class SaveFile
 {
-    public string fileName;
-    public DateTime dateTime;
+    public static CodeEvent<SaveFile, SaveTypeToken> Loaded;
+    public static CodeEvent<SaveFile,SaveTypeToken> Saving;
 
-    public object saveData;
-    public string thumnailID;
-
-     private bool savingLockedWhilstCompletingProcess = false;
-     private bool saveLocallyNext = false;
-
-    [Button]
-    public void SetFileData(string dataToSave,bool captureNewScreenshot = false, bool _saveLocallyNext = false)
+    public static Metadata LoadMetadata(string fileName)
     {
-        if (savingLockedWhilstCompletingProcess) return;
-
-        saveLocallyNext = false;
-
-        saveData = dataToSave;
-        dateTime = DateTime.Now;
-
-        if (captureNewScreenshot)
+        if (File.Exists(fileName))
         {
-            CaptureScreenshot();
+            using (StreamReader reader = new StreamReader(fileName))
+            {
+                string json = reader.ReadToEnd();
+                Metadata metadata = JsonUtility.FromJson<Metadata>(json);
+                return metadata;
+            }
         }
         else
         {
-            PostScreenshot();
+            Debug.LogError($"File not found: {fileName}");
+            return null;
+        }
+        //return JsonUtility.FromJson<Metadata>(fileName);
+    }
+
+    public static SaveFile LoadSaveFile(string fileName)
+    {
+        return JsonUtility.FromJson<SaveFile>(fileName);
+    }
+
+    public Metadata metadata; 
+
+    [SerializeField]
+    public Dictionary<string,Section> sections = new Dictionary<string,Section>();
+
+    public List<string> exampleSections = new List<string>();
+
+    public bool Contains(string key, out Section val)
+    {
+        if (sections.ContainsKey(key))
+        {
+            val = sections[key];
+            return true;
+        }
+        else
+        {
+            val = null;
+            return false;
         }
     }
 
-    [Button]
-    public void CaptureScreenshot()
+    public void Add(string key,Section section,bool replaceIfExists = false)
     {
-        if (savingLockedWhilstCompletingProcess) return;
-
-        savingLockedWhilstCompletingProcess = true;
-        string thumnailID = System.Guid.NewGuid().ToString();
-
-        ScreenshotUtility.Instance.CaptureScreenshot("GameSaves/"+thumnailID,(Texture2D texture) =>
+        if (!sections.ContainsKey(key))
         {
-            savingLockedWhilstCompletingProcess = false;
-            if (texture != null)
-            {
-                PostScreenshot();
-            }
-            else
-            {
-                
-            }
-        });
+            sections.Add(key, section);
+        }
+        else if (replaceIfExists) //Probably dangerous to use this
+        {
+            sections[key] = section;
+        }
+        else
+        {
+            Debug.LogError("Multiple values added by same value name in save file!");
+        }        
     }
 
-    private void PostScreenshot()
+    [Serializable]
+    public class Section
     {
-        if (saveLocallyNext)
-        {
-            //string json = SaveFile            
-        }
+        public Dictionary<string, string> sectionData = new Dictionary<string, string>();
+    }
+
+    [Serializable]
+    public class Metadata
+    {
+        public string name;
+        public string saveTypeID;
+        public string dateTime;
+        public string thumbnailID;
     }
 }

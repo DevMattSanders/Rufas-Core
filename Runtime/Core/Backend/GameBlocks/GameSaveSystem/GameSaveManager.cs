@@ -10,8 +10,8 @@ using UnityEngine;
 
 public class GameSaveManager : GameSystem<GameSaveManager>
 {
-    public static CodeEvent<SaveFile, SaveTypeToken> SaveFileCollecting;
-    public static CodeEvent<SaveFile, SaveTypeToken> SaveFileLoading;
+    public static CodeEvent<GameSaveFile, SaveTypeToken> SaveFileCollecting;
+    public static CodeEvent<GameSaveFile, SaveTypeToken> SaveFileLoading;
     public static CodeEvent saveFilesRefreshed;
 
 
@@ -27,7 +27,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     //Ignore this for now
     public List<SaveFilePointer> ugcContentFiles = new List<SaveFilePointer>();
 
-
+    public List<UnityEngine.Object> delaySavingWhilstAnyInList = new List<UnityEngine.Object>();
 
     //Current saving instance
     [BoxGroup("Save Instance")][SerializeField,ReadOnly] private bool savingNow = false;
@@ -104,28 +104,42 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         currentScreenshotID = _screenshotID;
 
         //Method to check if any files aleady exist with this name?    
-        if (ES3.KeyExists(currentFileName, filePath: saveFolder + currentToken.additionalSavePath))
+        if (ES3.KeyExists(currentFileName, filePath: saveFolder +"/"+ currentToken.additionalSavePath + "/" + currentFileName))
         {
             //No popup yet so just silently save over for now
-            ConfirmSave();
+            CoroutineMonoBehaviour.i.StartCoroutine(ConfirmSave());
         }
         else
         {
-            ConfirmSave();
+            CoroutineMonoBehaviour.i.StartCoroutine(ConfirmSave());
         }
     }
 
-    private void ConfirmSave()
+    private IEnumerator ConfirmSave()
     {
-        try
-        {
-            SaveFile saveContainer = new SaveFile();
+       
+            GameSaveFile saveContainer = new GameSaveFile();
                         
             SaveFileCollecting.Raise(saveContainer, currentToken);
 
-            //*? maybe a system here to lock the rest of the method whilst various systems are async placing data into the save container?
-            //A list of 'holders' that won't progress this script unless it's empty?
+        while (delaySavingWhilstAnyInList.Count > 0)
+        {
+            for (int i = 0; i < delaySavingWhilstAnyInList.Count; i++)
+            {
+                if (delaySavingWhilstAnyInList[i] == null)
+                {
+                    delaySavingWhilstAnyInList.RemoveAt(i);
+                }
+            }
 
+            yield return null;
+        }
+
+        //*? maybe a system here to lock the rest of the method whilst various systems are async placing data into the save container?
+        //A list of 'holders' that won't progress this script unless it's empty?
+
+        try
+        {
 
             //Now create or update the actual save pointer
             SaveFilePointer pointer = null;
@@ -139,18 +153,40 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             {
                 pointer = new SaveFilePointer(currentFileName, currentToken.UniqueID, DateTime.Now.ToString(), currentScreenshotID);
                 pointersByFileName.Add(currentFileName, pointer);
-            }          
+            }
 
+            //ES3.se
             //Saving a save pointer so that I can later access the name, thumbnail and
             //dateTime without having to load the full save file
             ES3.Save(currentFileName, pointer, filePath: "SavePointers");
 
+            var settings = new ES3Settings();// ES3.CompressionType.Gzip);
+
+            string filePath = saveFolder + "/" + currentToken.additionalSavePath + "/" + currentFileName;
+
             //Save the full save file!
-            ES3.Save(currentFileName, saveContainer, filePath: saveFolder + currentToken.additionalSavePath);
+            ES3.Save(currentFileName, saveContainer, filePath, settings);
+
+            outputJson = ES3.LoadRawString(filePath, settings);
+
+            //var settings = ;
+            ES3.SaveRaw(outputJson,"TempLoaded", new ES3Settings(ES3.Location.Cache));
+
+            file = ES3.Load<GameSaveFile>(currentFileName, "TempLoaded", new ES3Settings(ES3.Location.Cache));
+
+            //file = JsonUtility.FromJson<GameSaveFile>(outputJson);
+
+            Debug.Log(file.dataKeyValues.Count);
+
+            foreach(KeyValuePair<string,string> next in file.dataKeyValues)
+            {
+                Debug.Log(next.Key + " | " + next.Value);
+            }
 
             RefreshSavePointers();
             ClearCurrentSaveStamp();
             savingNow = false;
+
         }
         catch (Exception e) 
         {
@@ -160,6 +196,11 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             savingNow = false;
         }
     }
+
+    [TextArea(minLines: 20, maxLines: 50)]
+    public string outputJson;
+
+    public GameSaveFile file;
 
     [Button]
     private void RefreshSavePointers()
@@ -186,21 +227,9 @@ public class GameSaveManager : GameSystem<GameSaveManager>
                     {
                         Debug.LogError($"Error loading SaveFilePointer for key {key}: {e.Message}");
                     }
-                    /*
-                    SaveFilePointer loaded = ES3.Load<SaveFilePointer>(key, filePath: "SavePointers");
-
-                    if (loaded != null)
-                    {
-                        localDeviceFiles.Add(loaded);
-                    }
-                    */
                 }
             }
         }
-
-       // fileByName = ES3.GetFiles("GameSavesTrackFiles"); //What do I need to write here?
-
-        
 
         saveFilesRefreshed.Raise();
     }
@@ -208,6 +237,10 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     public void LoadByFileName(string fileName, SaveTypeToken token)
     {
         RefreshSavePointers();
+
+        //JsonUtilityArrays
+        //JsonUtility.ToJson()
+
         SaveFilePointer foundPointer = null;
 
         foreach(SaveFilePointer pointer in localDeviceFiles)
@@ -228,40 +261,15 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         }
     }
 
-   // public string[] fileByName;
-
-    [SerializeField]
-    public Byte[] brokenDown;
     public void Load(SaveFilePointer saveFilePointer,SaveTypeToken token)
-    {     
-    
-
+    {        
         if (ES3.KeyExists(saveFilePointer.fileName, filePath: saveFolder + token.additionalSavePath))
         {
-            SaveFile file = ES3.Load<SaveFile>(saveFilePointer.fileName,filePath: saveFolder + token.additionalSavePath);
-        //    string byString = ES3.LoadString(saveFilePointer.fileName,null, filePath: saveFolder + token.additionalSavePath);
-
-            //ES3.Load()
-            brokenDown = ES3.Serialize<SaveFile>(file);
-
-            ES3.Save<byte[]>("BrokenDown", brokenDown, filePath: "BrokenDown");
-
-           // Debug.Log(byString);
-
+            GameSaveFile file = ES3.Load<GameSaveFile>(saveFilePointer.fileName,filePath: saveFolder + token.additionalSavePath);
+        
             if (file != null)
             {
                 SaveFileLoading.Raise(file, token);
-                /* Debuging loaded data
-                Debug.Log("Loading!");
-                Debug.Log(saveFilePointer.fileName);
-                Debug.Log(saveFilePointer.dateTime);
-                Debug.Log(saveFilePointer.thumbnailID);
-
-                foreach (KeyValuePair<string, string> next in file.dataKeyValues)
-                {
-                    Debug.Log(next.Key + " | " + next.Value);
-                }
-                */
             }
             else
             {
@@ -270,17 +278,24 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         }
     }
 }
+//
+// 
 
 [Serializable]
-public class SaveFile
+public class GameSaveFile
 {
-    
-
     public Dictionary<string, string> dataKeyValues = new Dictionary<string, string>();
-    public void Add(string key,string value)
-    {        
-        dataKeyValues.Add(key, value);
-    }
+    //public List<string> data = new List<string>();
+    public void Add(string key, string val)
+    {
+        dataKeyValues.Add(key, val);
+       // data.Add(key + "," + value);
+    }    
+
+  //  public bool ContainsKey(string key)
+   // {
+        //Way to confirm here from data?
+   // }
 }
 
 //A data container class used to make note of local save files without actually loading their
