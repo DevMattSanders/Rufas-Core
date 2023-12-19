@@ -20,7 +20,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     [SerializeField] private GameObject thumbnailPrefab;    //Replace with addressable asset reference later!
     [SerializeField] private Texture2D defaultThumbnail;
 
-    Dictionary<string, SaveFilePointer> pointersByFileName = new Dictionary<string, SaveFilePointer>();
+    public Dictionary<string, SaveFilePointer> pointersByFileName = new Dictionary<string, SaveFilePointer>();
 
     public List<SaveFilePointer> localDeviceFiles = new List<SaveFilePointer>();
 
@@ -146,14 +146,15 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
             if (pointersByFileName.ContainsKey(currentFileName))
             {
-               // pointersByFileName[currentFileName].UpdateValues(currentFileName, currentToken.UniqueID, DateTime.Now.ToString(), currentScreenshotID);
-                pointersByFileName[currentFileName].thumbnailID = currentScreenshotID;
+                // pointersByFileName[currentFileName].UpdateValues(currentFileName, currentToken.UniqueID, DateTime.Now.ToString(), currentScreenshotID);
+                // pointersByFileName[currentFileName].thumbnailID = currentScreenshotID;
+                pointersByFileName.Remove(currentFileName);
             }
-            else
-            {
+          //  else
+          //  {
                 pointer = new SaveFilePointer(currentFileName, currentToken.UniqueID, DateTime.Now.ToString(), currentScreenshotID);
                 pointersByFileName.Add(currentFileName, pointer);
-            }
+          //  }
 
             //ES3.se
             //Saving a save pointer so that I can later access the name, thumbnail and
@@ -163,6 +164,10 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             var settings = new ES3Settings();// ES3.CompressionType.Gzip);
 
             string filePath = saveFolder + "/" + currentToken.additionalSavePath + "/" + currentFileName;
+
+            //settings
+            //settings.com
+
 
             //Save the full save file!
             ES3.Save(currentFileName, saveContainer, filePath, settings);
@@ -263,9 +268,9 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     public void Load(SaveFilePointer saveFilePointer,SaveTypeToken token)
     {        
-        if (ES3.KeyExists(saveFilePointer.fileName, filePath: saveFolder + token.additionalSavePath))
+        if (ES3.KeyExists(saveFilePointer.fileName, filePath: saveFolder + "/" + token.additionalSavePath + "/" + saveFilePointer.fileName))
         {
-            GameSaveFile file = ES3.Load<GameSaveFile>(saveFilePointer.fileName,filePath: saveFolder + token.additionalSavePath);
+            GameSaveFile file = ES3.Load<GameSaveFile>(saveFilePointer.fileName,filePath: saveFolder + "/" + token.additionalSavePath + "/" + saveFilePointer.fileName);
         
             if (file != null)
             {
@@ -326,6 +331,13 @@ public class SaveFilePointer
     {
         GameSaveManager.Instance.Load(this, (SaveTypeToken)ScriptablesUniqueIDDatabase.Instance.gameContentObjects_KeyToObject[saveTypeToken]);
     }
+
+   // public void Delete()
+  //  {
+        //GameSaveManager.Instance.Delete(this,)
+       // GameSaveManager.Instance.pointersByFileName.Remove(fileName);
+       // GameSaveManager.Instance
+   // }
 }
 
 /*

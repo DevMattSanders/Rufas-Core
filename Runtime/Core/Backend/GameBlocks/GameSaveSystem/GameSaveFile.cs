@@ -41,7 +41,6 @@ public class SaveFile
     [SerializeField]
     public Dictionary<string,Section> sections = new Dictionary<string,Section>();
 
-    public List<string> exampleSections = new List<string>();
 
     public bool Contains(string key, out Section val)
     {
