@@ -18,6 +18,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
   //  public static CodeEvent<FileTypeID, FileChunk,SaveFileType> SaveFileLoading;
     public static CodeEvent saveFilesRefreshed;
 
+    /*
     public class FileTypeID
     {
         public FileTypeID(string _id)
@@ -44,8 +45,11 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             }
         }
     }
+    */
 
-    public ES3Settings settings;// = new ES3Settings();
+    //public ES3Settings settings;// = new ES3Settings();
+
+    public ES3.CompressionType compressionType;
 
     [SerializeField] private string saveFolder = "GameSaves";
     [SerializeField] private GameObject thumbnailPrefab;    //Replace with addressable asset reference later!
@@ -55,12 +59,12 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     //public List<>
     // public Dictionary<string, SaveFileHeader> saveFilesByName = new Dictionary<string, SaveFileHeader>();
-
+    public Dictionary<string, SaveFile> saveFilesByID = new Dictionary<string, SaveFile>();
     
-    public List<SaveFile> localDeviceFiles = new List<SaveFile>();
+  //  public List<SaveFile> localDeviceFiles = new List<SaveFile>();
 
     //Ignore this for now
-    public List<SaveFile> ugcContentFiles = new List<SaveFile>();
+    //public List<SaveFile> ugcContentFiles = new List<SaveFile>();
 
     public List<UnityEngine.Object> delaySavingWhilstAnyInList = new List<UnityEngine.Object>();
 
@@ -82,13 +86,17 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         base.PreInitialisationBehaviour();
         savingNow = false;
         ClearCurrentSaveStamp();
-        localDeviceFiles.Clear();
+        //  localDeviceFiles.Clear();
+        onDevice.Clear();
+        saveFilesByID.Clear();
     }
 
     public override void OnStartBehaviour()
     {
         base.OnStartBehaviour();
         RefreshSavePointers();
+        onDevice.Clear();
+        saveFilesByID.Clear();
     }
 
     public override void EndOfApplicaitonBehaviour()
@@ -96,7 +104,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         base.EndOfApplicaitonBehaviour();
         savingNow = false;
         ClearCurrentSaveStamp();
-        localDeviceFiles.Clear();
+       // localDeviceFiles.Clear();
     }
 
     private void ClearCurrentSaveStamp()
@@ -118,7 +126,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         savingNow = true;
 
         currentFileName = fileName;
-        currentFileID = System.Guid.NewGuid().ToString().Replace("-", "");
+        currentFileID = GenerateShortId();// System.Guid.NewGuid().ToString().Replace("-", "");
         currentSaveFileType = saveFileType;
 
         string fileNameWithNoSpaces =  (currentFileName + "-" + DateTime.Now).Replace(" ", "").Replace("/","").Replace(":","");
@@ -136,7 +144,21 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             GameObject thumbnailGenerator = GameObject.Instantiate(thumbnailPrefab);
         }
     }
+    private static readonly System.Random random = new System.Random();
+    public static string GenerateShortId()
+    {
+        Debug.Log(DateTime.UtcNow.Ticks);
+        long timestamp = DateTime.UtcNow.Ticks;
+        byte[] randomBytes = new byte[4];
+        random.NextBytes(randomBytes);
 
+        byte[] combinedBytes = new byte[12];
+        Array.Copy(BitConverter.GetBytes(timestamp), combinedBytes, 8);
+        Array.Copy(randomBytes, 0, combinedBytes, 8, 4);
+
+        string shortId = BitConverter.ToString(combinedBytes).Replace("-", "");
+        return shortId;
+    }
     public void PostThumnail(string _screenshotID)
     {      
         currentScreenshotID = _screenshotID;
@@ -155,7 +177,9 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     private IEnumerator ConfirmSave()
     {
-        SaveFile saveFile = new SaveFile(new SaveFileHeader(currentFileName, currentFileID, currentSaveFileType.UniqueID, DateTime.Now.ToString(), currentScreenshotID));
+        SaveFile saveFile = new SaveFile(new SaveFileHeader(currentFileName, currentFileID, currentSaveFileType.UniqueID,
+            DateTime.Now.ToString(),
+            currentScreenshotID));
         //FileChunk saveContainer = new FileChunk();
 
         // SaveFileCollecting.Raise(saveContainer.data, currentSaveFileType);
@@ -199,16 +223,23 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             //ES3.se
             //Saving a save pointer so that I can later access the name, thumbnail and
             //dateTime without having to load the full save file
-            string filePath = FileSavePath(saveFile.header.timeStamp,saveFile.header.savefileID, saveFile.header.saveFileType);
+            ES3Settings settings = new ES3Settings();
+            settings.typeChecking = false;
 
-            ES3.Save<SaveFileHeader>("Header", saveFile.header, filePath, settings);
+
+
+            string filePath = FileSavePath(saveFile.header.timeStamp,saveFile.header.savefileID, saveFile.header.saveFileType);
+            Debug.Log(filePath);
+            
 
             foreach(KeyValuePair<string, string> saveData in saveFile.data)
             {
-                ES3.Save<string>("-" + saveData.Key, saveData.Value, filePath, settings);
+                ES3.Save<string>(saveData.Key, saveData.Value, filePath);
             }
 
+            ES3.Save<SaveFileHeader>("Header", saveFile.header, filePath);
 
+            outputJson = ES3.LoadRawString(filePath);
             //Clues here for how to convert to JSON upload!
             /*
             //
@@ -245,10 +276,35 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     public SaveFile file;
 
     [Button]
-    private void RefreshSavePointers()
+    public void RefreshSavePointers()
     {
-        localDeviceFiles.Clear();
+       // localDeviceFiles.Clear();
+        onDevice.Clear();
+        saveFilesByID.Clear();
+        foreach (SaveFileType nextSaveType in SaveFileType.saveFileTypes)
+        {
+            SaveFileTypesOnDevice saveTypeOnDevice = new SaveFileTypesOnDevice();
+            onDevice.Add(saveTypeOnDevice);
+            saveTypeOnDevice.saveFileType = nextSaveType;
 
+            string[] fileNames = ES3.GetFiles(saveFolder + "/" + nextSaveType.UniqueID + "/");
+            Debug.Log(fileNames.Length);
+            foreach (string fileName in fileNames)
+            {
+               // Debug.Log(fileName);
+                string directoryFilePath = saveFolder + "/" + nextSaveType.UniqueID + "/" + fileName;
+                SaveFileHeader header = ES3.Load<SaveFileHeader>("Header", filePath: directoryFilePath);
+                SaveFile saveFile = new SaveFile(header);
+                saveFile.directoryFilePath = directoryFilePath;
+                saveTypeOnDevice.saveFiles.Add(saveFile);
+                saveFilesByID.Add(saveFile.header.savefileID, saveFile);
+            }
+        }
+        //string[] directories = ES3.GetDirectories();
+        //ES3.GetFiles()
+
+        saveFilesRefreshed.Raise();
+        return;
         if (ES3.FileExists("SavePointers"))
         {
             string[] pointersInMemory = ES3.GetKeys("SavePointers");
@@ -305,28 +361,43 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     }
     */
 
+    public List<SaveFileTypesOnDevice> onDevice = new List<SaveFileTypesOnDevice>();
+
+    //public 
+    [Serializable]
+    public class SaveFileTypesOnDevice
+    {
+        public SaveFileType saveFileType;
+        public List<SaveFile> saveFiles = new List<SaveFile>();
+    }
+
+
     public void Load(SaveFile saveFile)// FileHeader saveFilePointer,FileCategory token)
-    {/* CONTINUE HERE
-        string filePath = FileSavePath(saveFile.header.savefileID,saveFile.header.saveFileType,);
-        if (ES3.FileExists(filePath, settings))
-        {
-            string[] keys = ES3.GetKeys(filePath, settings);
+    {
+        saveFile.data.Clear();
+       // string filePath = FileSavePath(saveFile.header.timeStamp,saveFile.header.savefileID,saveFile.header.saveFileType);
+        if (ES3.FileExists(saveFile.directoryFilePath))
+        {           
+            string[] keys = ES3.GetKeys(saveFile.directoryFilePath);
 
             foreach(string key in keys)
             {
-                SaveFileChunk chunk = ES3.Load<SaveFileChunk>(key, filePath, settings);
+                if (string.Equals(key,"Header")) continue;
 
-                if(chunk != null)
+                string loadedValue = ES3.Load<string>(key, saveFile.directoryFilePath, "#NO#VALUE#FOUND#");
+
+                if(string.Equals(loadedValue, "#NO#VALUE#FOUND#"))
                 {
-                    SaveFileLoading.Raise(key,chunk, token);
+                    Debug.LogError($"KeyNotFoundInSaveFile:{key}");
+                    continue;
                 }
-                else
-                {
-                    Debug.LogError("No file found by name: Chunk");
-                }
-            }            
+
+                saveFile.data.Add(key, loadedValue);                
+            }
+
+            SaveFile.SaveFileLoading.Raise(saveFile);
         }        
-        */
+        
         /*
         if (ES3.KeyExists(saveFilePointer.fileName, filePath: saveFolder + "/" + token.additionalSavePath + "/" + saveFilePointer.fileName))
         {
@@ -344,9 +415,21 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         */
     }
 
+    public void Delete(SaveFile saveFile)
+    {
+        ES3.DeleteFile(saveFile.directoryFilePath);// FileSavePath(saveFile.header.timeStamp, saveFile.header.savefileID, saveFile.header.saveFileType));
+
+        RefreshSavePointers();
+    }
+
     public string FileSavePath(string timeStamp, string fileID, string saveFileTypeID)
     {
-        return saveFolder + "/" + timeStamp + "-" + saveFileTypeID + "/" + fileID;
+        return CleanupFileName(saveFolder) + "/"  + CleanupFileName(saveFileTypeID) + "/" + CleanupFileName(timeStamp) + "-" + CleanupFileName(fileID);
+    }
+
+    private string CleanupFileName(string fileName)
+    {
+        return fileName.Replace("/", "").Replace(":","").Replace(" ","");
     }
 }
 //
@@ -364,7 +447,10 @@ public class SaveFile
     public static CodeEvent<SaveFile> SaveFileSaving;
     public static CodeEvent<SaveFile> SaveFileLoading;
 
+    public string directoryFilePath;
+
     public SaveFileHeader header;
+    [ShowInInspector]
     public Dictionary<string, string> data = new Dictionary<string, string>();
         
 
@@ -397,13 +483,13 @@ public class SaveFile
     [Button]
     public void Load()
     {
-
+        GameSaveManager.Instance.Load(this);
     }
 
     [Button]
     public void Delete()
     {
-        
+        GameSaveManager.Instance.Delete(this);
     }
 }
 /*
@@ -452,7 +538,7 @@ public class SaveFileHeader
         saveFileType = _saveFileType;
         timeStamp = _timeStamp;
         thumbnailID = _thumbnailID;
-    }
+    }       
 
     [HideLabel, ReadOnly, HorizontalGroup("LineZero")] public string savefileName;
     [HideLabel, ReadOnly, HorizontalGroup("LineOne")] public string savefileID;
