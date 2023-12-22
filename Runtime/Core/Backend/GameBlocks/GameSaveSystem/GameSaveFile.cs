@@ -5,12 +5,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-
+/*
 [Serializable]
 public class SaveFile
 {
-    public static CodeEvent<SaveFile, SaveTypeToken> Loaded;
-    public static CodeEvent<SaveFile,SaveTypeToken> Saving;
+    public static CodeEvent<SaveFile, FileToken> Loaded;
+    public static CodeEvent<SaveFile,FileToken> Saving;
 
     public static Metadata LoadMetadata(string fileName)
     {
@@ -87,3 +87,4 @@ public class SaveFile
         public string thumbnailID;
     }
 }
+*/

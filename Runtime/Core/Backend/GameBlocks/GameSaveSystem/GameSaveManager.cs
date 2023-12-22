@@ -6,33 +6,69 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class GameSaveManager : GameSystem<GameSaveManager>
 {
-    public static CodeEvent<GameSaveFile, SaveTypeToken> SaveFileCollecting;
-    public static CodeEvent<GameSaveFile, SaveTypeToken> SaveFileLoading;
+ //   public static CodeEvent<SaveFile,FileCategory>
+
+  //  public static CodeEvent<FileChunk,SaveFileType> SaveFileCollecting;
+
+  //  public static CodeEvent<FileTypeID, FileChunk,SaveFileType> SaveFileLoading;
     public static CodeEvent saveFilesRefreshed;
 
+    public class FileTypeID
+    {
+        public FileTypeID(string _id)
+        {
+            id = _id;
+        }
 
+        public bool Compare(FileTypeID file)
+        {
+            if (String.Compare(file.ID, ID) == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        [SerializeField, ReadOnly]
+        private string id;
+        public string ID
+        {
+            get
+            {
+                return id;
+            }
+        }
+    }
+
+    public ES3Settings settings;// = new ES3Settings();
 
     [SerializeField] private string saveFolder = "GameSaves";
     [SerializeField] private GameObject thumbnailPrefab;    //Replace with addressable asset reference later!
     [SerializeField] private Texture2D defaultThumbnail;
 
-    public Dictionary<string, SaveFilePointer> pointersByFileName = new Dictionary<string, SaveFilePointer>();
 
-    public List<SaveFilePointer> localDeviceFiles = new List<SaveFilePointer>();
+
+    //public List<>
+    // public Dictionary<string, SaveFileHeader> saveFilesByName = new Dictionary<string, SaveFileHeader>();
+
+    
+    public List<SaveFile> localDeviceFiles = new List<SaveFile>();
 
     //Ignore this for now
-    public List<SaveFilePointer> ugcContentFiles = new List<SaveFilePointer>();
+    public List<SaveFile> ugcContentFiles = new List<SaveFile>();
 
     public List<UnityEngine.Object> delaySavingWhilstAnyInList = new List<UnityEngine.Object>();
 
     //Current saving instance
     [BoxGroup("Save Instance")][SerializeField,ReadOnly] private bool savingNow = false;
     [BoxGroup("Save Instance")][SerializeField, ReadOnly] private string currentFileName;
-    [BoxGroup("Save Instance")][SerializeField, ReadOnly] private SaveTypeToken currentToken;
+    [BoxGroup("Save Instance")][SerializeField, ReadOnly] private string currentFileID;
+    [BoxGroup("Save Instance")][SerializeField, ReadOnly] private SaveFileType currentSaveFileType;
     [BoxGroup("Save Instance")][SerializeField, ReadOnly] private string currentScreenshotID;
     [BoxGroup("Save Instance")][ShowInInspector,ReadOnly] public string currentThumbnailName { get; private set; }
 
@@ -66,7 +102,8 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     private void ClearCurrentSaveStamp()
     {
         currentFileName = "";
-        currentToken = null;
+        currentFileID = ""; 
+        currentSaveFileType = null;
         currentScreenshotID = "";
         currentThumbnailName = "";
     }
@@ -74,14 +111,15 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     
 
     [Button]
-    public void SaveNow(string fileName,SaveTypeToken token, bool useScreenshot)
+    public void SaveNow(string fileName,SaveFileType saveFileType, bool useScreenshot)
     {
-        if(savingNow || token == null || string.IsNullOrEmpty(fileName)) return;
+        if(savingNow || saveFileType == null || string.IsNullOrEmpty(fileName)) return;
 
         savingNow = true;
 
         currentFileName = fileName;
-        currentToken = token;
+        currentFileID = System.Guid.NewGuid().ToString().Replace("-", "");
+        currentSaveFileType = saveFileType;
 
         string fileNameWithNoSpaces =  (currentFileName + "-" + DateTime.Now).Replace(" ", "").Replace("/","").Replace(":","");
 
@@ -104,7 +142,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         currentScreenshotID = _screenshotID;
 
         //Method to check if any files aleady exist with this name?    
-        if (ES3.KeyExists(currentFileName, filePath: saveFolder +"/"+ currentToken.additionalSavePath + "/" + currentFileName))
+        if (ES3.KeyExists(currentFileName, filePath: saveFolder +"/"+ currentSaveFileType.UniqueID + "/" + currentFileName))
         {
             //No popup yet so just silently save over for now
             CoroutineMonoBehaviour.i.StartCoroutine(ConfirmSave());
@@ -117,10 +155,12 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     private IEnumerator ConfirmSave()
     {
-       
-            GameSaveFile saveContainer = new GameSaveFile();
-                        
-            SaveFileCollecting.Raise(saveContainer, currentToken);
+        SaveFile saveFile = new SaveFile(new SaveFileHeader(currentFileName, currentFileID, currentSaveFileType.UniqueID, DateTime.Now.ToString(), currentScreenshotID));
+        //FileChunk saveContainer = new FileChunk();
+
+        // SaveFileCollecting.Raise(saveContainer.data, currentSaveFileType);
+
+        SaveFile.SaveFileSaving.Raise(saveFile);
 
         while (delaySavingWhilstAnyInList.Count > 0)
         {
@@ -142,51 +182,48 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         {
 
             //Now create or update the actual save pointer
-            SaveFilePointer pointer = null;
+            //  SaveFileHeader pointer = null;
 
-            if (pointersByFileName.ContainsKey(currentFileName))
-            {
-                // pointersByFileName[currentFileName].UpdateValues(currentFileName, currentToken.UniqueID, DateTime.Now.ToString(), currentScreenshotID);
-                // pointersByFileName[currentFileName].thumbnailID = currentScreenshotID;
-                pointersByFileName.Remove(currentFileName);
-            }
-          //  else
-          //  {
-                pointer = new SaveFilePointer(currentFileName, currentToken.UniqueID, DateTime.Now.ToString(), currentScreenshotID);
-                pointersByFileName.Add(currentFileName, pointer);
-          //  }
+            //  if (pointersByFileName.ContainsKey(currentFileName))
+            //  {
+            // pointersByFileName[currentFileName].UpdateValues(currentFileName, currentToken.UniqueID, DateTime.Now.ToString(), currentScreenshotID);
+            // pointersByFileName[currentFileName].thumbnailID = currentScreenshotID;
+            //     pointersByFileName.Remove(currentFileName);
+            // }
+            //  else
+            //  {
+            //  pointer = new FileHeader(currentFileName, currentSaveFileType.UniqueID, DateTime.Now.ToString(), currentScreenshotID);
+            // saveFilesByName.Add(currentFileName, pointer);
+            //  }
 
             //ES3.se
             //Saving a save pointer so that I can later access the name, thumbnail and
             //dateTime without having to load the full save file
-            ES3.Save(currentFileName, pointer, filePath: "SavePointers");
+            string filePath = FileSavePath(saveFile.header.timeStamp,saveFile.header.savefileID, saveFile.header.saveFileType);
 
-            var settings = new ES3Settings();// ES3.CompressionType.Gzip);
+            ES3.Save<SaveFileHeader>("Header", saveFile.header, filePath, settings);
 
-            string filePath = saveFolder + "/" + currentToken.additionalSavePath + "/" + currentFileName;
+            foreach(KeyValuePair<string, string> saveData in saveFile.data)
+            {
+                ES3.Save<string>("-" + saveData.Key, saveData.Value, filePath, settings);
+            }
 
-            //settings
-            //settings.com
 
+            //Clues here for how to convert to JSON upload!
+            /*
+            //
 
+           // var tempSettings = new ES3Settings();// ES3.CompressionType.Gzip);
+           // string filePath = saveFolder + "/" + currentSaveFileType.additionalSavePath + "/" + currentFileName;            
             //Save the full save file!
-            ES3.Save(currentFileName, saveContainer, filePath, settings);
-
-            outputJson = ES3.LoadRawString(filePath, settings);
-
+            ES3.Save(currentFileName, saveContainer, filePath, tempSettings);            
+            //writer.w
+            outputJson = ES3.LoadRawString(filePath, tempSettings);                        
             //var settings = ;
             ES3.SaveRaw(outputJson,"TempLoaded", new ES3Settings(ES3.Location.Cache));
-
-            file = ES3.Load<GameSaveFile>(currentFileName, "TempLoaded", new ES3Settings(ES3.Location.Cache));
-
+            file = ES3.Load<SaveFileData>(currentFileName, "TempLoaded", new ES3Settings(ES3.Location.Cache));
             //file = JsonUtility.FromJson<GameSaveFile>(outputJson);
-
-            Debug.Log(file.dataKeyValues.Count);
-
-            foreach(KeyValuePair<string,string> next in file.dataKeyValues)
-            {
-                Debug.Log(next.Key + " | " + next.Value);
-            }
+            */
 
             RefreshSavePointers();
             ClearCurrentSaveStamp();
@@ -205,7 +242,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     [TextArea(minLines: 20, maxLines: 50)]
     public string outputJson;
 
-    public GameSaveFile file;
+    public SaveFile file;
 
     [Button]
     private void RefreshSavePointers()
@@ -222,10 +259,10 @@ public class GameSaveManager : GameSystem<GameSaveManager>
                 {
                     try
                     {
-                        SaveFilePointer loaded = ES3.Load<SaveFilePointer>(key, filePath: "SavePointers");
+                        SaveFileHeader loaded = ES3.Load<SaveFileHeader>(key, filePath: "SavePointers");
                         if (loaded != null)
                         {
-                            localDeviceFiles.Add(loaded);
+            //               localDeviceFiles.Add(loaded);
                         }
                     }
                     catch (Exception e)
@@ -239,16 +276,17 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         saveFilesRefreshed.Raise();
     }
 
-    public void LoadByFileName(string fileName, SaveTypeToken token)
+    /*
+    public void LoadByFileName(string fileName, FileToken token)
     {
         RefreshSavePointers();
 
         //JsonUtilityArrays
         //JsonUtility.ToJson()
 
-        SaveFilePointer foundPointer = null;
+        FileHeader foundPointer = null;
 
-        foreach(SaveFilePointer pointer in localDeviceFiles)
+        foreach(FileHeader pointer in localDeviceFiles)
         {
             if(string.Compare(fileName,pointer.fileName) == 0)
             {
@@ -265,92 +303,160 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             Load(foundPointer,token);
         }
     }
+    */
 
-    public void Load(SaveFilePointer saveFilePointer,SaveTypeToken token)
-    {        
+    public void Load(SaveFile saveFile)// FileHeader saveFilePointer,FileCategory token)
+    {/* CONTINUE HERE
+        string filePath = FileSavePath(saveFile.header.savefileID,saveFile.header.saveFileType,);
+        if (ES3.FileExists(filePath, settings))
+        {
+            string[] keys = ES3.GetKeys(filePath, settings);
+
+            foreach(string key in keys)
+            {
+                SaveFileChunk chunk = ES3.Load<SaveFileChunk>(key, filePath, settings);
+
+                if(chunk != null)
+                {
+                    SaveFileLoading.Raise(key,chunk, token);
+                }
+                else
+                {
+                    Debug.LogError("No file found by name: Chunk");
+                }
+            }            
+        }        
+        */
+        /*
         if (ES3.KeyExists(saveFilePointer.fileName, filePath: saveFolder + "/" + token.additionalSavePath + "/" + saveFilePointer.fileName))
         {
-            GameSaveFile file = ES3.Load<GameSaveFile>(saveFilePointer.fileName,filePath: saveFolder + "/" + token.additionalSavePath + "/" + saveFilePointer.fileName);
+            FileChunk file = ES3.Load<FileChunk>(saveFilePointer.fileName,filePath: saveFolder + "/" + token.additionalSavePath + "/" + saveFilePointer.fileName);
         
             if (file != null)
             {
-                SaveFileLoading.Raise(file, token);
+                SaveFileLoading.Raise(file,file.id, token);
             }
             else
             {
                 Debug.Log("Pointer pointed to non existent save file!");
-            }
-        }
+            }            
+        }     
+        */
+    }
+
+    public string FileSavePath(string timeStamp, string fileID, string saveFileTypeID)
+    {
+        return saveFolder + "/" + timeStamp + "-" + saveFileTypeID + "/" + fileID;
     }
 }
 //
 // 
 
+//Generated - not saved
 [Serializable]
-public class GameSaveFile
+public class SaveFile
 {
-    public Dictionary<string, string> dataKeyValues = new Dictionary<string, string>();
-    //public List<string> data = new List<string>();
-    public void Add(string key, string val)
+    public SaveFile(SaveFileHeader _header)
     {
-        dataKeyValues.Add(key, val);
-       // data.Add(key + "," + value);
-    }    
+        header = _header;
+    }
 
-  //  public bool ContainsKey(string key)
-   // {
-        //Way to confirm here from data?
-   // }
+    public static CodeEvent<SaveFile> SaveFileSaving;
+    public static CodeEvent<SaveFile> SaveFileLoading;
+
+    public SaveFileHeader header;
+    public Dictionary<string, string> data = new Dictionary<string, string>();
+        
+
+    public void AddData(string key, string value)
+    {
+        if (data.ContainsKey(key))
+        {
+            data[key] = value;
+        }
+        else
+        {
+            data.Add(key, value);
+        }
+    }
+
+    public bool ValueExists(string key, out string value)
+    {
+        if (data.ContainsKey(key))
+        {
+            value = data[key];
+            return true;// (true, data[key]);
+        }
+        else
+        {
+            value = null;
+            return false;// (false, null); // or any other appropriate value for non-existence
+        }
+    }
+
+    [Button]
+    public void Load()
+    {
+
+    }
+
+    [Button]
+    public void Delete()
+    {
+        
+    }
 }
+/*
+//The object that gets saved and loaded by ES3. This helps a little with future proofing as all
+//the games data is just a collection of save chunks, each with a string-string dictionary
+[Serializable]
+public class SaveFileChunk
+{
+    public Dictionary<string, string> data = new Dictionary<string, string>();
+
+    public void AddData(string key, string value)
+    {
+        if (data.ContainsKey(key))
+        {
+            data[key] = value;
+        }
+        else
+        {
+            data.Add(key, value);
+        }
+    }
+
+    public (bool,string) ValueExists(string key)
+    {
+        if (data.ContainsKey(key))
+        {
+            return (true, data[key]);
+        }
+        else
+        {
+            return (false, null); // or any other appropriate value for non-existence
+        }
+    }
+}
+*/
 
 //A data container class used to make note of local save files without actually loading their
 //content from the device. Useful for generating lists of content taht could be loaded if requested
 [Serializable]
-public class SaveFilePointer
+public class SaveFileHeader
 {
-    public SaveFilePointer(string _fileName, string _saveTypeToken, string _dateTime, string _thumbnailID)
+    public SaveFileHeader(string _saveFileName, string _saveFileID, string _saveFileType, string _timeStamp, string _thumbnailID)
     {     
-        fileName = _fileName;
-        saveTypeToken = _saveTypeToken;
-        dateTime = _dateTime;
+        savefileName = _saveFileName;
+        savefileID = _saveFileID;
+        saveFileType = _saveFileType;
+        timeStamp = _timeStamp;
         thumbnailID = _thumbnailID;
-    }  
-    
-    //The name used to find the actual save file (GameSaveFile)
-    [HideLabel,ReadOnly,HorizontalGroup("LineOne")] public string fileName;
-    //Unique ID for finding the save type token used for this save
-    [HideLabel, ReadOnly, HorizontalGroup("LineOne")] public string saveTypeToken;
-    //Used to store when the save was made
-    [HideLabel, ReadOnly, HorizontalGroup("LineTwo")] public string dateTime;
-    //Used to find the thumbnail from another system
+    }
+
+    [HideLabel, ReadOnly, HorizontalGroup("LineZero")] public string savefileName;
+    [HideLabel, ReadOnly, HorizontalGroup("LineOne")] public string savefileID;
+    [HideLabel, ReadOnly, HorizontalGroup("LineTwo")] public string saveFileType;
+    [HideLabel, ReadOnly, HorizontalGroup("LineTwo")] public string timeStamp;
     [HideLabel, ReadOnly, HorizontalGroup("LineTwo")] public string thumbnailID;
-
-    [HorizontalGroup("LineTwo")]
-    [Button]
-    public void Load()
-    {
-        GameSaveManager.Instance.Load(this, (SaveTypeToken)ScriptablesUniqueIDDatabase.Instance.gameContentObjects_KeyToObject[saveTypeToken]);
-    }
-
-   // public void Delete()
-  //  {
-        //GameSaveManager.Instance.Delete(this,)
-       // GameSaveManager.Instance.pointersByFileName.Remove(fileName);
-       // GameSaveManager.Instance
-   // }
 }
-
-/*
-    UpdateValues(_fileName, _saveTypeToken, _dateTime, _thumbnailID);
-  
-  public void UpdateValues(string _fileName, string _saveTypeToken, string _dateTime, string _thumbnailID)
-    {
-       
-        if (!string.IsNullOrEmpty(thumbnailID))
-        {
-            ScreenshotUtility.Instance.DeleteScreenshot(thumbnailID);
-        }
-
-       
-    }
- */

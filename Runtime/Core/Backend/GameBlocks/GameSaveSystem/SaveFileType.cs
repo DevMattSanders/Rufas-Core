@@ -14,7 +14,20 @@ using UnityEngine;
 /// </summary>
 
 [CreateAssetMenu(menuName = "Rufas/SaveLoad/SaveTypeToken")]
-public class SaveTypeToken : ScriptableWithUniqueID
+public class SaveFileType : ScriptableWithUniqueID
 {
+    /*
+    public static string GetPathFromToken(SaveFileType category)
+    {
+        if(string.IsNullOrEmpty(category.additionalSavePath) || string.IsNullOrWhiteSpace(category.additionalSavePath))
+        {
+            return "";
+        }
+        else
+        {
+            return category.additionalSavePath;
+        }
+    }
     public string additionalSavePath;
+    */
 }
