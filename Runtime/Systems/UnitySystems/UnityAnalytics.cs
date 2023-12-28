@@ -13,6 +13,7 @@ namespace Rufas.UnitySystems
         [ReadOnly, SerializeField] private bool analyticsStartedDataCollection = false;
 
         public override SdfIconType EditorIcon() { return SdfIconType.BarChartSteps; }
+
         public override string DesiredPath() { return "Platform & Third Party/Unity/Analytics"; }
 
         public override void PreInitialisationBehaviour()

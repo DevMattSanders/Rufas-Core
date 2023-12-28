@@ -1,10 +1,11 @@
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Rufas
 {
-    public class ScriptableWithCallbacks : ScriptableObject
+    public class ScriptableWithCallbacks : SerializedScriptableObject
     {
         public virtual void SoOnAwake() { }
 

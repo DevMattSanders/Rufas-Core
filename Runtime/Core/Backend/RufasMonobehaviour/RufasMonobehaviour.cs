@@ -31,7 +31,8 @@ namespace Rufas
         {
             if (RufasMonoBehaviourHandler.startCalled)
             {
-                Start_AfterInitialisation();
+                Start_AfterInitialisation();                
+
             }
             else
             {

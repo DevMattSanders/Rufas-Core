@@ -12,25 +12,25 @@ namespace Rufas
     {
         [SerializeField] private string screenshotFolderName = "GameplayScreenshots";
 
-        [ShowInInspector, ReadOnly]
-        public string DataPath()
-        {
-            return Application.dataPath + "/" + screenshotFolderName;
-        }
+       // [ShowInInspector, ReadOnly]
+      //  public string DataPath()
+      //  {
+       //     return Application.dataPath + "/" + screenshotFolderName;
+       // }
 
         public int pixelWidth = 384;
         public int pixelHeight = 216;
 
-        [PreviewField,ReadOnly] public Texture2D mostRecentScreenshot;
-        [PreviewField,ReadOnly] public List<Texture2D> screenshots = new List<Texture2D>();
+       // [PreviewField,ReadOnly] public Texture2D mostRecentScreenshot;
+        //[PreviewField,ReadOnly] public List<Texture2D> screenshots = new List<Texture2D>();
 
         public override string DesiredName()
         {
             return "Screenshot Utility";
         }
 
-        public static void CaptureScreenshotNow() { ScreenshotUtility.Instance?.CaptureScreenshot(); }
-        public override void PreInitialisationBehaviour() { base.PreInitialisationBehaviour(); RefreshFolder(); }
+        //public static void CaptureScreenshotNow() { ScreenshotUtility.Instance?.CaptureScreenshot(); }
+       // public override void PreInitialisationBehaviour() { base.PreInitialisationBehaviour(); RefreshFolder(); }
 
         [Button]
         public void CaptureScreenshot()
@@ -53,18 +53,18 @@ namespace Rufas
 
         public void CaptureScreenshot(Action<Texture2D> returnTexture)
         {
-            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot("Screenshot" + screenshots.Count, pixelWidth, pixelHeight, returnTexture));
+            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot( pixelWidth, pixelHeight, returnTexture));
         }
 
-        public void CaptureScreenshot(string _screenshotName, Action<Texture2D> returnTexture)
-        {
-            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, pixelWidth, pixelHeight, returnTexture));
-        }
+       // public void CaptureScreenshot(string _screenshotName, Action<Texture2D> returnTexture)
+       // {
+       //     CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, pixelWidth, pixelHeight, returnTexture));
+       // }
 
-        public void CaptureScreenshot(string _screenshotName, int _pixelWidth, int _pixelHeight, Action<Texture2D> returnTexture)
+        public void CaptureScreenshot(int _pixelWidth, int _pixelHeight, Action<Texture2D> returnTexture)
         {
 
-            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, _pixelWidth, _pixelHeight, returnTexture));
+            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_pixelWidth, _pixelHeight, returnTexture));
 
             /*
             CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, _pixelWidth, _pixelHeight, (Texture2D screenshot) =>
@@ -85,7 +85,7 @@ namespace Rufas
             */
         }
 
-        private IEnumerator CoroutineScreenshot(string screenshotName, int _pixelWidth, int _pixelHeight, Action<Texture2D> onComplete)
+        private IEnumerator CoroutineScreenshot(int _pixelWidth, int _pixelHeight, Action<Texture2D> onComplete)
         {
 
             yield return new WaitForEndOfFrame();
@@ -100,29 +100,29 @@ namespace Rufas
             Texture2D resizedTexture = ResizeTextureGPU(screenshotTexture, _pixelWidth, _pixelHeight);
 
             // Save the resized texture
-            byte[] byteArray = resizedTexture.EncodeToPNG();
+           // byte[] byteArray = resizedTexture.EncodeToPNG();
 
-            string pathToCreate = DataPath() + "/" + screenshotName + ".png";
+           // string pathToCreate = DataPath() + "/" + screenshotName + ".png";
 
             // Split the path after the last "/"
-            int lastSeparatorIndex = pathToCreate.LastIndexOf('/');
-            string directoryPart = pathToCreate.Substring(0, lastSeparatorIndex);
+           // int lastSeparatorIndex = pathToCreate.LastIndexOf('/');
+           // string directoryPart = pathToCreate.Substring(0, lastSeparatorIndex);
 
             // Check if the directory exists, and create it if it doesn't
-            if (!Directory.Exists(directoryPart))
-            {
-                Directory.CreateDirectory(directoryPart);
-            }
+          //  if (!Directory.Exists(directoryPart))
+          //  {
+          //      Directory.CreateDirectory(directoryPart);
+           // }
 
-            System.IO.File.WriteAllBytes(pathToCreate, byteArray);
+          //  System.IO.File.WriteAllBytes(pathToCreate, byteArray);
 
-            screenshots.Add(resizedTexture);
-            mostRecentScreenshot = resizedTexture;
+         //   screenshots.Add(resizedTexture);
+         //   mostRecentScreenshot = resizedTexture;
 
             // Invoke the onComplete callback with the resized texture
             onComplete?.Invoke(resizedTexture);
         }
-
+        /*
         public void DeleteScreenshot(string screenshotAddress)
         {
             // Construct the full path to the screenshot file
@@ -143,7 +143,7 @@ namespace Rufas
                 Debug.LogWarning("Screenshot not found: " + screenshotAddress);
             }
         }
-
+        
         private void RemoveScreenshotFromList(string screenshotName)
         {
             // Optional: Remove the screenshot from your internal list
@@ -159,7 +159,7 @@ namespace Rufas
                 Debug.LogWarning("Screenshot not found in the list: " + screenshotName);
             }
         }
-
+        */
         private Texture2D ResizeTextureGPU(Texture2D sourceTexture, int targetWidth, int targetHeight)
         {
             RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight, 0, RenderTextureFormat.Default,RenderTextureReadWrite.Linear);
@@ -257,7 +257,7 @@ namespace Rufas
         }
         */
 
-
+        /*
         [Button]
         private void RefreshFolder()
         {
@@ -285,7 +285,7 @@ namespace Rufas
            //     Debug.LogError("Folder does not exist: " + DataPath());
             //}
         }
-
+        */
 
     }
 }

@@ -38,11 +38,12 @@ namespace Rufas
         public GameSystemParentClass[] gameSystems;
 
         #region GameSystemsList
+#if UNITY_EDITOR
         [TitleGroup("Game Systems")]
         [ListDrawerSettings(ShowFoldout = true, HideAddButton = true, HideRemoveButton = true)]        
         public List<GameSystemManagerToggle> ShowIndividualGameSystems = new List<GameSystemManagerToggle>();
 
-#if UNITY_EDITOR
+
         [TitleGroup("Game Systems")]
         [HideInPlayMode]
         [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]

@@ -22,9 +22,10 @@ namespace Rufas.UnitySystems
         [HorizontalGroup("Oculus Auth/H")] public ULongVariable oculusLogin;
         [HorizontalGroup("Oculus Auth/H")] public StringVariable oculusProof;
 
-       
 
+//#if UNITY_EDITOR
         public override SdfIconType EditorIcon() { return SdfIconType.Globe2; }
+//#endif
 
         public override string DesiredPath()
         {

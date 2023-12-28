@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -74,7 +75,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     [BoxGroup("Save Instance")][SerializeField, ReadOnly] private string currentFileID;
     [BoxGroup("Save Instance")][SerializeField, ReadOnly] private SaveFileType currentSaveFileType;
     [BoxGroup("Save Instance")][SerializeField, ReadOnly] private string currentScreenshotID;
-    [BoxGroup("Save Instance")][ShowInInspector,ReadOnly] public string currentThumbnailName { get; private set; }
+    [BoxGroup("Save Instance")][ShowInInspector,ReadOnly] public Texture2D currentThumbnail { get; private set; }
 
     public override string DesiredName()
     {
@@ -89,7 +90,11 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         //  localDeviceFiles.Clear();
         onDevice.Clear();
         saveFilesByID.Clear();
+
+        RufasMonoBehaviour.callingStartAfterInit.AddListener(RefreshSavePointers);
     }
+
+   
 
     public override void OnStartBehaviour()
     {
@@ -98,6 +103,8 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         onDevice.Clear();
         saveFilesByID.Clear();
     }
+
+ 
 
     public override void EndOfApplicaitonBehaviour()
     {
@@ -113,7 +120,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         currentFileID = ""; 
         currentSaveFileType = null;
         currentScreenshotID = "";
-        currentThumbnailName = "";
+        currentThumbnail = null;
     }
 
     
@@ -121,6 +128,13 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     [Button]
     public void SaveNow(string fileName,SaveFileType saveFileType, bool useScreenshot)
     {
+        //STOPPING THUMBNAIL!
+        useScreenshot = false;
+        //STOPPING THUMBNAIL!
+
+
+
+
         if(savingNow || saveFileType == null || string.IsNullOrEmpty(fileName)) return;
 
         savingNow = true;
@@ -131,11 +145,11 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
         string fileNameWithNoSpaces =  (currentFileName + "-" + DateTime.Now).Replace(" ", "").Replace("/","").Replace(":","");
 
-        currentThumbnailName = "Thumbnails/" + fileNameWithNoSpaces;//Short GUID thing here?//;
+      //  currentThumbnailName = "Thumbnails/" + fileNameWithNoSpaces;//Short GUID thing here?//;
 
         if (thumbnailPrefab == null || useScreenshot == false)
         {
-            PostThumnail("");
+            PostThumnail(null);
         }
         else
         {
@@ -159,9 +173,9 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         string shortId = BitConverter.ToString(combinedBytes).Replace("-", "");
         return shortId;
     }
-    public void PostThumnail(string _screenshotID)
-    {      
-        currentScreenshotID = _screenshotID;
+    public void PostThumnail(Texture2D thumbnail)
+    {
+        currentThumbnail = thumbnail;
 
         //Method to check if any files aleady exist with this name?    
         if (ES3.KeyExists(currentFileName, filePath: saveFolder +"/"+ currentSaveFileType.UniqueID + "/" + currentFileName))
@@ -178,8 +192,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     private IEnumerator ConfirmSave()
     {
         SaveFile saveFile = new SaveFile(new SaveFileHeader(currentFileName, currentFileID, currentSaveFileType.UniqueID,
-            DateTime.Now.ToString(),
-            currentScreenshotID));
+            DateTime.Now.ToString(),"0-0-1"));
         //FileChunk saveContainer = new FileChunk();
 
         // SaveFileCollecting.Raise(saveContainer.data, currentSaveFileType);
@@ -231,14 +244,61 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             string filePath = FileSavePath(saveFile.header.timeStamp,saveFile.header.savefileID, saveFile.header.saveFileType);
             Debug.Log(filePath);
             
+            //ES3.com
 
             foreach(KeyValuePair<string, string> saveData in saveFile.data)
             {
                 ES3.Save<string>(saveData.Key, saveData.Value, filePath);
             }
 
-            ES3.Save<SaveFileHeader>("Header", saveFile.header, filePath);
 
+            Debug.Log("1");
+            ES3.Save<SaveFileHeader>("Header", saveFile.header, filePath);
+            Debug.Log("2");
+            if (currentThumbnail != null)
+            {
+              //  Debug.Log("3");
+               // byte[] bytes = ES3.SaveImageToBytes(currentThumbnail,100,ES3.ImageType.JPEG);
+             //   byte[] thumbnailBytes = currentThumbnail.EncodeToPNG();
+               // if (current != null)
+               // {
+               //     thumbnailBytes = thumbnail.EncodeToPNG();
+               // }
+              //   var str = System.Text.Encoding.Default.GetString(thumbnailBytes);
+              //   Debug.Log(str);
+              //  StringBuilder builder = new StringBuilder();
+              //  for (int i = 0; i < thumbnailBytes.Length; i++)
+              //  {
+              //      builder.Append(thumbnailBytes[i].ToString("x2"));
+              //  }
+
+             //   Debug.Log(builder.ToString());
+
+                // BitConverter can also be used to put all bytes into one string
+              //  string bitString = BitConverter.ToString(thumbnailBytes);
+              //  Debug.Log(bitString);
+
+                // UTF conversion - String from bytes
+              //  string utfString = Encoding.UTF8.GetString(thumbnailBytes, 0, thumbnailBytes.Length);
+               // Debug.Log(utfString);
+
+                // ASCII conversion - string from bytes
+              //  string asciiString = Encoding.ASCII.GetString(thumbnailBytes, 0, thumbnailBytes.Length);
+               // Debug.Log(asciiString);
+
+               // Debug.Log(thumbnailBytes);
+               // ES3.Save<string>("Thumbnail", 
+                    //ES3.SaveImageToBytes(currentThumbnail,100,ES3.ImageType.PNG),
+               //     ES3.CompressString(builder.ToString()),
+               //     filePath);//,new ES3Settings(compressionType = ES3.CompressionType.Gzip));
+
+                ES3Settings setti = new(true);
+                setti.compressionType = ES3.CompressionType.Gzip;
+                string folder = FolderFromSavePath(filePath);
+                Debug.Log(folder);
+                ES3.SaveImage(currentThumbnail,100, folder + "thumbnails/" + saveFile.header.savefileID + ".png", setti);
+            }
+            Debug.Log("4");
             outputJson = ES3.LoadRawString(filePath);
             //Clues here for how to convert to JSON upload!
             /*
@@ -270,6 +330,21 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         }
     }
 
+    [Button]
+    public void Calculate()
+    {
+        double n = 60 * 24 * 365 * 60;  // Number of minutes in 10,000 years
+        double N = Math.Pow(2, 48); // Total number of possible IDs
+
+        double collisionProbability = 1 - Math.Pow(1 - 1 / N, n);
+
+        double expectedCollisions = collisionProbability * n;
+
+        Debug.Log("Collision Probability: " + collisionProbability);
+        Debug.Log("Expected Collisions: " + expectedCollisions);
+
+    }
+
     [TextArea(minLines: 20, maxLines: 50)]
     public string outputJson;
 
@@ -277,8 +352,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     [Button]
     public void RefreshSavePointers()
-    {
-       // localDeviceFiles.Clear();
+    {        
         onDevice.Clear();
         saveFilesByID.Clear();
         foreach (SaveFileType nextSaveType in SaveFileType.saveFileTypes)
@@ -287,21 +361,24 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             onDevice.Add(saveTypeOnDevice);
             saveTypeOnDevice.saveFileType = nextSaveType;
 
-            string[] fileNames = ES3.GetFiles(saveFolder + "/" + nextSaveType.UniqueID + "/");
-            Debug.Log(fileNames.Length);
-            foreach (string fileName in fileNames)
+            //Create the directory if it doesn't exist already
+            string directoryPath = saveFolder + "/" + nextSaveType.UniqueID + "/";
+
+            if (ES3.DirectoryExists(directoryPath))
             {
-               // Debug.Log(fileName);
-                string directoryFilePath = saveFolder + "/" + nextSaveType.UniqueID + "/" + fileName;
-                SaveFileHeader header = ES3.Load<SaveFileHeader>("Header", filePath: directoryFilePath);
-                SaveFile saveFile = new SaveFile(header);
-                saveFile.directoryFilePath = directoryFilePath;
-                saveTypeOnDevice.saveFiles.Add(saveFile);
-                saveFilesByID.Add(saveFile.header.savefileID, saveFile);
+                string[] fileNames = ES3.GetFiles(directoryPath);
+                Debug.Log(fileNames.Length);
+                foreach (string fileName in fileNames)
+                {
+                    string directoryFilePath = directoryPath + fileName;
+                    SaveFileHeader header = ES3.Load<SaveFileHeader>("Header", filePath: directoryFilePath);
+                    SaveFile saveFile = new SaveFile(header);
+                    saveFile.directoryFilePath = directoryFilePath;
+                    saveTypeOnDevice.saveFiles.Add(saveFile);
+                    saveFilesByID.Add(saveFile.header.savefileID, saveFile);
+                }
             }
         }
-        //string[] directories = ES3.GetDirectories();
-        //ES3.GetFiles()
 
         saveFilesRefreshed.Raise();
         return;
@@ -363,7 +440,6 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     public List<SaveFileTypesOnDevice> onDevice = new List<SaveFileTypesOnDevice>();
 
-    //public 
     [Serializable]
     public class SaveFileTypesOnDevice
     {
@@ -396,8 +472,10 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             }
 
             SaveFile.SaveFileLoading.Raise(saveFile);
-        }        
-        
+        }
+
+        saveFile.data.Clear();
+
         /*
         if (ES3.KeyExists(saveFilePointer.fileName, filePath: saveFolder + "/" + token.additionalSavePath + "/" + saveFilePointer.fileName))
         {
@@ -424,7 +502,16 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     public string FileSavePath(string timeStamp, string fileID, string saveFileTypeID)
     {
-        return CleanupFileName(saveFolder) + "/"  + CleanupFileName(saveFileTypeID) + "/" + CleanupFileName(timeStamp) + "-" + CleanupFileName(fileID);
+        return CleanupFileName(saveFolder) + "/"  + CleanupFileName(saveFileTypeID) + "/" + CleanupFileName(timeStamp) + "-" + CleanupFileName(fileID);        
+    }
+
+    public string FolderFromSavePath(string savePath)
+    {
+        // Get the index of the last "/" character
+        int lastSlashIndex = savePath.LastIndexOf("/");
+
+        // If the last "/" is found, return the substring before it; otherwise, return the original string
+        return lastSlashIndex >= 0 ? savePath.Substring(0, lastSlashIndex) : savePath;
     }
 
     private string CleanupFileName(string fileName)
@@ -447,10 +534,14 @@ public class SaveFile
     public static CodeEvent<SaveFile> SaveFileSaving;
     public static CodeEvent<SaveFile> SaveFileLoading;
 
+    [ReadOnly]
     public string directoryFilePath;
 
+    //[InlineEditor(InlineEditorObjectFieldModes.Boxed)]
+    [HideLabel]
     public SaveFileHeader header;
-    [ShowInInspector]
+    
+   // [ShowInInspector,ReadOnly]
     public Dictionary<string, string> data = new Dictionary<string, string>();
         
 
@@ -531,18 +622,18 @@ public class SaveFileChunk
 [Serializable]
 public class SaveFileHeader
 {
-    public SaveFileHeader(string _saveFileName, string _saveFileID, string _saveFileType, string _timeStamp, string _thumbnailID)
+    public SaveFileHeader(string _saveFileName, string _saveFileID, string _saveFileType, string _timeStamp,string _saveStructureType)
     {     
         savefileName = _saveFileName;
         savefileID = _saveFileID;
         saveFileType = _saveFileType;
         timeStamp = _timeStamp;
-        thumbnailID = _thumbnailID;
+        saveStructureType = _saveStructureType;
     }       
 
     [HideLabel, ReadOnly, HorizontalGroup("LineZero")] public string savefileName;
     [HideLabel, ReadOnly, HorizontalGroup("LineOne")] public string savefileID;
     [HideLabel, ReadOnly, HorizontalGroup("LineTwo")] public string saveFileType;
     [HideLabel, ReadOnly, HorizontalGroup("LineTwo")] public string timeStamp;
-    [HideLabel, ReadOnly, HorizontalGroup("LineTwo")] public string thumbnailID;
+    [HideLabel, ReadOnly, HorizontalGroup("LineTwo")] public string saveStructureType;
 }

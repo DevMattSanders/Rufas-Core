@@ -1,5 +1,4 @@
 using Sirenix.OdinInspector;
-using Sirenix.OdinInspector.Editor;
 
 #if UNITY_EDITOR
 using Sirenix.Utilities.Editor;
@@ -27,9 +26,9 @@ namespace Rufas
         [ReadOnly,Button(ButtonHeight = 10,Style = ButtonStyle.Box,ButtonAlignment = 0.5f,Stretch = true,Name ="$TitleText")]
         private void Title()
         {
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
             Selection.activeObject = this;
-#endif
+//#endif
         }
         
         private string TitleText()
@@ -38,12 +37,12 @@ namespace Rufas
         }
 
         //public static SdfIconType editorI;
-
+#endif
         public virtual SdfIconType EditorIcon()
         {            
             return SdfIconType.CircleFill;
         }
-
+#if UNITY_EDITOR
         public string GetNamespace()
         {
             return this.GetType().Namespace;
