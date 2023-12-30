@@ -37,9 +37,14 @@ namespace Rufas
             }           
         }
 
-        public void AddListener(System.Action<bool> listener)
+        public void AddListener(System.Action<bool> listener, bool callNow = false)
         {
             onValue += listener;
+
+            if (callNow)
+            {
+                listener(Value);
+            }
         }
 
         public void RemoveListener(System.Action<bool> listener)

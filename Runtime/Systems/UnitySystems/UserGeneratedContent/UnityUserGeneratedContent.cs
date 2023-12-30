@@ -12,8 +12,7 @@ namespace Rufas.UnitySystems
 {
     public class UnityUserGeneratedContent : GameSystem<UnityUserGeneratedContent>
     {
-
-        [SerializeField] private bool ugcSystemReadyToGo;
+        public BoolWithCallback ugcSystemReadyToGo;
 
         public override string DesiredPath()
         {
@@ -41,7 +40,7 @@ namespace Rufas.UnitySystems
         private void ResetVals()
         {
             contentIds.Clear();
-            ugcSystemReadyToGo = false;
+            ugcSystemReadyToGo.Value = false;
             jsonFile = null;
             uploadName = "";
             uploadDescription = "";
@@ -50,7 +49,7 @@ namespace Rufas.UnitySystems
 
         private void OnUnityLoggedIn()
         {
-            ugcSystemReadyToGo = true;
+            ugcSystemReadyToGo.Value = true;
 
             RefreshFromServer();
         }
@@ -61,8 +60,7 @@ namespace Rufas.UnitySystems
 
         [Button,EnableIf("ugcSystemReadyToGo")]
         public async void RefreshFromServer()
-        {
-            
+        {            
             try
             {
                 contentIds.Clear();
