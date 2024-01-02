@@ -68,7 +68,7 @@ namespace Rufas.UnitySystems
                 PagedResults<Content> contentPagedResults = await UgcService.Instance.GetContentsAsync();
 
                 foreach (Content content in contentPagedResults.Results)
-                {
+                {                    
                     contentIds.Add(new ContentReference(content.Id, content.Name, content.Description));
                 }
             }
