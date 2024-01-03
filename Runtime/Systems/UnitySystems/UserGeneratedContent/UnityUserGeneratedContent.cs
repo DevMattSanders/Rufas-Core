@@ -12,8 +12,9 @@ namespace Rufas.UnitySystems
 {
     public class UnityUserGeneratedContent : GameSystem<UnityUserGeneratedContent>
     {
-        public BoolWithCallback ugcSystemReadyToGo;
+       
 
+        #region GameSystemThings
         public override string DesiredPath()
         {
             return "Platform & Third Party/Unity/User Generated Content";
@@ -36,15 +37,15 @@ namespace Rufas.UnitySystems
             base.EndOfApplicaitonBehaviour();
             ResetVals();
         }
+        #endregion
+
+        public BoolWithCallback ugcSystemReadyToGo;
+        public List<ContentReference> contentIds = new List<ContentReference>();
 
         private void ResetVals()
         {
             contentIds.Clear();
             ugcSystemReadyToGo.Value = false;
-            jsonFile = null;
-            uploadName = "";
-            uploadDescription = "";
-            thumbnail = null;
         }
 
         private void OnUnityLoggedIn()
@@ -54,10 +55,10 @@ namespace Rufas.UnitySystems
             RefreshFromServer();
         }
 
-        public List<ContentReference> contentIds = new List<ContentReference>();
+        
 
       
-
+        //Produces a list of contentReferences 
         [Button,EnableIf("ugcSystemReadyToGo")]
         public async void RefreshFromServer()
         {            
@@ -79,86 +80,7 @@ namespace Rufas.UnitySystems
         }
 
         #region DebugCreateAndUpload
-        [Space]
-        [EnableIf("ugcSystemReadyToGo")]
-        public TextAsset jsonFile;
-
-        [ShowIf("ShowJsonConfirm")]
-        [SerializeField] private string uploadName;
-        [ShowIf("ShowJsonConfirm"), TextArea]
-        [SerializeField] private string uploadDescription;
-        [ShowIf("ShowJsonConfirm")]
-        [SerializeField] private Texture2D thumbnail;
-
-
-
-        private bool ShowJsonConfirm()
-        {
-            if (ugcSystemReadyToGo == false)
-            {
-                return false;
-            }
-
-            if (jsonFile != null)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-
-        [Button]
-        [ShowIf("ShowJsonConfirm")]
-        private async void CreateContent()
-        {
-            if (ugcSystemReadyToGo == false)
-            {
-                Debug.Log("UGC System not ready!");
-                return;
-            }
-
-            string jsonContent = jsonFile.text;
-
-            byte[] jsonBytes = Encoding.UTF8.GetBytes(jsonContent);
-
-            using MemoryStream contentFileStream = new MemoryStream(jsonBytes);
-
-            byte[] thumbnailBytes = null;
-            if (thumbnail != null)
-            {
-                thumbnailBytes = thumbnail.EncodeToPNG();
-            }
-
-            try
-            {
-                if (thumbnailBytes != null)
-                {
-                    using MemoryStream thumbnailStream = new MemoryStream(thumbnailBytes);
-
-                    Content content = await UgcService.Instance.CreateContentAsync(new CreateContentArgs(uploadName, uploadDescription, contentFileStream)
-                    {
-                        IsPublic = true,
-                        Thumbnail = thumbnailStream
-                    });
-                    Debug.Log("Created Content with Thumbnail: " + content.Id);
-                }
-                else
-                {
-                    Content content = await UgcService.Instance.CreateContentAsync(new CreateContentArgs(uploadName, uploadDescription, contentFileStream)
-                    {
-                        IsPublic = true
-                    });
-                    Debug.Log("Created Content: " + content.Id);
-                }
-
-
-            }
-            catch (UgcException e)
-            {
-                Debug.LogError(e);
-            }
-        }
+      
 
         #endregion
 
