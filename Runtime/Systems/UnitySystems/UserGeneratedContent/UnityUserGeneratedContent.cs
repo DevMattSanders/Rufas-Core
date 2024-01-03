@@ -40,11 +40,11 @@ namespace Rufas.UnitySystems
         #endregion
 
         public BoolWithCallback ugcSystemReadyToGo;
-        public List<ContentReference> contentIds = new List<ContentReference>();
+        public List<ContentReference> allContent = new List<ContentReference>();
 
         private void ResetVals()
         {
-            contentIds.Clear();
+            allContent.Clear();
             ugcSystemReadyToGo.Value = false;
         }
 
@@ -54,23 +54,20 @@ namespace Rufas.UnitySystems
 
             RefreshFromServer();
         }
-
-        
-
-      
+              
         //Produces a list of contentReferences 
         [Button,EnableIf("ugcSystemReadyToGo")]
         public async void RefreshFromServer()
         {            
             try
             {
-                contentIds.Clear();
+                allContent.Clear();
 
                 PagedResults<Content> contentPagedResults = await UgcService.Instance.GetContentsAsync();
 
                 foreach (Content content in contentPagedResults.Results)
                 {                    
-                    contentIds.Add(new ContentReference(content.Id, content.Name, content.Description));
+                    allContent.Add(new ContentReference(content.Id, content.Name, content.Description));
                 }
             }
             catch (UgcException e)
@@ -79,10 +76,45 @@ namespace Rufas.UnitySystems
             }
         }
 
-        #region DebugCreateAndUpload
-      
+        [PropertySpace(spaceBefore: 10)]
+        [EnableIf("ugcSystemReadyToGo")]
+        [Button]
+        public async void UploadNewContent(byte[] toUpload, string uploadName, string uploadDescription, string trackFileMetadata, byte[] thumnailBytes = null,List<string> tags = null)
+        {
+            if (ugcSystemReadyToGo == false)
+            {
+                Debug.Log("Cannot upload content (not able to access User Generated Content server)");
+                return;
+            }
 
-        #endregion
+            try
+            {
+                using MemoryStream contentFileStream = new MemoryStream(toUpload);
+                CreateContentArgs args = new CreateContentArgs(uploadName, uploadDescription, contentFileStream);                
+                args.IsPublic = true;
+                args.Metadata = trackFileMetadata;
+
+                if (thumnailBytes != null)
+                {
+                    using MemoryStream thumbnailStream = new MemoryStream(thumnailBytes);
+                    args.Thumbnail = thumbnailStream;
+                }
+                Debug.Log("Here");
+                if(tags != null)
+                {
+                    //tags
+                  //  args.TagsId = new List<string>(tags);
+                }
+                Debug.Log("Here2");
+
+
+                Content content = await UgcService.Instance.CreateContentAsync(args);
+            }
+            catch (UgcException e)
+            {
+                Debug.LogError("UGC New Upload Error: " + e);
+            }
+        }
 
         [PropertySpace(spaceBefore: 10)]
         [EnableIf("ugcSystemReadyToGo")]
@@ -103,11 +135,13 @@ namespace Rufas.UnitySystems
             }
 
 
-            [HideInInspector] public string id;
+            
             [HideLabel, ShowIf("thumbnail"), HorizontalGroup("H"),PreviewField]            public Texture2D thumbnail;
             [ReadOnly, HideLabel, HorizontalGroup("H")] public string title;
+          
             [ReadOnly, HideLabel, HorizontalGroup("H")] public string description;
-            
+            [ReadOnly, HideLabel, HorizontalGroup("H2")] public string id;
+            [ReadOnly, HideLabel, HorizontalGroup("H2")] public List<string> tags = new List<string>();
             public Content downloadedContent;
             //public 
 
@@ -166,9 +200,16 @@ namespace Rufas.UnitySystems
                     await UgcService.Instance.DownloadContentDataAsync(content, true, false);
                     //Example here
                     downloadedContent = content;
-                    string modText = System.Text.Encoding.UTF8.GetString(content.DownloadedContent);
-                    Debug.Log(modText);
-
+                    //content.id
+                    string contentAsText = System.Text.Encoding.UTF8.GetString(content.DownloadedContent);
+                    Debug.Log(content.Metadata + "\n" + contentAsText);
+                    tags.Clear();
+                    foreach (Tag next in content.Tags)
+                    {
+                        Debug.Log("TagID: " + next.Id + " | TagName: " + next.Name);
+                       //tags.Add()
+                    }
+                    Debug.Log("Call event here to return this to save file!");
                     IsContentDownloaded = true;
                     downloading = false;
                 }

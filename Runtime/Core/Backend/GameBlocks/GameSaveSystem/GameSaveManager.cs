@@ -242,7 +242,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
 
             string filePath = FileSavePath(saveFile.header.timeStamp,saveFile.header.savefileID, saveFile.header.saveFileType);
-            Debug.Log(filePath);
+           // Debug.Log(filePath);
             
             //ES3.com
 
@@ -252,9 +252,9 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             }
 
 
-            Debug.Log("1");
+          //  Debug.Log("1");
             ES3.Save<SaveFileHeader>("Header", saveFile.header, filePath);
-            Debug.Log("2");
+          //  Debug.Log("2");
             if (currentThumbnail != null)
             {
               //  Debug.Log("3");
@@ -295,10 +295,10 @@ public class GameSaveManager : GameSystem<GameSaveManager>
                 ES3Settings setti = new(true);
                 setti.compressionType = ES3.CompressionType.Gzip;
                 string folder = FolderFromSavePath(filePath);
-                Debug.Log(folder);
+               // Debug.Log(folder);
                 ES3.SaveImage(currentThumbnail,100, folder + "thumbnails/" + saveFile.header.savefileID + ".png", setti);
             }
-            Debug.Log("4");
+          //  Debug.Log("4");
             outputJson = ES3.LoadRawString(filePath);
             //Clues here for how to convert to JSON upload!
             /*
@@ -330,22 +330,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         }
     }
 
-    [Button]
-    public void Calculate()
-    {
-        double n = 60 * 24 * 365 * 60;  // Number of minutes in 10,000 years
-        double N = Math.Pow(2, 48); // Total number of possible IDs
-
-        double collisionProbability = 1 - Math.Pow(1 - 1 / N, n);
-
-        double expectedCollisions = collisionProbability * n;
-
-        Debug.Log("Collision Probability: " + collisionProbability);
-        Debug.Log("Expected Collisions: " + expectedCollisions);
-
-    }
-
-    [TextArea(minLines: 20, maxLines: 50)]
+    [TextArea(minLines: 3, maxLines: 10)]
     public string outputJson;
 
     public SaveFile file;
@@ -367,7 +352,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             if (ES3.DirectoryExists(directoryPath))
             {
                 string[] fileNames = ES3.GetFiles(directoryPath);
-                Debug.Log(fileNames.Length);
+               // Debug.Log(fileNames.Length);
                 foreach (string fileName in fileNames)
                 {
                     string directoryFilePath = directoryPath + fileName;
@@ -447,7 +432,6 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         public List<SaveFile> saveFiles = new List<SaveFile>();
     }
 
-
     public void Load(SaveFile saveFile)// FileHeader saveFilePointer,FileCategory token)
     {
         saveFile.data.Clear();
@@ -474,7 +458,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             SaveFile.SaveFileLoading.Raise(saveFile);
         }
 
-        saveFile.data.Clear();
+      //  saveFile.data.Clear();
 
         /*
         if (ES3.KeyExists(saveFilePointer.fileName, filePath: saveFolder + "/" + token.additionalSavePath + "/" + saveFilePointer.fileName))
@@ -540,8 +524,9 @@ public class SaveFile
     //[InlineEditor(InlineEditorObjectFieldModes.Boxed)]
     [HideLabel]
     public SaveFileHeader header;
-    
-   // [ShowInInspector,ReadOnly]
+
+    // [ShowInInspector,ReadOnly]
+    [SerializeField]
     public Dictionary<string, string> data = new Dictionary<string, string>();
         
 
@@ -571,12 +556,13 @@ public class SaveFile
         }
     }
 
+    [HorizontalGroup("Options")]
     [Button]
     public void Load()
     {
         GameSaveManager.Instance.Load(this);
     }
-
+    [HorizontalGroup("Options")]
     [Button]
     public void Delete()
     {
