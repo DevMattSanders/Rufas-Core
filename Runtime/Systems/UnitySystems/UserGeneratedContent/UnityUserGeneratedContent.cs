@@ -99,13 +99,13 @@ namespace Rufas.UnitySystems
                     using MemoryStream thumbnailStream = new MemoryStream(thumnailBytes);
                     args.Thumbnail = thumbnailStream;
                 }
-                Debug.Log("Here");
+             //   Debug.Log("Here");
                 if(tags != null)
                 {
                     //tags
                   //  args.TagsId = new List<string>(tags);
                 }
-                Debug.Log("Here2");
+              //  Debug.Log("Here2");
 
 
                 Content content = await UgcService.Instance.CreateContentAsync(args);
