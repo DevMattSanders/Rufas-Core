@@ -40,6 +40,8 @@ namespace Rufas.UnitySystems
         #endregion
 
         public BoolWithCallback ugcSystemReadyToGo;
+        [HideInInspector]
+        public CodeEvent<List<ContentReference>> ugcServerRefreshed;
         public List<ContentReference> allContent = new List<ContentReference>();
 
         private void ResetVals()
@@ -65,10 +67,15 @@ namespace Rufas.UnitySystems
 
                 PagedResults<Content> contentPagedResults = await UgcService.Instance.GetContentsAsync();
 
+                
+
                 foreach (Content content in contentPagedResults.Results)
                 {                    
-                    allContent.Add(new ContentReference(content.Id, content.Name, content.Description));
+                    //content.
+                    allContent.Add(new ContentReference(content.Id, content.Name, content.Description,content.Metadata));
                 }
+
+                ugcServerRefreshed.Raise(allContent);
             }
             catch (UgcException e)
             {
@@ -124,24 +131,32 @@ namespace Rufas.UnitySystems
             await UgcService.Instance.DeleteContentAsync(contentID);
         }
 
-        [Serializable,InlineEditor(InlineEditorObjectFieldModes.Hidden)]
+        [Serializable]
         public class ContentReference
         {
-            public ContentReference(string _id, string _title, string _description)
+            public ContentReference(string _id, string _title, string _description, string _metadata)
             {
                 id = _id;
                 title = _title;
                 description = _description;
+                metadata = _metadata;
             }
 
+            public CodeEvent onContentDownloaded;
 
             
             [HideLabel, ShowIf("thumbnail"), HorizontalGroup("H"),PreviewField]            public Texture2D thumbnail;
             [ReadOnly, HideLabel, HorizontalGroup("H")] public string title;
           
-            [ReadOnly, HideLabel, HorizontalGroup("H")] public string description;
+            [ReadOnly, HideLabel, HorizontalGroup("H")] public string description;            
+
             [ReadOnly, HideLabel, HorizontalGroup("H2")] public string id;
+            
             [ReadOnly, HideLabel, HorizontalGroup("H2")] public List<string> tags = new List<string>();
+
+            [ReadOnly,HideLabel]
+            public string metadata;
+
             public Content downloadedContent;
             //public 
 
@@ -202,14 +217,15 @@ namespace Rufas.UnitySystems
                     downloadedContent = content;
                     //content.id
                     string contentAsText = System.Text.Encoding.UTF8.GetString(content.DownloadedContent);
-                    Debug.Log(content.Metadata + "\n" + contentAsText);
+                  //  Debug.Log(content.Metadata + "\n" + contentAsText);
                     tags.Clear();
                     foreach (Tag next in content.Tags)
                     {
-                        Debug.Log("TagID: " + next.Id + " | TagName: " + next.Name);
+                       // Debug.Log("TagID: " + next.Id + " | TagName: " + next.Name);
                        //tags.Add()
                     }
-                    Debug.Log("Call event here to return this to save file!");
+                    // Debug.Log("Call event here to return this to save file!");
+                    onContentDownloaded.Raise();
                     IsContentDownloaded = true;
                     downloading = false;
                 }
