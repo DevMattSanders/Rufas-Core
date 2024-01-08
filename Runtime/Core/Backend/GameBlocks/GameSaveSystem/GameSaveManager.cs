@@ -477,6 +477,11 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         */
     }
 
+   // public void LoadFileFromRAM(SaveFile saveFile)
+   // {
+
+   // }
+
     public void Delete(SaveFile saveFile)
     {
         ES3.DeleteFile(saveFile.directoryFilePath);// FileSavePath(saveFile.header.timeStamp, saveFile.header.savefileID, saveFile.header.saveFileType));
