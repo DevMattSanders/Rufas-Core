@@ -215,9 +215,10 @@ namespace Rufas.UnitySystems
                     await UgcService.Instance.DownloadContentDataAsync(content, true, false);
                     //Example here
                     downloadedContent = content;
+                    Debug.Log("DOWNLOAD: " + downloadedContent.DownloadedContent.Length.ToString());
                     //content.id
                     string contentAsText = System.Text.Encoding.UTF8.GetString(content.DownloadedContent);
-                  //  Debug.Log(content.Metadata + "\n" + contentAsText);
+                    Debug.Log(content.Metadata + "\n" + contentAsText);
                     tags.Clear();
                     foreach (Tag next in content.Tags)
                     {

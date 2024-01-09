@@ -337,7 +337,8 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     [Button]
     public void RefreshSavePointers()
-    {        
+    {
+        Debug.Log("REFRESHING LOADABLE TRACKS:");
         onDevice.Clear();
         saveFilesByID.Clear();
         foreach (SaveFileType nextSaveType in SaveFileType.saveFileTypes)
@@ -348,9 +349,10 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
             //Create the directory if it doesn't exist already
             string directoryPath = saveFolder + "/" + nextSaveType.UniqueID + "/";
-
+            Debug.Log("TRACK: " + directoryPath);
             if (ES3.DirectoryExists(directoryPath))
             {
+                Debug.Log("DOES EXIST");
                 string[] fileNames = ES3.GetFiles(directoryPath);
                // Debug.Log(fileNames.Length);
                 foreach (string fileName in fileNames)
@@ -362,6 +364,10 @@ public class GameSaveManager : GameSystem<GameSaveManager>
                     saveTypeOnDevice.saveFiles.Add(saveFile);
                     saveFilesByID.Add(saveFile.header.savefileID, saveFile);
                 }
+            }
+            else
+            {
+                Debug.Log("DOES NOT EXIST");
             }
         }
 
@@ -477,6 +483,36 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         */
     }
 
+    public void LoadDataOnly(SaveFile saveFile)
+    {
+        saveFile.data.Clear();
+        // string filePath = FileSavePath(saveFile.header.timeStamp,saveFile.header.savefileID,saveFile.header.saveFileType);
+        if (ES3.FileExists(saveFile.directoryFilePath))
+        {
+            string[] keys = ES3.GetKeys(saveFile.directoryFilePath);
+
+            foreach (string key in keys)
+            {
+                if (string.Equals(key, "Header")) continue;
+
+                string loadedValue = ES3.Load<string>(key, saveFile.directoryFilePath, "#NO#VALUE#FOUND#");
+
+                if (string.Equals(loadedValue, "#NO#VALUE#FOUND#"))
+                {
+                    Debug.LogError($"KeyNotFoundInSaveFile:{key}");
+                    continue;
+                }
+
+                saveFile.data.Add(key, loadedValue);
+
+                Debug.Log(key + "|" + loadedValue);
+
+            }
+
+           // SaveFile.SaveFileLoading.Raise(saveFile);
+        }
+    }
+
    // public void LoadFileFromRAM(SaveFile saveFile)
    // {
 
@@ -567,6 +603,12 @@ public class SaveFile
     {
         GameSaveManager.Instance.Load(this);
     }
+
+    public void LoadDataOnly()
+    {
+        GameSaveManager.Instance.LoadDataOnly(this);
+    }
+
     [HorizontalGroup("Options")]
     [Button]
     public void Delete()

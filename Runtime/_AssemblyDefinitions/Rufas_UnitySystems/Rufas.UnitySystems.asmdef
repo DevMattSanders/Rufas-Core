@@ -7,7 +7,8 @@
         "Unity.Services.Authentication",
         "Unity.Services.Core.Analytics",
         "Unity.Services.Ugc",
-        "Unity.Services.Analytics"
+        "Unity.Services.Analytics",
+        "Unity.Services.Core.Environments"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

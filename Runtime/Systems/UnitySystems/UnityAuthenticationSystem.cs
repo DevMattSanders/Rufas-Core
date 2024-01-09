@@ -6,6 +6,7 @@ using UnityEngine;
 using Rufas;
 using JetBrains.Annotations;
 using Sirenix.OdinInspector;
+using Unity.Services.Core.Environments;
 
 namespace Rufas.UnitySystems
 {
@@ -40,6 +41,10 @@ namespace Rufas.UnitySystems
 
         private async void InitAndSignIn()
         {
+//#if !UNITY_EDITOR
+    //        var options = new InitializationOptions();
+    //        options.SetEnvironmentName("production");
+//#endif
             await UnityServices.InitializeAsync();
 
             await AuthenticationService.Instance.SignInWithOculusAsync(oculusProof.Value, oculusLogin.Value.ToString());
