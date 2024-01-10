@@ -125,7 +125,8 @@ namespace Rufas
             }
         }
 #endif
-
+        AsyncOperationHandle<GameObject> Handle;
+        public AssetReference bootstrapPrefab;
 
         public void LoadAddressablesAndRunBootstrapBehaviours()
         {
@@ -141,10 +142,19 @@ namespace Rufas
             List<BootstrapBehaviour> bootstrapBehaviours = new List<BootstrapBehaviour>();
 
             if (loadAddressables)
-            {                
-                loadOp = Addressables.LoadAssetsAsync<BootstrapBehaviour>(labelName, null);
+            {
+
+                // bootstrapPrefab =
+
+               Handle = bootstrapPrefab.LoadAssetAsync<GameObject>();
+
+                Debug.Log("LOADING ADDRESSABLE ASSETS FROM BOOTSTRAPPER!");
+               // loadOp = Addressables.LoadAssetsAsync<BootstrapBehaviour>(labelName, null);
+                
 
                 CoroutineMonoBehaviour.StartCoroutine(LoadOpCounter(), LoadOpCounterRoutine);
+
+                //IList<BootstrapBehaviour> load
 
                 loadOp.Completed += bootstrapBehaviourResults =>
                 {
@@ -162,11 +172,14 @@ namespace Rufas
         private IEnumerator LoadOpCounterRoutine;
         IEnumerator LoadOpCounter()
         {
-            while (loadOp.IsDone == false)
+           // while (loadOp.IsDone == false)
+           while(Handle.IsDone == false)
             {
               //  Debug.Log(loadOp.PercentComplete);
                 yield return null;
             }
+
+            Instantiate(Handle.Result);
         }
 
         private void AssetsLoaded(List<BootstrapBehaviour> bootstrapBehaviours)
@@ -174,7 +187,7 @@ namespace Rufas
             //Debug.Log("Found all behaviours");
             foreach (BootstrapBehaviour next in bootstrapBehaviours)
             {
-             //   Debug.Log(next.name);
+                Debug.Log(next.name);
                 next.BehaviourToRunDuringBootstrap();
             }
         }

@@ -51,6 +51,15 @@ namespace Rufas
 
             foreach (LoadBeforeAwake next in loaders)
             {
+           //     next.BehaviourToRunBeforeStart();
+            }
+        }
+
+        [Button]
+        public void LoadObjects()
+        {
+            foreach (LoadBeforeAwake next in loaders)
+            {
                 next.BehaviourToRunBeforeStart();
             }
         }
@@ -62,14 +71,20 @@ namespace Rufas
 
         IEnumerator WaitForAllPreawakeLoadersBeforeFinishInitializing()
         {
+            LoadObjects();
+            yield return null;
             while (true)
             {
                 bool finished = true;
 
                 foreach(LoadBeforeAwake next in loaders)
                 {
+                    
+
                     foreach(AssetReference nextRef in next.addressablesToLoad)
                     {
+                        
+
                         if (nextRef.IsDone == false)
                         {
                             finished = false;

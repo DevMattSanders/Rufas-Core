@@ -128,6 +128,7 @@ namespace Rufas
 
             foreach (GameSystemParentClass next in gameSystems)
             {
+                Debug.Log("From Game Manager: " + next.name);
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
             }
@@ -456,6 +457,11 @@ namespace Rufas
 
             private Color ButtonColour()
             {
+                if(manager == null || gameSystem == null)
+                {
+                    return Color.white;
+                }
+
                 if (!manager.hiddenGameSystems.Contains(gameSystem))
                 {
                     return new Color(0.7f, 0.7f, 1, 1);

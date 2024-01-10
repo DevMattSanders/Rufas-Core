@@ -45,11 +45,12 @@ namespace Rufas
 
             foreach (AssetReferenceGameObject assetReference in addressablesToLoad)
             {
-                //assetReference.is
                 assetReference.LoadAssetAsync().Completed += createdObjectHandle =>
                 {
-                    GameObject createdObject = Instantiate(createdObjectHandle.Result);
+                    
+                    GameObject createdObject = GameObject.Instantiate(createdObjectHandle.Result);
                     DontDestroyOnLoad(createdObject);
+                    Debug.Log(createdObject.name);
                     createdObject.SendMessage("OnCreatedBeforeScene", SendMessageOptions.DontRequireReceiver);
                 };
             }

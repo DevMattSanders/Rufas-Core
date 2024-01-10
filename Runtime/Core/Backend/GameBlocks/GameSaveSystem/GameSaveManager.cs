@@ -371,6 +371,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             }
         }
 
+        Debug.Log("RAISING EVENT: " + saveFilesRefreshed);
         saveFilesRefreshed.Raise();
         return;
         if (ES3.FileExists("SavePointers"))

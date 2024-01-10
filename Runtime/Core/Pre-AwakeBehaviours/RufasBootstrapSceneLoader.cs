@@ -154,10 +154,10 @@ namespace Rufas
 
             assetListLoadVal = 1;
 
-           // sceneLoadVal = 1;
-           // RufasSceneManager.LoadScene(sceneToLoad);
-            
-           
+            // sceneLoadVal = 1;
+            // RufasSceneManager.LoadScene(sceneToLoad);
+
+          //  yield break;
 
             sceneInst = Addressables.LoadSceneAsync(sceneToLoad, LoadSceneMode.Single, activateOnLoad: false);
 

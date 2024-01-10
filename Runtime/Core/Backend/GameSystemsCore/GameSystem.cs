@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Rufas
@@ -18,7 +19,7 @@ namespace Rufas
         }
 
         
-        public override void TriggerInstance() { base.TriggerInstance(); bool tempTrigger = Instance; }
+        public override void TriggerInstance() { base.TriggerInstance(); bool tempTrigger = Instance;}
 
         private static T instance;
         public static T Instance
@@ -41,6 +42,7 @@ namespace Rufas
                             if (next is T)
                             {
                                 instance = next as T;
+                          
                             }
                         }
                     }

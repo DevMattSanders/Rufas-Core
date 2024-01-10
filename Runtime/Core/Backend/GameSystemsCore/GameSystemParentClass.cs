@@ -51,7 +51,7 @@ namespace Rufas
         public void CreateGameSystem(string systemName, string displayName, GameSystemManager toRefresh)
         {
             GameSystemParentClass objectToCreate = (GameSystemParentClass)ScriptableObject.CreateInstance(systemName);
-            Debug.Log("Create instance: " + systemName);
+          //  Debug.Log("Create instance: " + systemName);
             Directory.CreateDirectory("Assets/Rufas/Systems");
 
             if (string.IsNullOrWhiteSpace(displayName))
@@ -82,7 +82,7 @@ namespace Rufas
         
         public virtual void TriggerInstance()
         {
-
+            
         }
 
         //public virtual bool IsRufasSystem()

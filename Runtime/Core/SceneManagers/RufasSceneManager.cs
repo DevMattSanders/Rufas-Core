@@ -213,7 +213,7 @@ namespace Rufas
         }
 
 #if UNITY_EDITOR
-
+        [Button]
         public void RefreshApplicationScenesList()
         {
             applicationScenes.Clear();
@@ -229,8 +229,6 @@ namespace Rufas
             settings.GetAllAssets(sceneEntries, false);
 
             int sceneListCount = 0;
-
-            //List<scene>
 
             SoSceneReference[] references = RufasStatic.GetAllScriptables_ToArray<SoSceneReference>();
             bool editorNeedsRefresh = false;

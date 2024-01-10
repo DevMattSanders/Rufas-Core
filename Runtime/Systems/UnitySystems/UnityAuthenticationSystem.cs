@@ -36,19 +36,24 @@ namespace Rufas.UnitySystems
         public override void PreInitialisationBehaviour()
         {
             base.PreInitialisationBehaviour();
+            Debug.Log("UNITY INIT: 1");
             onPlatformCompletedLogin.AddListener(InitAndSignIn);
+
+            Debug.Log("ID HERE: " + onPlatformCompletedLogin.GetInstanceID());
         }
 
         private async void InitAndSignIn()
         {
-//#if !UNITY_EDITOR
-    //        var options = new InitializationOptions();
-    //        options.SetEnvironmentName("production");
-//#endif
+            //#if !UNITY_EDITOR
+            //        var options = new InitializationOptions();
+            //        options.SetEnvironmentName("production");
+            //#endif
+            Debug.Log("UNITY INIT: 2");
             await UnityServices.InitializeAsync();
-
+            Debug.Log("UNITY INIT: 3");
+            Debug.Log(oculusProof.Value + " " + oculusLogin.Value.ToString());
             await AuthenticationService.Instance.SignInWithOculusAsync(oculusProof.Value, oculusLogin.Value.ToString());
-
+           
 
             Debug.Log("Unity Authentification Completed! PlayerID: " + AuthenticationService.Instance.PlayerId);
             UnityAuthenticationCompleted.Raise();
