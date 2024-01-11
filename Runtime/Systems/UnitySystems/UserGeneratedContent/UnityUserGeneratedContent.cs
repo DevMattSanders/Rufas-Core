@@ -5,7 +5,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Unity.Services.Ugc;
+using Unity.Services.Ugc.Generated.Models;
 using UnityEngine;
 
 namespace Rufas.UnitySystems
@@ -129,6 +131,24 @@ namespace Rufas.UnitySystems
         private async void DeleteOnlineContent(string contentID)
         {
             await UgcService.Instance.DeleteContentAsync(contentID);
+        }
+
+        [PropertySpace(spaceBefore: 10)]
+        [EnableIf("ugcSystemReadyToGo")]
+        [Button]
+        private async void ReportContent(string contentID,Reason reason = Reason.NonFunctional)
+        {            
+            var result = await UgcService.Instance.ReportContentAsync(new ReportContentArgs(contentID, reason));
+
+            Debug.Log($"The following content was reported: {result.Id}.");
+        }
+
+        [PropertySpace(spaceBefore: 10)]
+        [EnableIf("ugcSystemReadyToGo")]
+        [Button]
+        private async void RejectReportedContent(string contentID)
+        {
+            await UgcService.Instance.RejectContentAsync(contentID);
         }
 
         [Serializable]

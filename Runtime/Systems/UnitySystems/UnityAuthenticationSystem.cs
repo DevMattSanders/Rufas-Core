@@ -50,8 +50,9 @@ namespace Rufas.UnitySystems
             //#endif
             //Debug.Log("UNITY INIT: 2");
             await UnityServices.InitializeAsync();
-           // Debug.Log("UNITY INIT: 3");
+            // Debug.Log("UNITY INIT: 3");
             //Debug.Log(oculusProof.Value + " " + oculusLogin.Value.ToString());
+
             await AuthenticationService.Instance.SignInWithOculusAsync(oculusProof.Value, oculusLogin.Value.ToString());
            
 
