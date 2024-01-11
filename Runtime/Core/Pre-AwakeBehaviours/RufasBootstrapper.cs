@@ -125,8 +125,8 @@ namespace Rufas
             }
         }
 #endif
-        AsyncOperationHandle<GameObject> Handle;
-        public AssetReference bootstrapPrefab;
+        //AsyncOperationHandle<GameObject> Handle;
+        //public AssetReference bootstrapPrefab;
 
         public void LoadAddressablesAndRunBootstrapBehaviours()
         {
@@ -146,20 +146,32 @@ namespace Rufas
 
                 // bootstrapPrefab =
 
-               Handle = bootstrapPrefab.LoadAssetAsync<GameObject>();
+            //   Handle = bootstrapPrefab.LoadAssetAsync<GameObject>();
 
                 Debug.Log("LOADING ADDRESSABLE ASSETS FROM BOOTSTRAPPER!");
-               // loadOp = Addressables.LoadAssetsAsync<BootstrapBehaviour>(labelName, null);
+
                 
 
-                CoroutineMonoBehaviour.StartCoroutine(LoadOpCounter(), LoadOpCounterRoutine);
+                loadOp = Addressables.LoadAssetsAsync<BootstrapBehaviour>(labelName, null);
 
+                if (loadOp.IsDone == false)
+                {
+
+                    loadOp.Completed += bootstrapBehaviourResults =>
+                    {
+                        AssetsLoaded((List<BootstrapBehaviour>)bootstrapBehaviourResults.Result);
+                    };
+
+
+                    CoroutineMonoBehaviour.StartCoroutine(LoadOpCounter(), LoadOpCounterRoutine);
+                }
+                else
+                {
+                    AssetsLoaded((List<BootstrapBehaviour>)loadOp.Result);
+                }
                 //IList<BootstrapBehaviour> load
 
-                loadOp.Completed += bootstrapBehaviourResults =>
-                {
-                    AssetsLoaded((List<BootstrapBehaviour>)bootstrapBehaviourResults.Result);
-                };
+               
             }
             else
             {
@@ -169,17 +181,22 @@ namespace Rufas
             }          
         }
 
+        private void LoadOpDone()
+        {
+
+        }
+
         private IEnumerator LoadOpCounterRoutine;
         IEnumerator LoadOpCounter()
         {
-           // while (loadOp.IsDone == false)
-           while(Handle.IsDone == false)
+            while (loadOp.IsDone == false)
+          // while(Handle.IsDone == false)
             {
               //  Debug.Log(loadOp.PercentComplete);
                 yield return null;
             }
 
-            Instantiate(Handle.Result);
+            //Instantiate(Handle.Result);
         }
 
         private void AssetsLoaded(List<BootstrapBehaviour> bootstrapBehaviours)
@@ -188,6 +205,7 @@ namespace Rufas
             foreach (BootstrapBehaviour next in bootstrapBehaviours)
             {
                 Debug.Log(next.name);
+                
                 next.BehaviourToRunDuringBootstrap();
             }
         }

@@ -110,6 +110,8 @@ namespace Rufas
          //   Debug.Log("GAME_SYSTEM_MANAGER: 1");
             base.BehaviourToRunDuringBootstrap();
 
+            Debug.Log("GAME SYSTEM MANAGER SETTING INSTANCE: " + this.GetInstanceID());
+
             if (instance == null)
             {
                 instance = this;
@@ -119,16 +121,16 @@ namespace Rufas
             }
 
 #if UNITY_EDITOR
-            gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
+            //gameSystems = RufasStatic.GetAllScriptables_ToArray<GameSystemParentClass>();
 #endif
 
-            Debug.Log("GAME_SYSTEM_MANAGER: 2");
+           // Debug.Log("GAME_SYSTEM_MANAGER: 2");
 
             allSystemsInitialised.Value = false;
 
             foreach (GameSystemParentClass next in gameSystems)
             {
-                Debug.Log("From Game Manager: " + next.name);
+              //  Debug.Log("From Game Manager: " + next.name);
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
             }
