@@ -20,7 +20,7 @@ namespace Rufas.UnitySystems
         {
             base.PreInitialisationBehaviour();
             ResetVals();
-            UnityAuthenticationSystem.UnityAuthenticationCompleted.AddListener(OnUnityLoggedIn);
+            UnityAuthenticationSystem.OnUnityAuthenticationComplete.AddListener(OnUnityLoggedIn);
         }
 
         public override void EndOfApplicaitonBehaviour()

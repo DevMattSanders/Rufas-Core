@@ -110,7 +110,7 @@ namespace Rufas
          //   Debug.Log("GAME_SYSTEM_MANAGER: 1");
             base.BehaviourToRunDuringBootstrap();
 
-            Debug.Log("GAME SYSTEM MANAGER SETTING INSTANCE: " + this.GetInstanceID());
+           // Debug.Log("GAME SYSTEM MANAGER SETTING INSTANCE: " + this.GetInstanceID());
 
             if (instance == null)
             {

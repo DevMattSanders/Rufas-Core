@@ -12,7 +12,9 @@ namespace Rufas.UnitySystems
 {
     public class UnityAuthenticationSystem : GameSystem<UnityAuthenticationSystem>
     {
-        public static CodeEvent UnityAuthenticationCompleted;
+        public static CodeEvent OnUnityAuthenticationComplete;
+        public static bool isUnityAuthenticationCompleted;
+        public string PlayerID;
 
         //[Header("Void Event that triggers Unitys Authentication!")]
         [Required]
@@ -33,13 +35,27 @@ namespace Rufas.UnitySystems
             return "Platform & Third Party/Unity/Unity Authentication";
         }
 
+        public override void OnAwakeBehaviour()
+        {
+            base.OnAwakeBehaviour();
+            PlayerID = "No-ID-Found";
+        }
+
+        public override void EndOfApplicaitonBehaviour()
+        {
+            base.EndOfApplicaitonBehaviour();
+            PlayerID = "No-ID-Found";
+        }
+
         public override void PreInitialisationBehaviour()
         {
             base.PreInitialisationBehaviour();
            // Debug.Log("UNITY INIT: 1");
             onPlatformCompletedLogin.AddListener(InitAndSignIn);
 
-            Debug.Log("ID HERE: " + onPlatformCompletedLogin.GetInstanceID());
+           // Debug.Log("ID HERE: " + onPlatformCompletedLogin.GetInstanceID());
+
+            
         }
 
         private async void InitAndSignIn()
@@ -54,12 +70,12 @@ namespace Rufas.UnitySystems
             //Debug.Log(oculusProof.Value + " " + oculusLogin.Value.ToString());
 
             await AuthenticationService.Instance.SignInWithOculusAsync(oculusProof.Value, oculusLogin.Value.ToString());
-           
 
-            Debug.Log("Unity Authentification Completed! PlayerID: " + AuthenticationService.Instance.PlayerId);
-            UnityAuthenticationCompleted.Raise();
-
-
+            PlayerID = AuthenticationService.Instance.PlayerId;
+            Debug.Log("ID: " + PlayerID);
+            // Debug.Log("Unity Authentification Completed! PlayerID: " + AuthenticationService.Instance.PlayerId);
+            isUnityAuthenticationCompleted = true;
+            OnUnityAuthenticationComplete.Raise();
         }
     }
 }

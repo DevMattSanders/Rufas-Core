@@ -338,7 +338,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     [Button]
     public void RefreshSavePointers()
     {
-        Debug.Log("REFRESHING LOADABLE TRACKS:");
+        //Debug.Log("REFRESHING LOADABLE TRACKS:");
         onDevice.Clear();
         saveFilesByID.Clear();
         foreach (SaveFileType nextSaveType in SaveFileType.saveFileTypes)
@@ -349,10 +349,10 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
             //Create the directory if it doesn't exist already
             string directoryPath = saveFolder + "/" + nextSaveType.UniqueID + "/";
-            Debug.Log("TRACK: " + directoryPath);
+            //Debug.Log("TRACK: " + directoryPath);
             if (ES3.DirectoryExists(directoryPath))
             {
-                Debug.Log("DOES EXIST");
+                //Debug.Log("DOES EXIST");
                 string[] fileNames = ES3.GetFiles(directoryPath);
                // Debug.Log(fileNames.Length);
                 foreach (string fileName in fileNames)
@@ -371,7 +371,7 @@ public class GameSaveManager : GameSystem<GameSaveManager>
             }
         }
 
-        Debug.Log("RAISING EVENT: " + saveFilesRefreshed);
+       // Debug.Log("RAISING EVENT: " + saveFilesRefreshed);
         saveFilesRefreshed.Raise();
         return;
         if (ES3.FileExists("SavePointers"))

@@ -68,6 +68,11 @@ namespace Rufas
 #endif
             onEvent?.Invoke(argument);
         }
+
+        public void AddListener()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DisableInEditorMode]

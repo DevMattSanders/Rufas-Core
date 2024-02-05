@@ -50,7 +50,7 @@ namespace Rufas
                     
                     GameObject createdObject = GameObject.Instantiate(createdObjectHandle.Result);
                     DontDestroyOnLoad(createdObject);
-                    Debug.Log(createdObject.name);
+                    //Debug.Log(createdObject.name);
                     createdObject.SendMessage("OnCreatedBeforeScene", SendMessageOptions.DontRequireReceiver);
                 };
             }

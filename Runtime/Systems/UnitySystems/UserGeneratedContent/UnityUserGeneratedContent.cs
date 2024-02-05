@@ -14,7 +14,8 @@ namespace Rufas.UnitySystems
 {
     public class UnityUserGeneratedContent : GameSystem<UnityUserGeneratedContent>
     {
-       
+       // public bool playerIDFound = false;
+       // public string playerID = "";
 
         #region GameSystemThings
         public override string DesiredPath()
@@ -31,7 +32,7 @@ namespace Rufas.UnitySystems
         {
             base.PreInitialisationBehaviour();
             ResetVals();
-            UnityAuthenticationSystem.UnityAuthenticationCompleted.AddListener(OnUnityLoggedIn);
+            UnityAuthenticationSystem.OnUnityAuthenticationComplete.AddListener(OnUnityLoggedIn);
         }
 
         public override void EndOfApplicaitonBehaviour()
@@ -48,6 +49,8 @@ namespace Rufas.UnitySystems
 
         private void ResetVals()
         {
+            //playerID = "";
+            //playerIDFound = false;
             allContent.Clear();
             ugcSystemReadyToGo.Value = false;
         }
@@ -67,14 +70,39 @@ namespace Rufas.UnitySystems
             {
                 allContent.Clear();
 
+                /*
+                if (playerIDFound == false)
+                {
+                    PagedResults<Content> playersContent = await UgcService.Instance.GetPlayerContentsAsync();
+
+                    if (playersContent.Results.Count > 0)
+                    {
+                        Debug.Log("LOCAL-TRACKS_" + playersContent.Results.Count);
+
+                        Debug.Log(playersContent.Results[0].Name);
+
+                        playerIDFound = true;
+                        playerID = playersContent.Results[0].CreatorAccountId;
+                    }
+                    else
+                    {
+                        playerIDFound = false;
+                        playerID = "";
+                    }
+                }
+                */
+
                 PagedResults<Content> contentPagedResults = await UgcService.Instance.GetContentsAsync();
-
-                
-
+               // IsLocalPlayersContent
                 foreach (Content content in contentPagedResults.Results)
-                {                    
+                {
+                    bool isLocalContent = false;
+
+                    if(content.CreatorAccountId ==  UnityAuthenticationSystem.Instance.PlayerID) { isLocalContent = true; }
                     //content.
-                    allContent.Add(new ContentReference(content.Id, content.Name, content.Description,content.Metadata));
+                    allContent.Add(new ContentReference(content.Id, content.Name, content.Description,content.Metadata,isLocalContent));
+
+                   //if(content.CreatorAccountId == UgcService.Instance.get)
                 }
 
                 ugcServerRefreshed.Raise(allContent);
@@ -128,7 +156,7 @@ namespace Rufas.UnitySystems
         [PropertySpace(spaceBefore: 10)]
         [EnableIf("ugcSystemReadyToGo")]
         [Button]
-        private async void DeleteOnlineContent(string contentID)
+        public async void DeleteOnlineContent(string contentID)
         {
             await UgcService.Instance.DeleteContentAsync(contentID);
         }
@@ -154,13 +182,16 @@ namespace Rufas.UnitySystems
         [Serializable]
         public class ContentReference
         {
-            public ContentReference(string _id, string _title, string _description, string _metadata)
+            public ContentReference(string _id, string _title, string _description, string _metadata, bool _isLocalPlayerContent)
             {
                 id = _id;
                 title = _title;
                 description = _description;
                 metadata = _metadata;
+                IsLocalPlayersContent = _isLocalPlayerContent;
             }
+
+            public bool IsLocalPlayersContent;
 
             public CodeEvent onContentDownloaded;
 

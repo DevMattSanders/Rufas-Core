@@ -19,7 +19,7 @@ namespace Rufas
         }
 
         
-        public override void TriggerInstance() { base.TriggerInstance(); bool tempTrigger = Instance; if (instance == this) Debug.Log(GetInstanceID() + " | INSTANCE | " + this.name); }
+        public override void TriggerInstance() { base.TriggerInstance(); bool tempTrigger = Instance;}
 
         private static T instance;
         public static T Instance
