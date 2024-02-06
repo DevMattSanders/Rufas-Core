@@ -14,7 +14,16 @@ namespace Rufas
         {
             yield return new WaitForSeconds(delay);
             method();
-        }        
+        }
+
+        public static void CallWithDelay<T>(this MonoBehaviour mono, Action<T> method, T parameter, float delay)
+    => mono.StartCoroutine(CallWithDelayRoutine(method, parameter, delay));
+
+        private static IEnumerator CallWithDelayRoutine<T>(Action<T> method, T parameter, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            method(parameter);
+        }
 
         public static void CallWithFrameDelay(this MonoBehaviour mono, Action method, int framesToSkip)
             => mono.StartCoroutine(CallWithDelayRoutine(method, framesToSkip));

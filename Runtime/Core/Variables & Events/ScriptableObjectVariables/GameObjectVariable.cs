@@ -15,6 +15,8 @@ namespace Rufas
         [DisableInEditorMode]
         public GameObject value;
 
+        //value needs to be a get/set event for cases where other systems cache it
+
         public override void SoOnAwake()
         {
             base.SoOnAwake();
