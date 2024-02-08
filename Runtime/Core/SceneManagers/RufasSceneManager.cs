@@ -17,11 +17,11 @@ namespace Rufas
 {
     public class RufasSceneManager : GameSystem<RufasSceneManager>
     {
-        
+        [FoldoutGroup("Application Scenes")]
         [SerializeField]
         [HideReferenceObjectPicker]
         [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true, HideAddButton = true)]
-        [InlineButton("RefreshApplicationScenesList")]
+       // [InlineButton("RefreshApplicationScenesList")]
         public List<SceneInfo> applicationScenes = new List<SceneInfo>();
         [PropertySpace(15)]
         [FoldoutGroup("Debug")] public CodeEvent onSceneLoadTriggered;
@@ -57,10 +57,10 @@ namespace Rufas
         [ReadOnly, HideInEditorMode, SerializeReference]
         public List<AsyncOperationHandle> asyncOperationHandles = new List<AsyncOperationHandle>();
 
-        [TitleGroup("Fade to black")]
+        [FoldoutGroup("Fade to black")]
         [Tooltip("Loaded on start!")] //Inline button if null for creating one?
         public AssetReference screenFadePrefab;
-        [TitleGroup("Fade to black")]
+        [FoldoutGroup("Fade to black")]
         [ShowIf("screenFadePrefab")]
         public float fadeToBlackDuration = 0.2f;
 
@@ -71,7 +71,11 @@ namespace Rufas
             return SdfIconType.CameraReels;
         }
 #endif
+        public override string DesiredName()
+        {
+            return "Scene Manager";
 
+        }
         public override string DesiredPath()
         {
             return "Rufas/Scene Manager";

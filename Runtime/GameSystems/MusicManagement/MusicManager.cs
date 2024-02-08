@@ -6,9 +6,11 @@ using UnityEngine;
 
 namespace Rufas.MusicManagement
 {
-    public class MusicManager : MonoBehaviour
+    public class MusicManager : GameSystem<MusicManager>
     {
-        public static MusicManager Instance;
+        //public static MusicManager Instance;
+
+        public Transform musicInstancesParent;
 
         [Header("Current & Upcoming")]
         [SerializeField, ReadOnly] public float timeLeftOnCurrentTrack;
@@ -29,48 +31,94 @@ namespace Rufas.MusicManagement
         [Space]
         [Header("Instances")]
         [FoldoutGroup("Instances"), SerializeField, InlineEditor, ReadOnly] private MusicInstance currentInstance;
-        [FoldoutGroup("Instances"), SerializeField, InlineEditor, ReadOnly] private MusicInstance upcommingInstance;
+        [FoldoutGroup("Instances"), SerializeField, InlineEditor, ReadOnly] private MusicInstance upcomingInstance;
 
-        private void Awake()
+        // private void Awake()
+        // {
+        //    if (Instance == null) { MusicManager.Instance = this; }
+        //     else { Debug.LogError("Two or more instances of music manager!", this.gameObject); }
+        // }
+
+        public override string DesiredName()
         {
-            if (Instance == null) { MusicManager.Instance = this; }
-            else { Debug.LogError("Two or more instances of music manager!", this.gameObject); }
+            return "Music Manager";
+
         }
 
-        private void Update()
+        private void ResetValues()
         {
-            if (currentInstance != null)
-            {
-                timeLeftOnCurrentTrack = currentInstance.GetTimeLeftOnCurrentTrack();
-                if (timeLeftOnCurrentTrack <= crossFadeDuration && !isCurrentlyFading)
-                {
-                    StartCrossFade();
-                }
-            }
-            
-            if (isCurrentlyFading)
-            {
-                if (fadeTimer < crossFadeDuration)
-                {
-                    float fadeProgress = (fadeTimer / crossFadeDuration) * musicVolume.Value;
-                    currentInstance.UpdateVolume(musicVolume.Value - fadeProgress);
+            timeLeftOnCurrentTrack = 0;
+            currentTrack = null;
+            upcomingTrack = null;
+            currentInstance = null;
+            isCurrentlyFading = false;
+            crossFadeDuration = 0;
+            fadeTimer = 0;
+            currentInstance = null;
+            upcomingInstance = null;
+        }
 
-                    upcommingInstance.UpdateVolume(fadeProgress);
+        public override void OnAwakeBehaviour()
+        {
+            base.OnAwakeBehaviour();
+            ResetValues();
+        }
 
-                    fadeTimer += Time.deltaTime;
-                }
-                else
+        public override void EndOfApplicaitonBehaviour()
+        {
+            base.EndOfApplicaitonBehaviour();
+            ResetValues();
+        }
+
+        public override void OnStartBehaviour()
+        {
+            base.OnStartBehaviour();
+
+            CoroutineMonoBehaviour.i.StartCoroutine(MusicManagerUpdate());
+
+            musicInstancesParent = new GameObject("Music-Instances").transform;
+            DontDestroyOnLoad(musicInstancesParent);
+
+        }
+
+        IEnumerator MusicManagerUpdate()
+        {
+            while (true)
+            {
+                if (currentInstance != null)
                 {
-                    isCurrentlyFading = false;
-                    fadeTimer = 0f;
-                    if (currentInstance != null) { Destroy(currentInstance.gameObject); }
-                    currentInstance = upcommingInstance;
-                    upcommingInstance = null;
-                    if (currentInstance != null)
+                    timeLeftOnCurrentTrack = currentInstance.GetTimeLeftOnCurrentTrack();
+                    if (timeLeftOnCurrentTrack <= crossFadeDuration && !isCurrentlyFading)
                     {
-                        currentTrack = currentInstance.GetMusicTrack();
+                        StartCrossFade();
                     }
                 }
+
+                if (isCurrentlyFading)
+                {
+                    if (fadeTimer < crossFadeDuration)
+                    {
+                        float fadeProgress = (fadeTimer / crossFadeDuration) * musicVolume.Value;
+                        currentInstance.UpdateVolume(musicVolume.Value - fadeProgress);
+
+                        upcomingInstance.UpdateVolume(fadeProgress);
+
+                        fadeTimer += Time.deltaTime;
+                    }
+                    else
+                    {
+                        isCurrentlyFading = false;
+                        fadeTimer = 0f;
+                        if (currentInstance != null) { Destroy(currentInstance.gameObject); }
+                        currentInstance = upcomingInstance;
+                        upcomingInstance = null;
+                        if (currentInstance != null)
+                        {
+                            currentTrack = currentInstance.GetMusicTrack();
+                        }
+                    }
+                }
+                yield return null;
             }
         }
 
@@ -97,24 +145,20 @@ namespace Rufas.MusicManagement
         {
             MusicInstance newInstance = new GameObject("Music Instance").AddComponent<MusicInstance>();
 
-
             DontDestroyOnLoad(newInstance.gameObject);
-
-            newInstance.transform.SetParent(transform, false);
+            newInstance.transform.SetParent(musicInstancesParent, false);
             newInstance.musicVolume = musicVolume;
-            //newInstance.UpdateVolume(musicVolume.Value);
 
             return newInstance;
         }
 
         [Button()] private void StartCrossFade()
         {
-            //Debug.Log("Start Timer");
             isCurrentlyFading = true;
             fadeTimer = 0f;
-            upcommingInstance = CreateNewMusicInstance();
+            upcomingInstance = CreateNewMusicInstance();
             upcomingTrack = currentTrackList.GetNextUnplayedTrack();
-            upcommingInstance.PlayNewMusicTrack(upcomingTrack);
+            upcomingInstance.PlayNewMusicTrack(upcomingTrack);
         }
     }
 }

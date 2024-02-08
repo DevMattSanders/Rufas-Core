@@ -1,0 +1,19 @@
+{
+    "name": "Rufas.XNode",
+    "rootNamespace": "Rufas.XNode",
+    "references": [
+        "Rufas",
+        "XNode"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "RUFAS_XNODE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

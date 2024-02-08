@@ -80,7 +80,10 @@ namespace Rufas
                 }
 
                 Debug.Log("Inconsistent database tracking.");
-                SaveLoad.Instance.StringToObject.Add(existingId, obj);
+                if (obj.IsSaveLoadable())
+                {
+                    SaveLoad.Instance.StringToObject.Add(existingId, obj);
+                }
 
                 return;
             }
@@ -102,7 +105,10 @@ namespace Rufas
             if (knownObject == obj)
             {
                 Debug.Log("Inconsistent database tracking.");
-                SaveLoad.Instance.ObjectToString.Add(obj, obj.UniqueID);
+                if (obj.IsSaveLoadable())
+                {
+                    SaveLoad.Instance.ObjectToString.Add(obj, obj.UniqueID);
+                }
                 return;
             }
 
@@ -118,6 +124,11 @@ namespace Rufas
             RegisterObject(obj);
         }
 
+        public virtual bool IsSaveLoadable()
+        {
+            return false;
+        }
+
         private static void RegisterObject(SuperScriptableWithID aID, bool replace = false)
         {
             if (replace)
@@ -126,10 +137,15 @@ namespace Rufas
             }
             else
             {
-                SaveLoad.Instance.StringToObject.Add(aID.UniqueID, aID);
+                if (aID.IsSaveLoadable())
+                {
+                    SaveLoad.Instance.StringToObject.Add(aID.UniqueID, aID);
+                }
             }
-
-            SaveLoad.Instance.ObjectToString.Add(aID, aID.UniqueID);
+            if (aID.IsSaveLoadable())
+            {
+                SaveLoad.Instance.ObjectToString.Add(aID, aID.UniqueID);
+            }
         }
 
         private static void GenerateInternalId(SuperScriptableWithID obj)

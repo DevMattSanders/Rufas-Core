@@ -12,43 +12,7 @@ using UnityEngine;
 
 public class GameSaveManager : GameSystem<GameSaveManager>
 {
- //   public static CodeEvent<SaveFile,FileCategory>
-
-  //  public static CodeEvent<FileChunk,SaveFileType> SaveFileCollecting;
-
-  //  public static CodeEvent<FileTypeID, FileChunk,SaveFileType> SaveFileLoading;
     public static CodeEvent saveFilesRefreshed;
-
-    /*
-    public class FileTypeID
-    {
-        public FileTypeID(string _id)
-        {
-            id = _id;
-        }
-
-        public bool Compare(FileTypeID file)
-        {
-            if (String.Compare(file.ID, ID) == 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        [SerializeField, ReadOnly]
-        private string id;
-        public string ID
-        {
-            get
-            {
-                return id;
-            }
-        }
-    }
-    */
-
-    //public ES3Settings settings;// = new ES3Settings();
 
     public ES3.CompressionType compressionType;
 
@@ -57,16 +21,8 @@ public class GameSaveManager : GameSystem<GameSaveManager>
     [SerializeField] private Texture2D defaultThumbnail;
 
 
-
-    //public List<>
-    // public Dictionary<string, SaveFileHeader> saveFilesByName = new Dictionary<string, SaveFileHeader>();
     public Dictionary<string, SaveFile> saveFilesByID = new Dictionary<string, SaveFile>();
     
-  //  public List<SaveFile> localDeviceFiles = new List<SaveFile>();
-
-    //Ignore this for now
-    //public List<SaveFile> ugcContentFiles = new List<SaveFile>();
-
     public List<UnityEngine.Object> delaySavingWhilstAnyInList = new List<UnityEngine.Object>();
 
     //Current saving instance
@@ -140,22 +96,26 @@ public class GameSaveManager : GameSystem<GameSaveManager>
         savingNow = true;
 
         currentFileName = fileName;
-        currentFileID = GenerateShortId();// System.Guid.NewGuid().ToString().Replace("-", "");
+        currentFileID = GenerateShortId();
         currentSaveFileType = saveFileType;
 
         string fileNameWithNoSpaces =  (currentFileName + "-" + DateTime.Now).Replace(" ", "").Replace("/","").Replace(":","");
 
-      //  currentThumbnailName = "Thumbnails/" + fileNameWithNoSpaces;//Short GUID thing here?//;
-
-        if (thumbnailPrefab == null || useScreenshot == false)
+        if (useScreenshot)
         {
-            PostThumnail(null);
+            if (thumbnailPrefab == null)
+            {
+                Debug.LogError("Thumbnail Generator Prefab on GameSaveManager == null. Skipping Thumbnail");
+                PostThumnail(null);
+            }
+            else
+            {
+                GameObject thumbnailGenerator = GameObject.Instantiate(thumbnailPrefab);
+            }
         }
         else
         {
-            //Replace with addressable asset reference later!
-            //This system generates a thumbnail before calling PostThumnail
-            GameObject thumbnailGenerator = GameObject.Instantiate(thumbnailPrefab);
+            PostThumnail(null);
         }
     }
     private static readonly System.Random random = new System.Random();

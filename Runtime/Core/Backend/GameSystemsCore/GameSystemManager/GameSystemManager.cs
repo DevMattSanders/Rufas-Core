@@ -101,7 +101,9 @@ namespace Rufas
         [PropertySpace(SpaceBefore = 15), PropertyOrder(10)]
         [InfoBox("Not all Rufas scriping define symbols are being used for the current build target. To include in the project, copy exact text into PlayerSettings -> Other -> ScriptingDefineSymbols", SdfIconType.ExclamationCircleFill, VisibleIf = "NotUsingAllDefineSymbols")]
         [ListDrawerSettings(HideAddButton = true, HideRemoveButton = true)]
-        public List<RufasScriptingDefineSymbolsManager.DefineSymbolCheck> rufasDefineSymbols = RufasScriptingDefineSymbolsManager.AllDefineSymbols();
+        public List<RufasScriptingDefineSymbolsManager.DefineSymbolCheck> defineSymbolsInProject = RufasScriptingDefineSymbolsManager.AllDefineSymbols();
+
+
 #endif
         #endregion
 
@@ -130,7 +132,7 @@ namespace Rufas
 
             foreach (GameSystemParentClass next in gameSystems)
             {
-              //  Debug.Log("From Game Manager: " + next.name);
+                Debug.Log("From Game Manager: " + next.name);
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
             }
@@ -318,13 +320,13 @@ namespace Rufas
 
         private void ResetSymbolList()
         {
-            rufasDefineSymbols = RufasScriptingDefineSymbolsManager.AllDefineSymbols();
+            defineSymbolsInProject = RufasScriptingDefineSymbolsManager.AllDefineSymbols();
         }
 
 
         private bool NotUsingAllDefineSymbols()
         {
-            foreach (RufasScriptingDefineSymbolsManager.DefineSymbolCheck next in rufasDefineSymbols)
+            foreach (RufasScriptingDefineSymbolsManager.DefineSymbolCheck next in defineSymbolsInProject)
             {
                 if (!next.Check()) return true;
             }

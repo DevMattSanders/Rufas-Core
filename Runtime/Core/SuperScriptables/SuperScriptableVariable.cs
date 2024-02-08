@@ -36,6 +36,12 @@ namespace Rufas
             return startingValue;
         }
 
+        public override bool IsSaveLoadable()
+        {
+            //return base.IsSaveLoadable();
+            return saveOnValueChanged;
+        }
+
         [ShowInInspector, DisableInEditorMode, InlineProperty, TitleGroup("$GetName")]
         public T Value
         {

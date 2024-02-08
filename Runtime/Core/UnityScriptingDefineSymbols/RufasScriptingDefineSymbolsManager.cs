@@ -16,7 +16,8 @@ namespace Rufas
         {
             return new List<DefineSymbolCheck>
             {
-                 new DSC_RUFAS_UNITY_SYSTEMS()
+                 new DSC_RUFAS_UNITY_SYSTEMS(),
+                 new DSC_RUFAS_XNODE()
             };
         }
 
@@ -25,19 +26,6 @@ namespace Rufas
         {
             public virtual string Name() { return ""; }
             public virtual bool Check() { return false; }
-
-
-            //  [HorizontalGroup("H"),ReadOnly,HideIf("Check"),HideLabel]
-            //  public string NotIncludedWarning = "Copy Here -->";
-
-            // [InfoBox("Symbol not found!", icon: SdfIconType.ExclamationCircleFill, VisibleIf = "CounterCheck")]
-
-            //[HorizontalGroup("H")]
-            //[HideLabel, ShowIf("Check")]
-            // public EditorIcon foundIcon = EditorIcons.;
-
-
-            //public EditorIcon notFoundIcon = EditorIcons.AlertCircle;
 
             [PropertyOrder(0)]
             [HorizontalGroup("H",order: 0,width: 15)]
@@ -58,20 +46,11 @@ namespace Rufas
             {
                 return !Check();
             }
-            
+
             private bool EnableText()
             {
-                //if (Check()) //
-                //{              
-
-                    TextField = Name();
-                //}
-               // else
-               // {
-                  //  TextField = Name();
-               // }
-
-                return! Check();
+                TextField = Name();
+                return !Check();
             }
         }
 
@@ -92,6 +71,24 @@ namespace Rufas
 #endif
             }
         }
+
+        class DSC_RUFAS_XNODE : DefineSymbolCheck
+        {
+            public override string Name()
+            {
+                return "RUFAS_XNODE";
+            }
+
+            public override bool Check()
+            {
+#if RUFAS_XNODE
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
 #endif
             }
 

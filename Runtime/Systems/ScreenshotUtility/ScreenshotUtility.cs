@@ -8,32 +8,14 @@ using UnityEngine;
 
 namespace Rufas
 {
-    public class ScreenshotUtility : GameSystem<ScreenshotUtility>
+    public static class ScreenshotUtility
     {
-        [SerializeField] private string screenshotFolderName = "GameplayScreenshots";
+        public static string screenshotFolderName = "GameplayScreenshots";
 
-       // [ShowInInspector, ReadOnly]
-      //  public string DataPath()
-      //  {
-       //     return Application.dataPath + "/" + screenshotFolderName;
-       // }
+        public static int pixelWidth = 384;
+        public static int pixelHeight = 216;
 
-        public int pixelWidth = 384;
-        public int pixelHeight = 216;
-
-       // [PreviewField,ReadOnly] public Texture2D mostRecentScreenshot;
-        //[PreviewField,ReadOnly] public List<Texture2D> screenshots = new List<Texture2D>();
-
-        public override string DesiredName()
-        {
-            return "Screenshot Utility";
-        }
-
-        //public static void CaptureScreenshotNow() { ScreenshotUtility.Instance?.CaptureScreenshot(); }
-       // public override void PreInitialisationBehaviour() { base.PreInitialisationBehaviour(); RefreshFolder(); }
-
-        [Button]
-        public void CaptureScreenshot()
+        public static void CaptureScreenshot()
         {
             CaptureScreenshot((Texture2D tex) =>
             {
@@ -51,41 +33,18 @@ namespace Rufas
             });
         }
 
-        public void CaptureScreenshot(Action<Texture2D> returnTexture)
+        public static void CaptureScreenshot(Action<Texture2D> returnTexture)
         {
             CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot( pixelWidth, pixelHeight, returnTexture));
         }
 
-       // public void CaptureScreenshot(string _screenshotName, Action<Texture2D> returnTexture)
-       // {
-       //     CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, pixelWidth, pixelHeight, returnTexture));
-       // }
-
-        public void CaptureScreenshot(int _pixelWidth, int _pixelHeight, Action<Texture2D> returnTexture)
+        public static void CaptureScreenshot(int _pixelWidth, int _pixelHeight, Action<Texture2D> returnTexture)
         {
 
             CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_pixelWidth, _pixelHeight, returnTexture));
-
-            /*
-            CoroutineMonoBehaviour.i.StartCoroutine(CoroutineScreenshot(_screenshotName, _pixelWidth, _pixelHeight, (Texture2D screenshot) =>
-            {
-                if (screenshot != null)
-                {
-                    screenshots.Add(screenshot);
-                    mostRecentScreenshot = screenshot;
-                    Debug.Log("Screenshot captured with default width and height!");
-                    //Call returnTexture here with result?
-                }
-                else
-                {
-                    Debug.LogError("Failed to capture screenshot!");
-                    //Call returnTexture here with null?
-                }
-            }));
-            */
         }
 
-        private IEnumerator CoroutineScreenshot(int _pixelWidth, int _pixelHeight, Action<Texture2D> onComplete)
+        private static IEnumerator CoroutineScreenshot(int _pixelWidth, int _pixelHeight, Action<Texture2D> onComplete)
         {
 
             yield return new WaitForEndOfFrame();
@@ -99,75 +58,18 @@ namespace Rufas
             // Resize the texture to the lower resolution on the GPU
             Texture2D resizedTexture = ResizeTextureGPU(screenshotTexture, _pixelWidth, _pixelHeight);
 
-            // Save the resized texture
-           // byte[] byteArray = resizedTexture.EncodeToPNG();
-
-           // string pathToCreate = DataPath() + "/" + screenshotName + ".png";
-
-            // Split the path after the last "/"
-           // int lastSeparatorIndex = pathToCreate.LastIndexOf('/');
-           // string directoryPart = pathToCreate.Substring(0, lastSeparatorIndex);
-
-            // Check if the directory exists, and create it if it doesn't
-          //  if (!Directory.Exists(directoryPart))
-          //  {
-          //      Directory.CreateDirectory(directoryPart);
-           // }
-
-          //  System.IO.File.WriteAllBytes(pathToCreate, byteArray);
-
-         //   screenshots.Add(resizedTexture);
-         //   mostRecentScreenshot = resizedTexture;
-
             // Invoke the onComplete callback with the resized texture
             onComplete?.Invoke(resizedTexture);
         }
-        /*
-        public void DeleteScreenshot(string screenshotAddress)
-        {
-            // Construct the full path to the screenshot file
-            string screenshotPath = DataPath() + "/" + screenshotAddress + ".png";
-
-            // Check if the file exists before attempting to delete
-            if (File.Exists(screenshotPath))
-            {
-                // Delete the file
-                File.Delete(screenshotPath);
-                Debug.Log("Screenshot deleted: " + screenshotAddress);
-
-                // Optional: Remove the screenshot from the list
-                RemoveScreenshotFromList(screenshotAddress);
-            }
-            else
-            {
-                Debug.LogWarning("Screenshot not found: " + screenshotAddress);
-            }
-        }
-        
-        private void RemoveScreenshotFromList(string screenshotName)
-        {
-            // Optional: Remove the screenshot from your internal list
-            Texture2D screenshotToRemove = screenshots.Find(tex => tex.name == screenshotName);
-
-            if (screenshotToRemove != null)
-            {
-                screenshots.Remove(screenshotToRemove);
-                Debug.Log("Screenshot removed from the list: " + screenshotName);
-            }
-            else
-            {
-                Debug.LogWarning("Screenshot not found in the list: " + screenshotName);
-            }
-        }
-        */
-        private Texture2D ResizeTextureGPU(Texture2D sourceTexture, int targetWidth, int targetHeight)
+       
+        private static Texture2D ResizeTextureGPU(Texture2D sourceTexture, int targetWidth, int targetHeight)
         {
             RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight, 0, RenderTextureFormat.Default,RenderTextureReadWrite.Linear);
             rt.filterMode = FilterMode.Bilinear;
 
             Graphics.Blit(sourceTexture, rt);
 
-            Texture2D resultTexture = new Texture2D(targetWidth, targetHeight);//, TextureFormat.RGBA32, true); // Set isReadable to true
+            Texture2D resultTexture = new Texture2D(targetWidth, targetHeight);
             resultTexture.filterMode = FilterMode.Bilinear;
             resultTexture.wrapMode = TextureWrapMode.Clamp;
             RenderTexture.active = rt;
@@ -180,112 +82,7 @@ namespace Rufas
 
             Debug.Log(resultTexture.isReadable);
             return resultTexture;
-        }
-        /*
-        public void CaptureScreenshot(int width, int height, string screenshotName, Action<Texture2D> onComplete = null)
-        {
-
-            Texture2D screenshotTexture = null;
-
-            if (width < 1 || width > 1080) width = pixelWidth;
-            if (height < 1 || height > 1920) height = pixelHeight;
-
-            screenshotTexture = new Texture2D(width, height, TextureFormat.ARGB32, false);
-            Rect rect = new Rect(0, 0, width, height);
-            screenshotTexture.ReadPixels(rect, 0, 0);
-            screenshotTexture.Apply();
-
-            byte[] byteArray = screenshotTexture.EncodeToPNG();
-            System.IO.File.WriteAllBytes(Application.persistentDataPath + "/" + screenshotName + ".png", byteArray);
-            onComplete?.Invoke(screenshotTexture);
-        }
-
-        public void CaptureScreenshot(string screenshotName, Action<Texture2D> onComplete = null)
-        {
-            Texture2D screenshotTexture = null;
-
-            screenshotTexture = new Texture2D(pixelWidth, pixelHeight, TextureFormat.ARGB32, false);
-            Rect rect = new Rect(0, 0, pixelWidth, pixelHeight);
-            screenshotTexture.ReadPixels(rect, 0, 0);
-            screenshotTexture.Apply();
-
-            byte[] byteArray = screenshotTexture.EncodeToPNG();
-            System.IO.File.WriteAllBytes(DataPath() + "/" + screenshotName + ".png", byteArray);
-
-
-            onComplete?.Invoke(screenshotTexture);
-        }
-        */
-        /*
-        public async void CaptureScreenshot(int width, int height, string screenshotName, Action<Texture2D> onComplete = null)
-        {
-            Texture2D screenshotTexture = null;
-
-            await Task.Run(() =>
-            {
-                if (width < 1 || width > 1080) width = pixelWidth;
-                if (height < 1|| height > 1920) height = pixelHeight;
-
-                screenshotTexture = new Texture2D(width, height, TextureFormat.ARGB32, false);
-                Rect rect = new Rect(0, 0, width, height);
-                screenshotTexture.ReadPixels(rect, 0, 0);
-                screenshotTexture.Apply();
-
-                byte[] byteArray = screenshotTexture.EncodeToPNG();
-                System.IO.File.WriteAllBytes(DataPath() + "/" + screenshotName, byteArray);
-            });
-
-            onComplete?.Invoke(screenshotTexture);
-        }
-
-        public async void CaptureScreenshot(string screenshotName, Action<Texture2D> onComplete = null)
-        {
-            Texture2D screenshotTexture = null;
-
-            await Task.Run(() =>
-            {
-                screenshotTexture = new Texture2D(pixelWidth, pixelHeight, TextureFormat.ARGB32, false);
-                Rect rect = new Rect(0, 0, pixelWidth, pixelHeight);
-                screenshotTexture.ReadPixels(rect, 0, 0);
-                screenshotTexture.Apply();
-
-                byte[] byteArray = screenshotTexture.EncodeToPNG();
-                System.IO.File.WriteAllBytes(DataPath() + "/" + screenshotName, byteArray);
-            });
-
-            onComplete?.Invoke(screenshotTexture);
-        }
-        */
-
-        /*
-        [Button]
-        private void RefreshFolder()
-        {
-            screenshots.Clear();
-
-            if(!Directory.Exists(DataPath()))
-            {
-                Directory.CreateDirectory(DataPath());
-            }
-
-            //if (Directory.Exists(DataPath()))
-           // {
-                string[] files = Directory.GetFiles(DataPath(), "*.png");;
-
-                foreach(string filePath in files)
-                {
-                    byte[] fileData = File.ReadAllBytes(filePath);
-                    Texture2D texture = new Texture2D(2, 2); //Placeholder
-                    texture.LoadImage(fileData);
-                    screenshots.Add(texture);
-                }
-            //}
-            //else
-           /// {
-           //     Debug.LogError("Folder does not exist: " + DataPath());
-            //}
-        }
-        */
+        }      
 
     }
 }
