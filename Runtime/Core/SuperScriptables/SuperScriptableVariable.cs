@@ -31,6 +31,11 @@ namespace Rufas
 
         private T _value;
 
+        public T GetStartingValue()
+        {
+            return startingValue;
+        }
+
         [ShowInInspector, DisableInEditorMode, InlineProperty, TitleGroup("$GetName")]
         public T Value
         {
