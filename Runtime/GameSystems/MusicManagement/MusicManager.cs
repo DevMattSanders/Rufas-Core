@@ -45,6 +45,11 @@ namespace Rufas.MusicManagement
 
         }
 
+        public override SdfIconType EditorIcon()
+        {
+            return SdfIconType.MusicNote;
+        }
+
         private void ResetValues()
         {
             timeLeftOnCurrentTrack = 0;

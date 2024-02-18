@@ -35,7 +35,11 @@ public class GameSaveManager : GameSystem<GameSaveManager>
 
     public override string DesiredName()
     {
-        return "Game Save Manager";
+        return "Save / Load";
+    }
+    public override SdfIconType EditorIcon()
+    {
+        return SdfIconType.FolderSymlinkFill;
     }
 
     public override void PreInitialisationBehaviour()

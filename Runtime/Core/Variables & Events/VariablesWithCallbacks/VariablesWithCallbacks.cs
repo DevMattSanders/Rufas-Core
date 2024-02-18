@@ -822,4 +822,93 @@ namespace Rufas
             return true;
         }
     }
+
+    [System.Serializable, InlineProperty]
+    public struct ULongWithCallback : IEquatable<ulong>
+    {
+        [SerializeField, HideInInspector]
+        private ulong _value;
+
+        public ULongWithCallback(ulong startingValue) : this()
+        {
+            Value = startingValue;
+        }
+
+        [ShowInInspector, HideLabel]
+        public ulong Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                if (value == _value)
+                {
+                    return;
+                }
+
+                _value = value;
+                onValue?.Invoke(_value);
+            }
+        }
+
+        public void AddListener(System.Action<ulong> listener)
+        {
+            onValue += listener;
+        }
+
+        public void RemoveListener(System.Action<ulong> listener)
+        {
+            onValue -= listener;
+        }
+
+        [SerializeField, HideInInspector]
+        private event Action<ulong> onValue;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(ulong other)
+        {
+            return _value == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public static bool operator ==(ULongWithCallback a, ulong b)
+        {
+            return a.Value == b;
+        }
+        public static bool operator !=(ULongWithCallback a, ulong b)
+        {
+            return !(a.Value == b);
+        }
+
+        public static bool operator ==(ulong a, ULongWithCallback b)
+        {
+            return a == b.Value;
+        }
+        public static bool operator !=(ulong a, ULongWithCallback b)
+        {
+            return !(a == b.Value);
+        }
+
+        public static bool operator ==(ULongWithCallback a, ULongWithCallback b)
+        {
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(ULongWithCallback a, ULongWithCallback b)
+        {
+            if (a.Value == b.Value) return false;
+
+            return true;
+        }
+    }
 }

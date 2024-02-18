@@ -17,13 +17,13 @@ namespace Rufas.UnitySystems
         public string PlayerID;
 
         //[Header("Void Event that triggers Unitys Authentication!")]
-        [Required]
-        public VoidEvent onPlatformCompletedLogin;
+        //[Required]
+        //public VoidEvent onPlatformCompletedLogin;
 
 
-        [TitleGroup("Oculus Auth", horizontalLine: true)]
-        [HorizontalGroup("Oculus Auth/H")] public ULongVariable oculusLogin;
-        [HorizontalGroup("Oculus Auth/H")] public StringVariable oculusProof;
+        //[TitleGroup("Oculus Auth", horizontalLine: true)]
+        //[HorizontalGroup("Oculus Auth/H")] public ULongVariable oculusLogin;
+        //[HorizontalGroup("Oculus Auth/H")] public StringVariable oculusProof;
 
 
 //#if UNITY_EDITOR
@@ -50,32 +50,32 @@ namespace Rufas.UnitySystems
         public override void PreInitialisationBehaviour()
         {
             base.PreInitialisationBehaviour();
-           // Debug.Log("UNITY INIT: 1");
-            onPlatformCompletedLogin.AddListener(InitAndSignIn);
-
-           // Debug.Log("ID HERE: " + onPlatformCompletedLogin.GetInstanceID());
-
-            
+           // onPlatformCompletedLogin.AddListener(InitAndSignIn);            
         }
 
-        private async void InitAndSignIn()
+        private void PostSignIn()
         {
-            //#if !UNITY_EDITOR
-            //        var options = new InitializationOptions();
-            //        options.SetEnvironmentName("production");
-            //#endif
-            //Debug.Log("UNITY INIT: 2");
-            await UnityServices.InitializeAsync();
-            // Debug.Log("UNITY INIT: 3");
-            //Debug.Log(oculusProof.Value + " " + oculusLogin.Value.ToString());
-
-            await AuthenticationService.Instance.SignInWithOculusAsync(oculusProof.Value, oculusLogin.Value.ToString());
-
             PlayerID = AuthenticationService.Instance.PlayerId;
-            Debug.Log("ID: " + PlayerID);
-            // Debug.Log("Unity Authentification Completed! PlayerID: " + AuthenticationService.Instance.PlayerId);
             isUnityAuthenticationCompleted = true;
             OnUnityAuthenticationComplete.Raise();
         }
+
+        
+        //Gets called by the oculusAppManager
+        public async void SignInWithOculus(ulong oculusUserID,string oculusProofCode)
+        {
+            await UnityServices.InitializeAsync();
+            await AuthenticationService.Instance.SignInWithOculusAsync(oculusProofCode, oculusUserID.ToString());
+            PostSignIn();
+        }
+
+        //Quick and easy way.
+        public async void SignInAnonymously()
+        {
+            await UnityServices.InitializeAsync();
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            PostSignIn();
+        }
+
     }
 }

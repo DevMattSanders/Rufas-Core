@@ -13,9 +13,16 @@ namespace Rufas.BasicFunctions
         public UnityEvent onTrue;
         public UnityEvent onFalse;
 
+        public bool refreshOnStart;
+
         private void Start()
         {
             boolVariable.AddListener(ValueChanged,true);
+
+            if (refreshOnStart)
+            {
+                ValueChanged(boolVariable.Value);
+            }
         }
 
         private void OnDestroy()
