@@ -14,12 +14,8 @@ namespace Rufas.UnitySystems
     {
         public static CodeEvent OnUnityAuthenticationComplete;
         public static bool isUnityAuthenticationCompleted;
+        [ReadOnly]
         public string PlayerID;
-
-        //[Header("Void Event that triggers Unitys Authentication!")]
-        //[Required]
-        //public VoidEvent onPlatformCompletedLogin;
-
 
         //[TitleGroup("Oculus Auth", horizontalLine: true)]
         //[HorizontalGroup("Oculus Auth/H")] public ULongVariable oculusLogin;

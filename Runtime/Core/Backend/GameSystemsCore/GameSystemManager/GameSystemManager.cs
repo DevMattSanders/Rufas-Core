@@ -132,7 +132,7 @@ namespace Rufas
 
             foreach (GameSystemParentClass next in gameSystems)
             {
-                Debug.Log("From Game Manager: " + next.name);
+                //Debug.Log("From Game Manager: " + next.name);
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
             }
