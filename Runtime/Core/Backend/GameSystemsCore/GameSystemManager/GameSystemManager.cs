@@ -286,6 +286,7 @@ namespace Rufas
 
             foreach(GameSystemParentClass next in gameSystemsList)
             {
+                if (next == null) continue;
                 if(string.Compare(next.GetType().ToString(),"Rufas.GameSystem") == 0 || string.Compare(next.GetType().ToString(), "Rufas.GameSystemParentClass") == 0)
                 {
 

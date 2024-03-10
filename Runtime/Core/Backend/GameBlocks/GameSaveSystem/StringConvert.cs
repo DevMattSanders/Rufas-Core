@@ -86,6 +86,25 @@ namespace Rufas
             return val.ToString("R"); // "R" format ensures that the string representation is culture-invariant
         }
 
+        public static double ToDouble(string val)
+        {
+            double result;
+            if(double.TryParse(val,out result))
+            {
+                return result;
+            }
+            else
+            {
+                Debug.LogError("Failed to convert string to double!");
+                return -1;// 0.0f;
+            }
+        }
+
+        public static string FromDouble(double val)
+        {
+            return val.ToString("F3");
+        }
+
         // VECTOR2
         public static Vector2 ToVector2(string val)
         {
