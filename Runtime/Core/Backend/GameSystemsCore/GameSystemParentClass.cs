@@ -131,12 +131,15 @@ namespace Rufas
 
         public virtual void EndOfApplicaitonBehaviour()
         {
-
+            finishedIniting = false;
         }
+
+        public bool finishedIniting = false;
 
         public virtual void FinaliseInitialisation()
         {
-            GameSystemManager.instance.systemsInitializing.Remove(this);
+            finishedIniting = true;
+            //GameSystemManager.instance.systemsInitializing.Remove(this);
         }
 
         public virtual void OnEnable_EditorModeOnly()

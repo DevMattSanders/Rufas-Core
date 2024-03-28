@@ -521,17 +521,17 @@ public class SaveFile
         header = _header;
     }
 
+    //public List<string> instanceSpecialRules = new List<string>();
+    public Dictionary<string, string> instanceSpecialRules = new Dictionary<string, string>();
     public static CodeEvent<SaveFile> SaveFileSaving;
     public static CodeEvent<SaveFile> SaveFileLoading;
 
     [ReadOnly]
     public string directoryFilePath;
 
-    //[InlineEditor(InlineEditorObjectFieldModes.Boxed)]
     [HideLabel]
     public SaveFileHeader header;
 
-    // [ShowInInspector,ReadOnly]
     [SerializeField]
     public Dictionary<string, string> data = new Dictionary<string, string>();
         

@@ -21,7 +21,6 @@ namespace Rufas
         [SerializeField]
         [HideReferenceObjectPicker]
         [ListDrawerSettings(ShowFoldout = false, HideRemoveButton = true, HideAddButton = true)]
-       // [InlineButton("RefreshApplicationScenesList")]
         public List<SceneInfo> applicationScenes = new List<SceneInfo>();
         [PropertySpace(15)]
         [FoldoutGroup("Debug")] public CodeEvent onSceneLoadTriggered;
@@ -33,6 +32,22 @@ namespace Rufas
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField] private List<string> nonAddressableOpenScenes = new List<string>();
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField, SerializeReference] private AssetReference queuedSceneToLoad;
         [FoldoutGroup("Current Snapshot")][ReadOnly, SerializeField, SerializeReference] public List<SceneInstance> openScenes = new List<SceneInstance>();
+
+        public string GetCurrentScene()
+        {
+            if (isCurrentlyLoadingScene.Value)
+            {
+                return loadingScene;
+            }
+            else
+            {
+                if(lastOpenedScene == "")
+                {
+                    lastOpenedScene = SceneManager.GetActiveScene().name;
+                }
+                return lastOpenedScene;
+            }
+        }
 
         public static void LoadScene(AssetReference sceneInstance)
         {
@@ -94,7 +109,6 @@ namespace Rufas
                 Addressables.LoadAssetAsync<GameObject>(screenFadePrefab).Completed += asset =>
                 {
                     if (asset.Result != null) DontDestroyOnLoad(GameObject.Instantiate(asset.Result));
-
                     base.FinaliseInitialisation();
 
                 };

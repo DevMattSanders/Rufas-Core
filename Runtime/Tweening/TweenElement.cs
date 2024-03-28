@@ -188,14 +188,18 @@ namespace Rufas
             lastTweenIndex = caseIndex;
 
             elementInFinishedState.Value = false;
+            if (transform.gameObject.activeInHierarchy)
+            {
+                if (caseIndex == -1)
+                {
 
-            if (caseIndex == -1)
-            {
-                defaultData.StartActions(transform);
-            }
-            else
-            {
-                tweenCases[caseIndex].StartActions(transform);
+                    defaultData.StartActions(transform);
+
+                }
+                else
+                {
+                    tweenCases[caseIndex].StartActions(transform);
+                }
             }
         }
 

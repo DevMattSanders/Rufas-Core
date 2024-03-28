@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UnityEngine.Events;
 namespace Rufas
 {
     [System.Serializable]
@@ -394,5 +395,156 @@ namespace Rufas
                 fadeTarget = transform.GetComponent<CanvasGroup>().alpha;
             }
         }
+    }
+
+    [System.Serializable]
+    public class SetActiveState : zBaseTween
+    {
+
+        [HorizontalGroup("H")] public bool setToActiveState = true;// = 1;
+        [Required(MessageType = InfoMessageType.Error), LabelText("Target (shouldn't be this object!)")] public GameObject target;
+
+        private TweenContainer container;
+
+        public override void StartSpecificTween(Transform transform)
+        {
+            base.StartSpecificTween(transform);
+
+            if (container == null)
+            {
+                container = TweenContainer.Get(transform);
+            }
+
+            tween = container.canvasGroupFadeTween;
+
+            if (tween != null) tween.Kill();
+
+            //if (target != null)
+            //{
+                shouldRun = true;
+               // Debug.Log("Active State here: " + target.name + " " + setToActiveState);
+                container.CallWithDelay(SetActiveAfterDelay, delay + duration);
+            
+        }
+
+        bool shouldRun = false;
+
+        private void SetActiveAfterDelay()
+        {
+            if (shouldRun)
+            {
+                shouldRun = false;
+                target.SetActive(setToActiveState);
+                TweenCompleted();
+            }
+        }
+
+        public override void TweenCompleted()
+        {
+            base.TweenCompleted();
+            shouldRun = false;
+        }
+
+        public override void StopTween()
+        {
+            base.StopTween();
+        }
+
+        public override void FastAction(Transform transform)
+        {
+            base.FastAction(transform);
+
+            if (Application.isPlaying == false)
+            {
+                Debug.Log("Fast action not applicable to tween type SetActive");
+            }
+            else
+            {
+                target.SetActive(setToActiveState);
+            }            
+            return;
+        }
+
+        public override void GetCurrentValues(Transform transform)
+        {
+            base.GetCurrentValues(transform);
+            Debug.Log("GetCurrentValues not applicable to tween type SetActive");
+            return;
+        }
+
+
+        [System.Serializable]
+        public class CallEvent : zBaseTween
+        {
+
+            // [HorizontalGroup("H")] public bool setToActiveState = true;// = 1;
+            // [Required(MessageType = InfoMessageType.Error), LabelText("Target (shouldn't be this object!)")] public GameObject target;
+
+            [HideLabel]
+            public UnityEvent unityEvent;
+            private TweenContainer container;
+
+            public override void StartSpecificTween(Transform transform)
+            {
+                base.StartSpecificTween(transform);
+
+                if (container == null)
+                {
+                    container = TweenContainer.Get(transform);
+                }
+
+                tween = container.canvasGroupFadeTween;
+
+                if (tween != null) tween.Kill();
+
+                shouldRun = true;
+                container.CallWithDelay(CallEventAfterDelay, delay + duration);
+            }
+
+            bool shouldRun = false;
+
+            private void CallEventAfterDelay()
+            {
+                if (shouldRun)
+                {
+                    shouldRun = false;
+                    unityEvent.Invoke();
+                    TweenCompleted();
+                }
+            }
+
+            public override void TweenCompleted()
+            {
+                base.TweenCompleted();
+                shouldRun = false;
+            }
+
+            public override void StopTween()
+            {
+                base.StopTween();
+            }
+
+            public override void FastAction(Transform transform)
+            {
+                base.FastAction(transform);
+                if (Application.isPlaying)
+                {
+                    Debug.Log("Fast action not applicable to tween type CallEvent");
+                }
+                else
+                {
+                    unityEvent.Invoke();
+                }
+                return;
+            }
+
+            public override void GetCurrentValues(Transform transform)
+            {
+                base.GetCurrentValues(transform);
+                Debug.Log("GetCurrentValues not applicable to tween type CallEvent");
+                return;
+            }
+        }
+
     }
 }

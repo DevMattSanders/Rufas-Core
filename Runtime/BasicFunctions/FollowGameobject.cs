@@ -118,34 +118,72 @@ namespace Rufas
         private bool ShowAnyRotFields() { if (!rotationX && !rotationY && !rotationZ) return false; return true; }
         private bool ShowRotFollowSpeed() { if (ShowAnyRotFields() && smoothRotation) return true; return false; }
 
+        public bool useLateUpdate = false;
+
         void Update()
         {
-            //Debug.Log(name + " " + useScriptable + " " + scriptable.name);
-            //Null checks
-            if (useScriptable && scriptable != null)
+            if (useLateUpdate == false)
             {
-                if (scriptable.value != null)
+                //Debug.Log(name + " " + useScriptable + " " + scriptable.name);
+                //Null checks
+                if (useScriptable && scriptable != null)
                 {
-                    trueTarget = scriptable.value.transform;
+                    if (scriptable.value != null)
+                    {
+                        trueTarget = scriptable.value.transform;
+                    }
                 }
-            }
-            else if (sceneRef != null)
-            {
-                trueTarget = sceneRef.transform;
-            }
-            else
-            {
-                trueTarget = null;
-            }
+                else if (sceneRef != null)
+                {
+                    trueTarget = sceneRef.transform;
+                }
+                else
+                {
+                    trueTarget = null;
+                }
 
-            if (trueTarget == null)
-            {
-               // Debug.LogError("Target to follow is null!");
-                return;
-            }
+                if (trueTarget == null)
+                {
+                    // Debug.LogError("Target to follow is null!");
+                    return;
+                }
 
-            UpdatePositon();
-            UpdateRotation();
+                UpdatePositon();
+                UpdateRotation();
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if (useLateUpdate)
+            {
+                //Debug.Log(name + " " + useScriptable + " " + scriptable.name);
+                //Null checks
+                if (useScriptable && scriptable != null)
+                {
+                    if (scriptable.value != null)
+                    {
+                        trueTarget = scriptable.value.transform;
+                    }
+                }
+                else if (sceneRef != null)
+                {
+                    trueTarget = sceneRef.transform;
+                }
+                else
+                {
+                    trueTarget = null;
+                }
+
+                if (trueTarget == null)
+                {
+                    // Debug.LogError("Target to follow is null!");
+                    return;
+                }
+
+                UpdatePositon();
+                UpdateRotation();
+            }
         }
 
         private void UpdatePositon()

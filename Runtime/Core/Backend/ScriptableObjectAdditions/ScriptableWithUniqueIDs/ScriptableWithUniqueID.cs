@@ -33,7 +33,7 @@ namespace Rufas
         [HideInInspector] public bool IDAlreadyExists;
 
 #endif
-
+        [HideInInlineEditors]
         [HorizontalGroup("TopLine", width: 30, order: 2)]
         [Button("R")]
         void RefreshButton()

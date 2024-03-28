@@ -132,6 +132,7 @@ namespace Rufas
 
             foreach (GameSystemParentClass next in gameSystems)
             {
+                next.finishedIniting = false;
                 //Debug.Log("From Game Manager: " + next.name);
                 systemsInitializing.Add(next);
                 next.TriggerInstance();
@@ -168,6 +169,15 @@ namespace Rufas
         {
             while(systemsInitializing.Count > 0)
             {
+                for (int i = 0; i < systemsInitializing.Count; i++)
+                {
+                    if (systemsInitializing[i].finishedIniting == true)
+                    {
+                        systemsInitializing.Remove(systemsInitializing[i]);
+                        i--;
+                    }
+                }
+
                 yield return null;
             }
 

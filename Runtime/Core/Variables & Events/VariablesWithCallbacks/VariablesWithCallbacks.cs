@@ -69,7 +69,11 @@ namespace Rufas
         {
             return base.GetHashCode();
         }
-               
+        
+        public static implicit operator bool(BoolWithCallback a)
+        {
+            return a.Value;
+        }
 
         public static bool operator ==(BoolWithCallback a, bool b)
         {

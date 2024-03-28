@@ -16,7 +16,12 @@ namespace Rufas
         public Dictionary<GameContentReference, string> objectsToKeys = new Dictionary<GameContentReference, string>();
 
 
+        public GameContentReference GetFromKey(string _key)
+        {
+            if(keysToObjects.ContainsKey(_key)) return keysToObjects[_key];
 
+            return null;
+        }
         public override void OnEnable_EditorModeOnly()
         {
             base.OnEnable_EditorModeOnly();

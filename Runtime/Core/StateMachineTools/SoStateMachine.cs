@@ -51,8 +51,7 @@ namespace Rufas
         {
             base.SoOnAwake();
 
-          //  Debug.Log("So On Awake Called");
-
+            //  Debug.Log("So On Awake Called");
             currentState = null;
             nextState = null;
             previousState = null;
@@ -61,9 +60,7 @@ namespace Rufas
             {
                 nextState.stateEnterRequested.AddListener(StateEnterRequested);
                 nextState.SyncToStateMachine(this);
-            }
-                       
-                      
+            }          
         }
 
         public override void SoOnStart()
